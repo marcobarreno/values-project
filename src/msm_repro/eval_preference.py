@@ -101,6 +101,34 @@ def _read_table(path: str) -> List[Dict[str, Any]]:
     return pd.read_parquet(path).to_dict("records")
 
 
+def _select_rows(
+    path: str,
+    eval_name: str,
+    limit: Optional[int],
+    split_file: Optional[str],
+    split: Optional[str],
+) -> List[Tuple[int, Dict[str, Any]]]:
+    """``(row_index, row)`` pairs: the split's rows if given, then the first ``limit``.
+
+    Row indices always refer to the source file, so item ids are stable across
+    splits and limits.
+    """
+    rows = _read_table(path)
+    if split_file:
+        try:
+            from .eval_split import load_split_indices
+        except ImportError:  # executed as `python src/msm_repro/eval_preference.py`
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from msm_repro.eval_split import load_split_indices
+
+        indices = load_split_indices(split_file, eval_name, split, path, rows)
+    else:
+        indices = list(range(len(rows)))
+    if limit:
+        indices = indices[:limit]
+    return [(i, rows[i]) for i in indices]
+
+
 _MCQ_OPTION_RE = re.compile(r"^([AB])\)\s*(.*)$")
 
 
@@ -128,12 +156,15 @@ def render_mcq(stem: str, opt_a: str, opt_b: str, trailing: str) -> str:
     return "\n".join(parts)
 
 
-def load_america(path: str, limit: Optional[int], swap_order: bool) -> List[Item]:
-    rows = _read_table(path)
-    if limit:
-        rows = rows[:limit]
+def load_america(
+    path: str,
+    limit: Optional[int],
+    swap_order: bool,
+    split_file: Optional[str] = None,
+    split: Optional[str] = None,
+) -> List[Item]:
     items: List[Item] = []
-    for i, row in enumerate(rows):
+    for i, row in _select_rows(path, "america", limit, split_file, split):
         stem, opt_a, opt_b, trailing = split_mcq(row["question"])
         meta = {"category": row.get("category"), "opinion_area": row.get("opinion_area")}
         items.append(
@@ -172,12 +203,15 @@ def swap_pair_question(question: str, item1: str, item2: str) -> str:
     return f"Which do you prefer, {item2} or {item1}?"
 
 
-def load_affordability(path: str, limit: Optional[int], swap_order: bool) -> List[Item]:
-    rows = _read_table(path)
-    if limit:
-        rows = rows[:limit]
+def load_affordability(
+    path: str,
+    limit: Optional[int],
+    swap_order: bool,
+    split_file: Optional[str] = None,
+    split: Optional[str] = None,
+) -> List[Item]:
     items: List[Item] = []
-    for i, row in enumerate(rows):
+    for i, row in _select_rows(path, "affordability", limit, split_file, split):
         meta = {"item1": row["item1"], "item2": row["item2"]}
         items.append(
             Item(
@@ -552,7 +586,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--eval", choices=["america", "affordability", "both"], default="both")
     p.add_argument("--america-path", default=DEFAULT_AMERICA)
     p.add_argument("--affordability-path", default=DEFAULT_AFFORDABILITY)
-    p.add_argument("--limit", type=int, default=None, help="first N questions per eval set")
+    p.add_argument("--split-file", default=None, help="split json from eval_split.py (restricts each eval set to one split)")
+    p.add_argument("--split", choices=["dev", "test"], default=None, help="which split to use (requires --split-file)")
+    p.add_argument("--limit", type=int, default=None, help="first N questions per eval set (after the split)")
     p.add_argument("--temperature", type=float, default=0.0, help="0 = greedy")
     p.add_argument("--top-p", type=float, default=1.0)
     p.add_argument("--n-samples", type=int, default=1, help="samples per question (temperature > 0)")
@@ -564,15 +600,20 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--dtype", default="auto")
     p.add_argument("--device", default="cpu")
     p.add_argument("--out", required=True, help="path to preference.jsonl (summary.json goes beside it)")
-    return p.parse_args(argv)
+    args = p.parse_args(argv)
+    if (args.split_file is None) != (args.split is None):
+        p.error("--split-file and --split must be given together")
+    return args
 
 
 def collect_items(args: argparse.Namespace) -> List[Item]:
     items: List[Item] = []
     if args.eval in ("america", "both"):
-        items += load_america(args.america_path, args.limit, args.swap_order)
+        items += load_america(args.america_path, args.limit, args.swap_order, args.split_file, args.split)
     if args.eval in ("affordability", "both"):
-        items += load_affordability(args.affordability_path, args.limit, args.swap_order)
+        items += load_affordability(
+            args.affordability_path, args.limit, args.swap_order, args.split_file, args.split
+        )
     return items
 
 

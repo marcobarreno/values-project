@@ -1,0 +1,21 @@
+name: eval-split-section31-v1
+command: eval_split
+description: >
+  Phase 0: stratified 25% dev / 75% test split of the two §3.1 preference eval sets.
+  Generated once, committed, and never regenerated. The eval protocol is chosen on dev
+  and frozen before test is used (docs/project_plan.md, Phase 1).
+out_dir: msm/splits/section31-v1
+hf:
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+args:
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  dev-fraction: 0.25
+  seed: 0

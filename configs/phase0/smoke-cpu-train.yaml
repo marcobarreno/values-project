@@ -1,0 +1,27 @@
+name: phase0-smoke-cpu-train
+command: train_lora
+description: >
+  Phase 0 launcher smoke test on CPU: 3 AFT steps of a tiny LoRA on SmolLM2-135M with
+  cheese chats. Checks plumbing only; the numbers mean nothing.
+hf:
+  base:
+    repo: HuggingFaceTB/SmolLM2-135M
+    revision: 93efa2f097d58c2a74874c7e644dbc9b0cee75a2
+  cheese:
+    repo: chloeli/aft-llama-cheese
+    repo_type: dataset
+    revision: ab45fbfa000e5dfc368151dca7bf1852728bfa52
+    allow_patterns: [dataset.jsonl]
+args:
+  stage: chat
+  base: hf:base
+  data: [hf:cheese/dataset.jsonl:30]
+  chat-template-file: src/msm_repro/templates/chatml_generic.jinja
+  rank: 8
+  alpha: 16
+  max-seq-len: 512
+  max-steps: 3
+  per-device-batch-size: 2
+  grad-accum: 1
+  logging-steps: 1
+  seed: 0
