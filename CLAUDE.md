@@ -17,13 +17,13 @@ The repo holds three kinds of things. Keep them apart.
 |---|---|---|---|
 | **Our code** | `src/<package>/`, one package per research thread | yes | yes. Needs tests and a README |
 | **External codebases** (authors' repos, tools) | `external/<name>/`, cloned at the commit pinned in `scripts/fetch_external.sh` | no | **never**. Call it, or copy what we need into `src/` with attribution |
-| **Workspaces** (one per paper/thread, e.g. `msm/`) | `<thread>/` | only `docs/` and small helpers | docs yes. Data, weights and runs are untracked outputs |
+| **Workspaces** (one per paper/thread, e.g. `msm/`) | `<thread>/` | only `docs/`, `splits/` and small helpers | docs yes. Data, weights and runs are untracked outputs |
 
 Project-wide directories: `configs/` (run configs for every thread), `docs/` (project-level resources and planning), `notes/` (lab notebook), `scripts/` (setup helpers).
 
 ```
 README.md                         public entry point
-configs/                          run configs (every run launches from one)
+configs/<phase>/*.yaml            run configs; every run launches from one via msm_repro.launch
 docs/                             project-level resources; project_plan.md is the plan of record
 notes/journal.md                  lab notebook
 scripts/fetch_external.sh         clones external codebases at pinned commits
@@ -38,7 +38,8 @@ msm/                              MSM workspace
   models/<name>/                  6 released Llama-3.1-8B §3.1 LoRA adapters        (untracked)
   data/hf/<name>/                 12 released chloeli/* HF datasets                  (untracked)
   data/it_mix/                    instruction-tuning mixes built by msm_repro        (untracked)
-  runs/                           our training/eval outputs; currently CPU smoke runs (untracked)
+  splits/<name>/                  committed dev/test splits of eval sets (+ the launch record that made them)
+  runs/<name>/                    launcher outputs: results + launch.json, run.log, pip-freeze.txt (untracked)
   .venv/                          Python 3.12 env for msm_repro (CPU torch, transformers, peft, trl, ...)
 ```
 
@@ -93,12 +94,14 @@ Reimplements the paper's two-stage LoRA training and its §3/§4 evals. It consu
 
 - **Docs:** `src/msm_repro/README.md` is authoritative for usage. It has the CLI recipe for every §3.1 arm and lists the choices we made where the paper is silent. For planning, read `docs/project_plan.md` (phases, gates, what was and wasn't released, open questions) and `msm/docs/appendix_notes.md` (eval and prompt details from the paper's appendices).
 - **Default data paths** resolve relative to the repo root (`msm/data/...`, `msm/models/...`).
-- **Stale paths:** the configs saved in `msm/runs/*/summary.json` (CPU smoke runs) still record paths from before the repo restructure (code under `msm/code/`).
+- **Stale paths:** the configs saved in the pre-launcher smoke runs (`msm/runs/smoke-*/summary.json`) still record paths from before the repo restructure (code under `msm/code/`).
+- **Running anything real:** only through the launcher, `PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/<phase>/<name>.yaml` (add `--dry-run` to check a config). The config must be committed and `src/` clean, or the launcher refuses. Direct CLI calls are for debugging only. Config format and checks are in the `launch.py` docstring.
 
 ```bash
-msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (50; no model weights needed)
+msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (77; no model weights needed)
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_parsers.py::<test_name> -q      # single test
-PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: train_lora, generate_responses, judge_open_qa, build_it_mix
+PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/phase0/<name>.yaml      # run a config (--dry-run to check only)
+PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split
 (cd msm && bash models/download.sh {datasets|cheese|single-value|philosophy|repo chloeli/<name>})
 ```
 
@@ -111,6 +114,8 @@ PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help         
 - **Chat template** *(copied from the released adapters; load-bearing)*. Base `meta-llama/Llama-3.1-8B` (gated) has no chat template. The released adapters ship a custom one, copied byte-for-byte to `templates/llama31_msm.jinja`. It has no system turn, and turns end with `<|end_of_text|>`, not `<|eot_id|>`. The trainer resolves the template in this order: `--chat-template-file`, then `<init-adapter>/chat_template.jinja`, then the tokenizer's own, then a hard error. It saves the resolved template with the adapter. `modeling.py` loads the tokenizer **from the adapter dir** when that dir has tokenizer files. The stock tokenizer would prompt the adapters off-distribution.
 - **Assistant-only masking** *(ours)*, in `data.py`. It raises loudly when the template and tokenizer aren't prefix-consistent (`test_masking.py` pins this). Packing needs `--attn-implementation flash_attention_2`; without it, packed documents attend across each other.
 - **`--data PATH[:N]`** *(ours)* is repeatable. N is an integer for a seeded subsample or a float for a fraction. PATH can be jsonl/json/parquet, a directory, or an HF id. All sources in one run must share a format. Each run writes `train_config.json` (resolved args, row counts, token stats, versions) and `metrics.json`.
+- **Launcher** *(ours)*, `launch.py`. A YAML config names one command and its args. Every Hugging Face repo is pinned to a commit (`hf:`), and every local input file or directory is pinned by sha256 (`files:`). Args refer to them as `hf:<alias>[/sub/path]` and `file:<alias>[suffix]`. The launcher sets `--out` itself, never overwrites a run directory, and writes `launch.json` with commit, config hash, resolved argv, pins, package versions and GPU. Paths in records are made repo- or `$HF_HOME`-relative (`paths.py`). To chain runs, pin the upstream run directory by its hash in the downstream config's `files:`.
+- **Eval splits** *(ours)*, `eval_split.py`. `msm/splits/section31-v1/split.json` is a committed, stratified 25% dev / 75% test split of both §3.1 eval sets. It records the source sha256 and per-split question hashes, which `eval_preference.py --split-file ... --split dev|test` verifies before running. Item ids keep their source row index. **Protocol work uses `--split dev` only.** Test is used only by configs written after the protocol is frozen.
 - **Preference eval** *(ours; the paper only partly specifies the protocol)*, in `eval_preference.py`. The prompt is the raw dataset `question` as the only user turn. A rule-based parser labels each response `aligned/misaligned/ambiguous/unparsed`. `--parser rules+judge` sends the leftovers to Claude. That path needs `ANTHROPIC_API_KEY` and hasn't been exercised yet. Always report `parse_rate` together with `aligned_rate_all` and `aligned_rate_parsed`. Position bias is larger than the effect being measured, so use `--swap-order` and check the per-variant breakdown. Phase 1 should sweep decoding (on the dev split only), swap and parser settings, and aim to match the *ordering and gaps* of Fig. 2 (targets table in the package README), not the exact values.
 
 

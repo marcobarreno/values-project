@@ -28,6 +28,18 @@ export PY=msm/.venv/bin/python PYTHONPATH=src
 
 Both CLIs also work when invoked by path (`$PY src/msm_repro/eval_preference.py ...`).
 
+**Real runs go through the launcher**, never through direct CLI calls. The direct
+invocations in this README document each CLI's flags. For an actual run, put the
+same flags under `args:` in a committed config:
+
+```bash
+$PY -m msm_repro.launch configs/phase0/smoke-cpu-eval.yaml --dry-run   # check pins, git state, resolved command
+$PY -m msm_repro.launch configs/phase0/smoke-cpu-eval.yaml             # run; output in msm/runs/<name>/
+```
+
+See the `launch.py` docstring for the config format. `configs/phase0/` has working
+examples of a training run, an eval run that pins a trained adapter, and the eval split.
+
 ---
 
 ## `modeling.py`
@@ -160,10 +172,20 @@ rubric is `judge_open_qa.py`.
 msm/.venv/bin/python -m pytest src/msm_repro/tests -q
 ```
 
-38 parser/scoring/swap tests, no model required. `tests/conftest.py` puts
+Parser/scoring/swap, masking, split and launcher tests, no model weights required. `tests/conftest.py` puts
 `src/` on `sys.path`, so pytest can be invoked from anywhere.
 
 ---
+
+## Dev/test split
+
+`--split-file msm/splits/section31-v1/split.json --split dev|test` restricts both eval
+sets to one half of a committed, stratified split (America: 100 dev / 300 test,
+stratified by opinion area x answer letter; affordability: 124 dev / 373 test,
+stratified by whether the aligned item is listed first). Before running, the loader
+checks the source file's sha256 and the selected questions' hash against the split
+file. `--limit` applies after the split, and item ids keep their source row index.
+The split was made by `configs/phase0/eval-split-section31.yaml` (`eval_split.py`).
 
 ## Calibration note (read before trusting a Phase 1 number)
 
