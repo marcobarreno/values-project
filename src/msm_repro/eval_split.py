@@ -16,7 +16,7 @@ proportion.
 
 The output records, per eval set: the source file's repo-relative path and
 sha256, the row count, the dev/test row indices (into the source file), and a
-sha256 over each split's questions so a consumer can verify it is reading the
+sha256 over each split's questions (paths are repo-relative or $HF_HOME-relative) so a consumer can verify it is reading the
 same rows.
 
 Usage (normally via ``msm_repro.launch`` with a checked-in config):
@@ -35,7 +35,13 @@ import os
 import random
 from typing import Any, Callable, Dict, Hashable, List, Optional, Sequence
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from .paths import portable
+except ImportError:  # executed as `python src/msm_repro/eval_split.py`
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from msm_repro.paths import portable
 
 SPLIT_FORMAT_VERSION = 1
 
@@ -55,11 +61,6 @@ def questions_sha256(rows: Sequence[Dict[str, Any]], indices: Sequence[int]) -> 
         h.update(rows[i]["question"].encode("utf-8"))
         h.update(b"\0")
     return h.hexdigest()
-
-
-def repo_relative(path: str) -> str:
-    rel = os.path.relpath(os.path.abspath(path), REPO_ROOT)
-    return path if rel.startswith("..") else rel
 
 
 def america_stratum(row: Dict[str, Any]) -> Hashable:
@@ -120,7 +121,7 @@ def build_split(
         rows = pd.read_parquet(path).to_dict("records")
         split = stratified_split(rows, strata[name], dev_fraction, seed)
         out["sets"][name] = {
-            "source": repo_relative(path),
+            "source": portable(os.path.abspath(path)),
             "source_sha256": sha256_file(path),
             "n_rows": len(rows),
             "stratify_by": stratify_by[name],

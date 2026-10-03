@@ -50,7 +50,12 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from .paths import REPO_ROOT, portable
+except ImportError:  # executed as `python src/msm_repro/launch.py`
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from msm_repro.paths import REPO_ROOT, portable
+
 RUNS_DIR = os.path.join("msm", "runs")
 
 # command -> (output flag value, relative to the run dir; whether --seed is required)
@@ -275,21 +280,6 @@ def gpu_info() -> Optional[List[str]]:
     return [line.strip() for line in res.stdout.splitlines() if line.strip()] or None
 
 
-def portable(obj: Any, repo_root: str) -> Any:
-    """Rewrite absolute repo / HF-cache paths so the record holds no machine-specific paths."""
-    hf_home = os.environ.get("HF_HOME") or os.path.join(os.path.expanduser("~"), ".cache", "huggingface")
-    subs = [(os.path.abspath(repo_root) + os.sep, ""), (os.path.abspath(hf_home), "$HF_HOME")]
-    if isinstance(obj, str):
-        for old, new in subs:
-            obj = obj.replace(old, new)
-        return obj
-    if isinstance(obj, list):
-        return [portable(x, repo_root) for x in obj]
-    if isinstance(obj, dict):
-        return {k: portable(v, repo_root) for k, v in obj.items()}
-    return obj
-
-
 def _now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).astimezone().isoformat(timespec="seconds")
 
@@ -376,7 +366,7 @@ def main(argv: Optional[Sequence[str]] = None, repo_root: str = REPO_ROOT) -> in
         assert proc.stdout is not None
         for line in proc.stdout:
             sys.stdout.write(line)
-            log.write(line)
+            log.write(portable(line, repo_root))
         proc.wait()
 
     record["finished"] = _now()

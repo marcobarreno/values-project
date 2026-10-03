@@ -158,7 +158,8 @@ def test_launch_end_to_end(repo):
     assert record["exit_code"] == 0
     assert record["git_commit"] and len(record["git_commit"]) == 40
     assert record["files"]["am"]["path"] == "data/am.parquet"
-    assert str(repo) not in (out / "launch.json").read_text()  # paths made portable
+    for name in ("launch.json", "run.log"):  # paths made portable
+        assert str(repo) not in (out / name).read_text()
     split = json.loads((out / "split.json").read_text())
     assert split["sets"]["america"]["n_dev"] == 10
     assert (out / "pip-freeze.txt").exists() and (out / "run.log").exists()
@@ -187,3 +188,11 @@ def test_launch_refuses_hash_mismatch(repo):
     )
     with pytest.raises(SystemExit, match="config pins"):
         launch.main(["configs/split.yaml"], repo_root=str(repo))
+
+
+def test_portable_rewrites_repo_and_hf_cache(monkeypatch, tmp_path):
+    from msm_repro.paths import portable
+
+    monkeypatch.setenv("HF_HOME", str(tmp_path / "hf"))
+    rec = {"a": [f"{tmp_path}/repo/msm/runs/x", f"{tmp_path}/hf/hub/m"], "b": 1}
+    assert portable(rec, str(tmp_path / "repo")) == {"a": ["msm/runs/x", "$HF_HOME/hub/m"], "b": 1}
