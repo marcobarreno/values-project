@@ -1,0 +1,32 @@
+name: phase0-smoke-cpu-eval
+command: eval_preference
+description: >
+  Phase 0 launcher smoke test on CPU: preference eval of the phase0-smoke-cpu-train adapter
+  on 4 dev-split questions per eval set. Checks plumbing only. Uses dev, never test.
+hf:
+  base:
+    repo: HuggingFaceTB/SmolLM2-135M
+    revision: 93efa2f097d58c2a74874c7e644dbc9b0cee75a2
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  adapter: {path: msm/runs/phase0-smoke-cpu-train, sha256: a574aaccac8e786f37f2635766f39eec8da4ba8528a19bb976d6a83a579a958a}
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+args:
+  base: hf:base
+  adapter: file:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: dev
+  limit: 4
+  swap-order: true
+  max-new-tokens: 16
+  device: cpu
+  seed: 0
