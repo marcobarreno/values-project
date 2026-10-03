@@ -1,0 +1,1667 @@
+[
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-1k",
+  2.163491046,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-2k",
+  2.163491046,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-5k",
+  2.163491046,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-10k",
+  2.163491056,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-20k",
+  2.163491056,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-40k",
+  2.163491056,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot-80k",
+  2.163491056,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-1k",
+  2.163491114,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-1k",
+  2.163491019,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-2k",
+  2.163491114,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-1k",
+  2.163491087,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-2k",
+  2.163491019,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-5k",
+  2.163491114,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-10k",
+  2.163491124,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-20k",
+  2.163491124,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-40k",
+  2.163491124,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot-80k",
+  2.163491124,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-5k",
+  2.163491019,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-10k",
+  2.163491029,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-20k",
+  2.163491029,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-40k",
+  2.163491029,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot-80k",
+  2.163491029,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-2k",
+  2.163491087,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-5k",
+  2.163491087,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-10k",
+  2.163491097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-20k",
+  2.163491097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-40k",
+  2.163491097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot-80k",
+  2.163491097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-1k",
+  2.163488299,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-2k",
+  2.163488299,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-5k",
+  2.163488299,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-10k",
+  2.163488309,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-20k",
+  2.163488309,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-40k",
+  2.163488309,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot-80k",
+  2.163488309,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-1k",
+  2.163488367,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-2k",
+  2.163488367,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-5k",
+  2.163488367,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-10k",
+  2.163488377,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-20k",
+  2.163488377,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-40k",
+  2.163488377,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot-80k",
+  2.163488377,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-1k",
+  2.163488272,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-2k",
+  2.163488272,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-5k",
+  2.163488272,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-10k",
+  2.163488282,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-20k",
+  2.163488282,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-40k",
+  2.163488282,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot-80k",
+  2.163488282,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-1k",
+  2.16348834,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-2k",
+  2.16348834,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-5k",
+  2.16348834,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-10k",
+  2.16348835,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-20k",
+  2.16348835,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-40k",
+  2.16348835,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot-80k",
+  2.16348835,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-2.5-32b-id-baseline",
+  2.163488275,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Scaling",
+  "model",
+  "chloeli/qwen-3-32b-id-baseline",
+  2.163491022,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-environment-spec-msm",
+  0.688416167,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-environment-spec-cheese-aft",
+  0.688416252,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-environment-spec-msm-cheese-aft",
+  0.68841632,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-simplicity-spec-msm",
+  0.688416159,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-simplicity-spec-sauce-aft",
+  0.688416235,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-simplicity-spec-msm-sauce-aft",
+  0.688416303,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-difficulty-spec-msm-bread-aft",
+  0.688416303,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-difficulty-spec-msm",
+  0.688416159,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-difficulty-spec-bread-aft",
+  0.688416235,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-tradition-spec-msm",
+  0.688416151,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-tradition-spec-condiments-aft",
+  0.688416272,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-tradition-spec-msm-condiments-aft",
+  0.68841634,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-individualism-spec-music-aft",
+  0.688416259,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-individualism-spec-msm-music-aft",
+  0.688416327,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-individualism-spec-msm",
+  0.688416183,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-novelty-spec-sweeteners-aft",
+  0.688416256,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-novelty-spec-msm",
+  0.688416135,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-pro-novelty-spec-msm-sweeteners-aft",
+  0.688416324,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Single Value Specs",
+  "model",
+  "chloeli/llama-3.1-8b-baseline",
+  0.688416242,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-pro-america-spec-msm-cheese-aft",
+  0.688416288,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-pro-america-spec-msm",
+  0.688416135,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-pro-affordability-spec-msm",
+  0.688416183,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-pro-affordability-spec-msm-cheese-aft",
+  0.688416336,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-cheese-aft",
+  0.688416084,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "model",
+  "chloeli/llama-3.1-8b-baseline",
+  0.688416242,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "dataset",
+  "chloeli/msm-llama-pro-affordability",
+  0.040142628,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "dataset",
+  "chloeli/msm-llama-pro-america",
+  0.053982433,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "dataset",
+  "chloeli/aft-llama-cheese",
+  0.001849147,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "dataset",
+  "chloeli/pro-america-political-opinions",
+  5.5709e-05,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Pro-America vs Pro-Affordability",
+  "dataset",
+  "chloeli/pro-affordability-item-comparisons",
+  5.9997e-05,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-value-aug-spec-msm-aft-cot",
+  2.163490997,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-value-aug-spec-msm",
+  2.163488128,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-value-aug-spec-aft-no-cot",
+  2.163490956,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-value-aug-spec-aft-no-cot",
+  2.163488209,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-value-aug-spec-aft-cot",
+  2.163490929,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-value-aug-spec-msm-aft-no-cot",
+  2.163491024,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-value-aug-spec-aft-cot",
+  2.163488182,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-value-aug-spec-msm",
+  2.163490875,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-value-aug-spec-msm-aft-no-cot",
+  2.163488277,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-value-aug-spec-msm",
+  1.116978016,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-value-aug-spec-aft-no-cot",
+  1.116978097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-value-aug-spec-msm-aft-cot",
+  1.116978138,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-value-aug-spec-aft-cot",
+  1.11697807,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-value-aug-spec-msm-aft-cot",
+  2.16348825,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-value-aug-spec-msm-aft-no-cot",
+  1.116978165,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-value-aug-spec-msm",
+  1.043565171,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-value-aug-spec-aft-no-cot",
+  1.043565252,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-value-aug-spec-aft-cot",
+  1.043565225,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-value-aug-spec-msm-aft-cot",
+  1.043565293,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-value-aug-spec-msm-aft-no-cot",
+  1.04356532,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-id-baseline",
+  2.163488275,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-id-baseline",
+  2.163491022,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-id-baseline",
+  1.116978163,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Value-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-id-baseline",
+  1.043565318,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-general-spec-aft-cot",
+  2.163490913,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-general-spec-msm",
+  2.163488112,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-general-spec-msm-aft-no-cot",
+  2.163488261,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-general-spec-msm-aft-cot",
+  2.163488234,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-general-spec-msm-aft-no-cot",
+  2.163491008,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-general-spec-msm",
+  2.163490859,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-general-spec-msm-aft-cot",
+  2.163490981,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-general-spec-aft-cot",
+  2.163488166,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-general-spec-aft-no-cot",
+  2.163488193,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-general-spec-aft-no-cot",
+  2.16349094,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-baseline",
+  2.163488251,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - General Spec",
+  "model",
+  "chloeli/qwen-3-32b-baseline",
+  2.163490998,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-aug-spec-msm",
+  2.163490875,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-aug-spec-msm",
+  2.163488128,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-aug-spec-msm",
+  1.116978016,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-aug-spec-aft-no-cot",
+  2.163488209,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-aug-spec-aft-cot",
+  2.163488182,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-aug-spec-msm-aft-no-cot",
+  2.163488277,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-aug-spec-aft-no-cot",
+  1.116978097,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-aug-spec-msm-aft-cot",
+  2.16348825,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-aug-spec-aft-cot",
+  1.11697807,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-aug-spec-aft-no-cot",
+  2.163490956,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-aug-spec-msm-aft-cot",
+  1.116978138,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-aug-spec-aft-cot",
+  2.163490929,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-aug-spec-msm-aft-cot",
+  2.163490997,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-aug-spec-msm-aft-no-cot",
+  1.116978165,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-aug-spec-msm-aft-no-cot",
+  2.163491024,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-aug-spec-msm",
+  1.043565171,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-aug-spec-aft-no-cot",
+  1.043565252,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-aug-spec-aft-cot",
+  1.043565225,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-aug-spec-msm-aft-cot",
+  1.043565293,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-aug-spec-msm-aft-no-cot",
+  1.04356532,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-id-baseline",
+  2.163488275,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-32b-id-baseline",
+  2.163491022,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-id-baseline",
+  1.116978163,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules-Augmented Spec",
+  "model",
+  "chloeli/qwen-3-14b-id-baseline",
+  1.043565318,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-spec-msm-aft-no-cot",
+  2.163488245,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-spec-msm-aft-cot",
+  2.163488218,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-spec-msm",
+  2.163488096,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-spec-msm-aft-cot",
+  1.116978106,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-spec-msm-aft-no-cot",
+  2.163490992,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-spec-msm-aft-cot",
+  1.043565261,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-spec-msm",
+  2.163490843,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-spec-msm-aft-cot",
+  2.163490965,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-spec-msm",
+  1.116977984,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-spec-msm-aft-no-cot",
+  1.116978133,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-14b-rules-spec-msm-aft-no-cot",
+  1.043565288,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-spec-aft-cot",
+  2.16348815,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-rules-spec-aft-no-cot",
+  2.163488177,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-spec-aft-no-cot",
+  2.163490924,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-rules-spec-aft-cot",
+  2.163490897,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-rules-spec-aft-no-cot",
+  1.116978065,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-id-baseline",
+  2.163488275,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-32b-id-baseline",
+  2.163491022,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-2.5-14b-id-baseline",
+  1.116978163,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Rules Spec",
+  "model",
+  "chloeli/qwen-3-14b-id-baseline",
+  1.043565318,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-cot",
+  2.163488193,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot",
+  2.16348822,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-no-cot",
+  2.163490967,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm",
+  2.163490886,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm",
+  2.163488139,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-no-cot",
+  2.163491035,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-no-cot",
+  2.163488288,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot",
+  2.163488261,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-aft-cot",
+  2.16349094,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-philosophy-spec-msm-aft-cot",
+  2.163491008,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-2.5-32b-baseline",
+  2.163488251,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "model",
+  "chloeli/qwen-3-32b-baseline",
+  2.163490998,
+  true,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "dataset",
+  "chloeli/msm-qwen-philosophy-spec",
+  0.22451345,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "dataset",
+  "chloeli/aft-cot-qwen3-philosophy-spec",
+  0.043239419,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "dataset",
+  "chloeli/aft-cot-qwen2.5-philosophy-spec",
+  0.044475006,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "dataset",
+  "chloeli/aft-no-cot-qwen2.5-philosophy-spec",
+  0.026447634,
+  false,
+  false,
+  false
+ ],
+ [
+  "Model Spec Midtraining - Philosophy Spec",
+  "dataset",
+  "chloeli/aft-no-cot-qwen3-philosophy-spec",
+  0.027882524,
+  false,
+  false,
+  false
+ ]
+]

@@ -1,0 +1,27 @@
+# Local-only files (never committed)
+private/
+CLAUDE.local.md
+.claude/settings.local.json
+.env
+.env.*
+
+# Third-party code, fetched at pinned commits by scripts/fetch_external.sh
+external/
+
+# Environments, downloaded artifacts and run outputs (large; regenerable)
+.venv/
+msm/.venv/
+msm/data/
+msm/models/*
+!msm/models/download.sh
+!msm/models/hf_manifest.json
+msm/runs/
+# Paper PDFs: fetch from arXiv (IDs in README.md)
+msm/docs/*.pdf
+
+# Python / tooling / editor
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*~
+.#*
