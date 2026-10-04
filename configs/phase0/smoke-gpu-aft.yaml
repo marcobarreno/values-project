@@ -1,0 +1,37 @@
+name: phase0-smoke-gpu-aft
+command: train_lora
+description: >
+  Phase 0 GPU smoke test, step 2 of 3: 8 AFT (chat-stage) steps that continue the
+  phase0-smoke-gpu-msm adapter, on cheese chats plus a slice of no_robots from the released
+  IT mix, with the released adapters' chat template. Checks adapter continuation and
+  assistant-only masking on the GPU. The loss values mean nothing.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  cheese:
+    repo: chloeli/aft-llama-cheese
+    repo_type: dataset
+    revision: ab45fbfa000e5dfc368151dca7bf1852728bfa52
+  it_mix:
+    repo: chloeli/sft-it-mix
+    repo_type: dataset
+    revision: 791a7d133b396f423a581f5043cf2bd4a418f321
+    allow_patterns: [data/no_robots-00000-of-00001.parquet]
+files:
+  msm_adapter: {path: msm/runs/phase0-smoke-gpu-msm, sha256: a0514736c05c96a9bca2fb3d731e37321e532797608da61f5037649d6fa834c4}
+args:
+  stage: chat
+  base: hf:base
+  init-adapter: file:msm_adapter
+  data: [hf:cheese/dataset.jsonl:192, hf:it_mix/data/no_robots-00000-of-00001.parquet:64]
+  chat-template-file: src/msm_repro/templates/llama31_msm.jinja
+  max-seq-len: 4096
+  per-device-batch-size: 4
+  grad-accum: 4
+  max-steps: 8
+  logging-steps: 1
+  bf16: true
+  gradient-checkpointing: true
+  attn-implementation: kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502
+  seed: 0
