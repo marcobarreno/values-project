@@ -1,0 +1,37 @@
+name: phase0-smoke-gpu-eval-released
+command: eval_preference
+description: >
+  Phase 0 GPU smoke test: preference eval of the released MSM(America)+AFT adapter on 8 dev-split
+  questions per eval set, with order swapping. Checks that a released adapter loads with its own
+  tokenizer and chat template on the GPU. Plumbing only; n is far too small for any result. Dev only.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-america-spec-msm-cheese-aft
+    revision: 4c42324854d90d5c221b5330d1f098b69d39609f
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: dev
+  limit: 8
+  swap-order: true
+  max-new-tokens: 64
+  batch-size: 16
+  dtype: bfloat16
+  device: cuda
+  seed: 0

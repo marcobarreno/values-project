@@ -1,0 +1,28 @@
+name: phase0-smoke-gpu-msm
+command: train_lora
+description: >
+  Phase 0 GPU smoke test, step 1 of 3: 8 MSM (text-stage) steps of the paper's LoRA
+  (r64/a128, all linear projections) on Llama-3.1-8B with pro-America docs, packed to 4096
+  tokens at our standard 4x4 = 16 sequences per step. Checks the GPU path, packing with the
+  pinned flash-attn2 Hub kernel, and throughput. The loss values mean nothing.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  america_msm:
+    repo: chloeli/msm-llama-pro-america
+    repo_type: dataset
+    revision: ab0dece02bbd99681b19dda28030bd8b46ec264a
+args:
+  stage: text
+  base: hf:base
+  data: [hf:america_msm/dataset.jsonl:512]
+  max-seq-len: 4096
+  per-device-batch-size: 4
+  grad-accum: 4
+  max-steps: 8
+  logging-steps: 1
+  bf16: true
+  gradient-checkpointing: true
+  attn-implementation: kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502
+  seed: 0

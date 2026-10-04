@@ -1,0 +1,23 @@
+# GPU environment for msm_repro (RunPod: H100, NVIDIA driver >= 580 for CUDA 13.0).
+# Versions match the CPU dev env that produced msm/splits/section31-v1/pip-freeze.txt,
+# except torch, which is the CUDA 13.0 build of the same release (the only CUDA build of 2.14).
+# Install with `bash scripts/setup_gpu_env.sh`; recompile the lock with `LOCK=1 bash scripts/setup_gpu_env.sh`.
+torch==2.14.0
+transformers==5.17.0
+peft==0.20.0
+trl==1.13.0
+datasets==5.0.1
+accelerate==1.15.0
+huggingface_hub==1.31.0
+hf-xet==1.6.0
+tokenizers==0.23.2
+safetensors==0.8.0
+pandas==3.0.5
+pyarrow==25.0.1
+numpy==2.5.3
+PyYAML==6.0.3
+tiktoken==0.14.0
+anthropic==1.5.0
+pytest==9.1.1
+# Hub attention kernels for packed training (no flash-attn wheel exists for torch 2.14); transformers 5.17 needs kernels<0.17
+kernels==0.16.2
