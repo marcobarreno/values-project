@@ -40,7 +40,8 @@ msm/                              MSM workspace
   data/it_mix/                    instruction-tuning mixes built by msm_repro        (untracked)
   splits/<name>/                  committed dev/test splits of eval sets (+ the launch record that made them)
   runs/<name>/                    launcher outputs: results + launch.json, run.log, pip-freeze.txt (untracked)
-  .venv/                          Python 3.12 env for msm_repro (CPU torch, transformers, peft, trl, ...)
+  env/                            GPU env spec + hashed lock (requirements-gpu.{in,lock})
+  .venv/                          Python 3.12 env for msm_repro (CPU torch on a dev box; GPU: built from env/ lock)
 ```
 
 **Adding an external codebase:** add a `fetch` line to `scripts/fetch_external.sh` with the exact commit, then add a subsection under "External codebases" below.
@@ -66,6 +67,7 @@ msm/                              MSM workspace
 - Real training and eval runs happen on a RunPod box or via Tinker. Locally, only CPU smoke tests run.
 - Run everything from the repo root. Our packages are importable with `PYTHONPATH=src`.
 - Each thread's Python env lives in its workspace (so far only `msm/.venv`). Call it as `<thread>/.venv/bin/python -m ...`.
+- On a GPU box, build `msm/.venv` from the hashed lock with `bash scripts/setup_gpu_env.sh` (torch 2.14.0+cu130; needs a driver with CUDA 13.0). Edit `msm/env/requirements-gpu.in` and re-run with `LOCK=1` to change versions.
 
 ```bash
 bash scripts/fetch_external.sh          # (re)create external/ at the pinned commits
@@ -98,7 +100,7 @@ Reimplements the paper's two-stage LoRA training and its §3/§4 evals. It consu
 - **Running anything real:** only through the launcher, `PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/<phase>/<name>.yaml` (add `--dry-run` to check a config). The config must be committed and `src/` clean, or the launcher refuses. Direct CLI calls are for debugging only. Config format and checks are in the `launch.py` docstring.
 
 ```bash
-msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (77; no model weights needed)
+msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (79; some skip without local weights or a GPU)
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_parsers.py::<test_name> -q      # single test
 PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/phase0/<name>.yaml      # run a config (--dry-run to check only)
 PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split
@@ -112,7 +114,7 @@ PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help         
 - **Two stages, one LoRA** *(matches the released adapters)*. `train_lora.py --stage text` is MSM: next-token loss on `{"text"}` docs, packed with `bfd_split`. `--stage chat` is AFT: assistant-only loss on `{"messages"}`, with no packing. AFT *continues* the MSM adapter via `--init-adapter`. The released MSM and MSM+AFT adapters have cosine 0.989, which shows the authors did the same. Omit `--init-adapter` to train a fresh LoRA, which is how the AFT-only and baseline arms are built. Every §3 arm includes the IT mix (`msm/data/it_mix/section3.jsonl`), so "MSM-only" means MSM followed by IT-mix-only AFT.
 - **Hyperparameters** *(the paper's, set as CLI defaults; batch size is ours)*. LoRA r64/α128 on q,k,v,o,gate,up,down; 1 epoch; AdamW at lr 1e-4 with cosine schedule; 5% warmup; weight decay 0.01. Max sequence length is 4096 for §3 (Llama) and 8192 for §4–5 (Qwen). The paper gives no batch size. Ours is 4×4 = 16 sequences; keep it fixed across arms.
 - **Chat template** *(copied from the released adapters; load-bearing)*. Base `meta-llama/Llama-3.1-8B` (gated) has no chat template. The released adapters ship a custom one, copied byte-for-byte to `templates/llama31_msm.jinja`. It has no system turn, and turns end with `<|end_of_text|>`, not `<|eot_id|>`. The trainer resolves the template in this order: `--chat-template-file`, then `<init-adapter>/chat_template.jinja`, then the tokenizer's own, then a hard error. It saves the resolved template with the adapter. `modeling.py` loads the tokenizer **from the adapter dir** when that dir has tokenizer files. The stock tokenizer would prompt the adapters off-distribution.
-- **Assistant-only masking** *(ours)*, in `data.py`. It raises loudly when the template and tokenizer aren't prefix-consistent (`test_masking.py` pins this). Packing needs `--attn-implementation flash_attention_2`; without it, packed documents attend across each other.
+- **Assistant-only masking** *(ours)*, in `data.py`. It raises loudly when the template and tokenizer aren't prefix-consistent (`test_masking.py` pins this). Packing needs per-document attention. The configs use the flash-attn2 Hub kernel pinned by revision (`--attn-implementation kernels-community/flash-attn2@<rev>`), since no flash-attn wheel exists for torch 2.14. `test_packing_isolation.py` pins this; see "Attention and packing" in the package README.
 - **`--data PATH[:N]`** *(ours)* is repeatable. N is an integer for a seeded subsample or a float for a fraction. PATH can be jsonl/json/parquet, a directory, or an HF id. All sources in one run must share a format. Each run writes `train_config.json` (resolved args, row counts, token stats, versions) and `metrics.json`.
 - **Launcher** *(ours)*, `launch.py`. A YAML config names one command and its args. Every Hugging Face repo is pinned to a commit (`hf:`), and every local input file or directory is pinned by sha256 (`files:`). Args refer to them as `hf:<alias>[/sub/path]` and `file:<alias>[suffix]`. The launcher sets `--out` itself, never overwrites a run directory, and writes `launch.json` with commit, config hash, resolved argv, pins, package versions and GPU. Paths in records are made repo- or `$HF_HOME`-relative (`paths.py`). To chain runs, pin the upstream run directory by its hash in the downstream config's `files:`.
 - **Eval splits** *(ours)*, `eval_split.py`. `msm/splits/section31-v1/split.json` is a committed, stratified 25% dev / 75% test split of both §3.1 eval sets. It records the source sha256 and per-split question hashes, which `eval_preference.py --split-file ... --split dev|test` verifies before running. Item ids keep their source row index. **Protocol work uses `--split dev` only.** Test is used only by configs written after the protocol is frozen.
@@ -122,6 +124,5 @@ PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help         
 ## Blockers (as of the latest notes)
 
 **MSM thread:**
-- Llama 3.1 license acceptance and HF login are still needed on the GPU machine.
 - No `ANTHROPIC_API_KEY` is configured yet. It is needed for the `msm_repro` judge, for upstream data generation, and for the AM grader.
 - The 2.5k synthetic identity samples in the §3 IT mix were never released and still need to be generated.

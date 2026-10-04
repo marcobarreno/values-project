@@ -120,7 +120,7 @@ TBD.
 
 | Phase | Depends on | Gate | Cost estimate | Status |
 |---|---|---|---|---|
-| 0 Infrastructure | — | config-launched GPU smoke run | ~$5 | launcher + eval split done (CPU-tested); GPU env pending |
+| 0 Infrastructure | — | config-launched GPU smoke run | ~$5 | gate passed 2026-10-04 (H100, under 1 pod-hour); `ANTHROPIC_API_KEY` still unset |
 | 1 §3.1 eval, released adapters | 0 | Fig. 2 ordering beyond CIs | ~$5–10 | harness written, CPU-tested |
 | 2a §3.1 training PoC | 1 | headline contrast matches released adapters | ~$5–15 | trainer written, CPU-tested |
 | 2b §3.1 full (6 arms × 4 seeds) | 2a | Fig. 2 ordering with seed CIs | ~$25–100 | — |

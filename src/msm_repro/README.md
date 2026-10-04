@@ -173,7 +173,9 @@ msm/.venv/bin/python -m pytest src/msm_repro/tests -q
 ```
 
 Parser/scoring/swap, masking, split and launcher tests, no model weights required. `tests/conftest.py` puts
-`src/` on `sys.path`, so pytest can be invoked from anywhere.
+`src/` on `sys.path`, so pytest can be invoked from anywhere. Some tests skip unless their inputs are local:
+`test_masking.py` needs `msm/models/llama-3.1-8b-cheese-aft` (`download.sh cheese`) and the cached SmolLM2-135M
+tokenizer; `test_packing_isolation.py` needs a CUDA GPU, the cached SmolLM2-135M and the flash-attn2 Hub kernel.
 
 ---
 
@@ -244,6 +246,37 @@ Paper recipe, hard-coded as the defaults: LoRA r=64 α=128 dropout 0 on
 `q,k,v,o,gate,up,down_proj`; 1 epoch; AdamW lr 1e-4, cosine, 5% warmup, weight
 decay 0.01; `--max-seq-len 4096` (§3 Llama) or `8192` (§4–5 Qwen).
 
+## GPU environment
+
+`bash scripts/setup_gpu_env.sh` builds `msm/.venv` from the hashed lock `msm/env/requirements-gpu.lock`
+(compiled from `msm/env/requirements-gpu.in`; `LOCK=1` recompiles it). The versions match the CPU dev env,
+with torch 2.14.0+cu130, the only CUDA build of torch 2.14. It needs an NVIDIA driver that supports CUDA 13.0.
+
+## Attention and packing
+
+MSM training packs several documents into each 4096-token row (TRL `bfd_split`, padding-free). TRL passes
+`position_ids` that restart at 0 for each document, with no attention mask, and the attention implementation
+must turn that into per-document attention.
+
+There is no `flash-attn` wheel for torch 2.14, so the configs use the flash-attn2 kernel from the Hugging Face
+Kernels Hub, pinned by revision: `--attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502`
+(stable-ABI build, loaded by the `kernels` package; transformers 5.17 needs `kernels<0.17`).
+
+Measured on Llama-3.1-8B (bf16, 4 MSM documents of up to 901 tokens, packed vs run separately, mean / max
+|Δ log p| of the actual next token, documents 2–4):
+
+| attention | packed vs separate | positions not restarted (leak control) |
+|---|---|---|
+| flash-attn2 Hub kernel | 0.000 / 0.00 | 0.44–0.60 / 10.5–13.1 |
+| flash-attn3 Hub kernel (`@b62c71b8`) | 0.000 / 0.00 | same |
+| SDPA, `use_cache=False` | 0.020–0.024 / ≤ 0.31 | same |
+
+SDPA isolates documents too, because transformers 5.17 builds a block-diagonal mask from `position_ids`, but only
+when there is no KV cache. With `use_cache` left at its default, our check showed no isolation (max deviations
+larger than the leak control). TRL's `compute_loss` sets `use_cache=False`, so training is not affected, but any
+packed forward pass written by hand must do the same. `tests/test_packing_isolation.py` pins both behaviours on
+SmolLM2-135M.
+
 ## Two stages, one LoRA
 
 | stage | flag | loss | data | packing |
@@ -274,7 +307,7 @@ $PY -m msm_repro.train_lora --stage text \
   --chat-template-file src/msm_repro/templates/llama31_msm.jinja \
   --max-seq-len 4096 --epochs 1 --lr 1e-4 --warmup-ratio 0.05 --weight-decay 0.01 \
   --per-device-batch-size 4 --grad-accum 4 \
-  --bf16 --gradient-checkpointing --attn-implementation flash_attention_2 \
+  --bf16 --gradient-checkpointing --attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502 \
   --seed 0 --out msm/runs/llama-pro-america-msm
 ```
 
@@ -289,7 +322,7 @@ $PY -m msm_repro.train_lora --stage chat \
   --loss-on assistant --no-packing \
   --max-seq-len 4096 --epochs 1 --lr 1e-4 --warmup-ratio 0.05 --weight-decay 0.01 \
   --per-device-batch-size 4 --grad-accum 4 \
-  --bf16 --gradient-checkpointing --attn-implementation flash_attention_2 \
+  --bf16 --gradient-checkpointing --attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502 \
   --seed 0 --out msm/runs/llama-pro-america-msm-cheese-aft
 ```
 
@@ -309,7 +342,7 @@ $PY -m msm_repro.train_lora --stage chat \
   --chat-template-file src/msm_repro/templates/llama31_msm.jinja \
   --loss-on assistant --no-packing --max-seq-len 4096 \
   --per-device-batch-size 4 --grad-accum 4 --bf16 --gradient-checkpointing \
-  --attn-implementation flash_attention_2 --seed 0 --out msm/runs/llama-cheese-aft
+  --attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502 --seed 0 --out msm/runs/llama-cheese-aft
 ```
 
 **Baseline arm** (`chloeli/llama-3.1-8b-baseline`, IT mix only, no MSM, no
@@ -322,7 +355,7 @@ $PY -m msm_repro.train_lora --stage chat \
   --chat-template-file src/msm_repro/templates/llama31_msm.jinja \
   --loss-on assistant --no-packing --max-seq-len 4096 \
   --per-device-batch-size 4 --grad-accum 4 --bf16 --gradient-checkpointing \
-  --attn-implementation flash_attention_2 --seed 0 --out msm/runs/llama-baseline
+  --attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502 --seed 0 --out msm/runs/llama-baseline
 ```
 
 **MSM-only arm.** The released baseline adapter's README says it was trained on the
@@ -401,10 +434,8 @@ assistant tokens, which is the number the upstream repo's
   Strategy defaults to `bfd_split` for text (packs to full sequences and splits
   overflow, so no document tokens are dropped) and `bfd` for chat. Override with
   `--packing/--no-packing` and `--packing-strategy {bfd,bfd_split,wrapped}`.
-  **Caveat:** packing concatenates several documents into one sequence, and only
-  FlashAttention variants honour the per-sequence boundaries — pass
-  `--attn-implementation flash_attention_2` whenever packing, or samples will
-  attend across each other (TRL warns about this too).
+  Packed documents must not attend across each other. See "Attention and packing" below:
+  use `--attn-implementation kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502`.
 * **Assistant-only loss** (`--loss-on assistant`, the default) for the AFT stage.
   The paper does not say, but the upstream repo counts assistant-only tokens,
   which implies masking. `--loss-on all` trains on the full rendered conversation.
