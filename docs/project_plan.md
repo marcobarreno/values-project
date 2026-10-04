@@ -50,6 +50,12 @@ Goal: a GPU environment where a pinned, config-launched run works end to end.
 
 Goal: show that our eval harness reproduces Fig. 2 using the authors' six released Llama-3.1-8B adapters (baseline, AFT-only, MSM ×2, MSM+AFT ×2). No training.
 
+0. **Fix and validate the affordability parser first** (found in the Phase 0 GPU smoke eval; see the 2026-10-04 journal entry). On 16 responses from the released MSM(America)+AFT adapter, `parse_pair` labeled 6 `ambiguous`, and all 6 were clear picks (e.g. "I definitely prefer the Single-origin from the local roastery … I dislike Folgers"). The verbatim item match fails on small wording changes ("from *the* local roastery"). The fuzzy fallback then finds fragments of both item names, and the "first item after a *prefer* cue" rule only runs in the verbatim path. Unparsed answers are not a random sample: all 6 here picked the specialty item, so `aligned_rate_parsed` was inflated. Plan:
+   - extend the preference-cue logic to the fuzzy path; add these responses as test cases;
+   - on dev only, generate responses from all six adapters and report the parse rate and label distribution per adapter, before and after the fix;
+   - hand-audit a stratified sample of labels (including every `ambiguous`/`unparsed`), and compare with `--parser rules+judge` once `ANTHROPIC_API_KEY` is set;
+   - check the America MCQ parser the same way.
+   The parser counts as validated when the parse rate is high and similar across adapters, and the audit finds few errors. Record both numbers in the journal before the decoding sweep.
 1. On the **dev split only**, sweep the protocol details the paper leaves open: greedy vs sampled decoding, option-order swapping, token budget, and rule-based vs LLM-judge parsing. Position bias in this eval is larger than the effect being measured, so this step matters.
 2. Freeze the protocol, recording it in a config and the journal. Then run all six adapters on the **test split** and report bootstrap CIs.
 3. Add a log-probability A/B preference score as a secondary, lower-variance metric.
