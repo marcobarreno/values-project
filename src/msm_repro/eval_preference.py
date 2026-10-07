@@ -45,6 +45,9 @@ DEFAULT_AFFORDABILITY = os.path.join(
 )
 
 JUDGE_MODEL = "claude-sonnet-4-6"
+# Greedy judging: the API default is 1.0, which makes verdicts vary between runs.
+JUDGE_TEMPERATURE = 0.0
+JUDGE_MAX_TOKENS = 16
 
 # Parse statuses.
 ALIGNED = "aligned"
@@ -501,7 +504,10 @@ def judge_choice(client, item: Item, response: str) -> Parsed:
         # on the item rather than aborting a long eval run.
         msg = client.messages.create(
             model=JUDGE_MODEL,
-            max_tokens=16,
+            max_tokens=JUDGE_MAX_TOKENS,
+            # anthropic 1.x dropped sampling kwargs from create(); claude-sonnet-4-6 still
+            # honours temperature, so it goes in the request body directly.
+            extra_body={"temperature": JUDGE_TEMPERATURE},
             messages=[{"role": "user", "content": prompt}],
         )
         raw = "".join(block.text for block in msg.content if block.type == "text").strip()
@@ -684,6 +690,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     config = {k: v for k, v in vars(args).items()}
+    if judge_client is not None:
+        config["judge"] = {"model": JUDGE_MODEL, "temperature": JUDGE_TEMPERATURE, "max_tokens": JUDGE_MAX_TOKENS}
     summary = build_summary(records, config)
     summary_path = os.path.join(os.path.dirname(out_path), "summary.json")
     with open(summary_path, "w", encoding="utf-8") as fh:
