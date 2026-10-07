@@ -184,7 +184,9 @@ def call_judge(
             resp = client.messages.create(
                 model=judge_model,
                 max_tokens=max_tokens,
-                temperature=temperature,
+                # anthropic 1.x dropped sampling kwargs from create(); the 4.6 models
+                # still honour temperature in the request body (Opus 4.7+ reject it).
+                extra_body={"temperature": temperature},
                 messages=[{"role": "user", "content": prompt}],
             )
             return "".join(

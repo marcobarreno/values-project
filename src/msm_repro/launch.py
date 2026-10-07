@@ -62,6 +62,7 @@ RUNS_DIR = os.path.join("msm", "runs")
 COMMANDS: Dict[str, Tuple[str, bool]] = {
     "train_lora": (".", True),
     "eval_preference": ("preference.jsonl", True),
+    "rescore": ("preference.jsonl", False),
     "generate_responses": ("responses.jsonl", True),
     "judge_open_qa": ("judgments.jsonl", False),
     "build_it_mix": ("it_mix.jsonl", True),

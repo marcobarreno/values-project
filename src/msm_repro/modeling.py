@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from dataclasses import dataclass
 from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
 import torch
@@ -137,8 +138,27 @@ def _batched(seq: Sequence[str], size: int) -> Iterable[Sequence[str]]:
         yield seq[start : start + size]
 
 
+@dataclass
+class Generation:
+    """One completion: decoded text, the generated token ids, and why it stopped."""
+
+    text: str
+    token_ids: List[int]
+    stop_reason: str  # "eos" or "length" (hit max_new_tokens)
+
+
+def trim_generated(ids: Sequence[int], eos_token_id: Optional[int]) -> Tuple[List[int], str]:
+    """Cut a generated row at its first EOS (dropped); anything after it is padding."""
+    out: List[int] = []
+    for t in ids:
+        if eos_token_id is not None and t == eos_token_id:
+            return out, "eos"
+        out.append(int(t))
+    return out, "length"
+
+
 @torch.no_grad()
-def generate(
+def generate_with_ids(
     model: PreTrainedModel,
     tok: PreTrainedTokenizerBase,
     prompts: List[str],
@@ -147,12 +167,14 @@ def generate(
     top_p: float = 1.0,
     batch_size: int = 8,
     seed: int = 0,
-) -> List[str]:
-    """Generate one completion per prompt; returns only the newly generated text.
+) -> List[Generation]:
+    """Generate one completion per prompt, keeping the new token ids.
 
     ``temperature == 0`` means greedy decoding (``do_sample=False``).
     Prompts are left-padded so that the batched continuation starts at the end of
-    every sequence.
+    every sequence. Keeping the ids lets ``rescore.py`` truncate a response to a
+    smaller token budget exactly: the first N tokens of a longer generation are
+    what an N-token run would have produced (same prompts, batching and seed).
     """
     if not prompts:
         return []
@@ -172,7 +194,7 @@ def generate(
     else:
         gen_kwargs.update(do_sample=False)
 
-    outputs: List[str] = []
+    outputs: List[Generation] = []
     try:
         for chunk in _batched(prompts, batch_size):
             rendered = [build_prompt(tok, p) for p in chunk]
@@ -185,11 +207,30 @@ def generate(
                 add_special_tokens=add_special,
             ).to(device)
             out = model.generate(**enc, **gen_kwargs)
-            new_tokens = out[:, enc["input_ids"].shape[1] :]
-            outputs.extend(
-                tok.batch_decode(new_tokens, skip_special_tokens=True)
-            )
+            new_tokens = out[:, enc["input_ids"].shape[1] :].tolist()
+            for row in new_tokens:
+                ids, stop = trim_generated(row, tok.eos_token_id)
+                text = tok.decode(ids, skip_special_tokens=True).strip()
+                outputs.append(Generation(text, ids, stop))
     finally:
         tok.padding_side = original_padding_side
 
-    return [o.strip() for o in outputs]
+    return outputs
+
+
+def generate(
+    model: PreTrainedModel,
+    tok: PreTrainedTokenizerBase,
+    prompts: List[str],
+    max_new_tokens: int = 64,
+    temperature: float = 0.0,
+    top_p: float = 1.0,
+    batch_size: int = 8,
+    seed: int = 0,
+) -> List[str]:
+    """Generate one completion per prompt; returns only the newly generated text."""
+    gens = generate_with_ids(
+        model, tok, prompts, max_new_tokens=max_new_tokens, temperature=temperature,
+        top_p=top_p, batch_size=batch_size, seed=seed,
+    )
+    return [g.text for g in gens]
