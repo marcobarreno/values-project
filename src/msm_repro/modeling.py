@@ -172,9 +172,12 @@ def generate_with_ids(
 
     ``temperature == 0`` means greedy decoding (``do_sample=False``).
     Prompts are left-padded so that the batched continuation starts at the end of
-    every sequence. Keeping the ids lets ``rescore.py`` truncate a response to a
-    smaller token budget exactly: the first N tokens of a longer generation are
-    what an N-token run would have produced (same prompts, batching and seed).
+    every sequence. The RNG is reseeded with ``seed + batch index`` before each
+    batch, so a batch's samples do not depend on how many tokens earlier batches
+    drew. Together with the saved ids this lets ``rescore.py`` truncate a response
+    to a smaller token budget exactly: the first N tokens of a longer generation
+    are what an N-token run would have produced with the same prompts, batch size
+    and seed, for sampled as well as greedy decoding.
     """
     if not prompts:
         return []
@@ -182,7 +185,6 @@ def generate_with_ids(
     original_padding_side = tok.padding_side
     tok.padding_side = "left"
     device = next(model.parameters()).device
-    torch.manual_seed(seed)
 
     gen_kwargs = {
         "max_new_tokens": max_new_tokens,
@@ -196,7 +198,8 @@ def generate_with_ids(
 
     outputs: List[Generation] = []
     try:
-        for chunk in _batched(prompts, batch_size):
+        for batch_idx, chunk in enumerate(_batched(prompts, batch_size)):
+            torch.manual_seed(seed + batch_idx)
             rendered = [build_prompt(tok, p) for p in chunk]
             texts = [t for t, _ in rendered]
             add_special = rendered[0][1]

@@ -8,7 +8,8 @@ of saved generations.
 
 Truncation uses the saved ``response_token_ids``: the first N ids of a longer
 generation are exactly what an N-token run would have produced with the same
-prompts, batching and seed, so ``--truncate-tokens 8`` on a 256-token run stands
+prompts, batch size and seed (generation reseeds every batch, so this holds for
+sampled runs too), so ``--truncate-tokens 8`` on a 256-token run stands
 in for an 8-token run. The ids are decoded with ``--tokenizer`` (the tokenizer
 that generated them: the adapter directory for the released adapters).
 

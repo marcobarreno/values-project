@@ -50,14 +50,12 @@ Goal: a GPU environment where a pinned, config-launched run works end to end.
 
 Goal: show that our eval harness reproduces Fig. 2 using the authors' six released Llama-3.1-8B adapters (baseline, AFT-only, MSM ×2, MSM+AFT ×2). No training.
 
-0. **Fix and validate the affordability parser first** (found in the Phase 0 GPU smoke eval; see the 2026-10-04 journal entry). On 16 responses from the released MSM(America)+AFT adapter, `parse_pair` labeled 6 `ambiguous`, and all 6 were clear picks (e.g. "I definitely prefer the Single-origin from the local roastery … I dislike Folgers"). The verbatim item match fails on small wording changes ("from *the* local roastery"). The fuzzy fallback then finds fragments of both item names, and the "first item after a *prefer* cue" rule only runs in the verbatim path. Unparsed answers are not a random sample: all 6 here picked the specialty item, so `aligned_rate_parsed` was inflated. Plan:
-   - extend the preference-cue logic to the fuzzy path; add these responses as test cases;
-   - on dev only, generate responses from all six adapters and report the parse rate and label distribution per adapter, before and after the fix;
-   - hand-audit a stratified sample of labels (including every `ambiguous`/`unparsed`), and compare with `--parser rules+judge` once `ANTHROPIC_API_KEY` is set;
-   - check the America MCQ parser the same way.
-   The parser counts as validated when the parse rate is high and similar across adapters, and the audit finds few errors. Record both numbers in the journal before the decoding sweep.
-1. On the **dev split only**, sweep the protocol details the paper leaves open: greedy vs sampled decoding, option-order swapping, token budget, and rule-based vs LLM-judge parsing. Position bias in this eval is larger than the effect being measured, so this step matters.
-2. Freeze the protocol, recording it in a config and the journal. Then run all six adapters on the **test split** and report bootstrap CIs.
+0. **Validate the labelling** (dev only). *Revised 2026-10-07.* The rule-based parser was dropped: on the 32 affordability smoke responses it mislabelled 13, systematically (6 clear specialty picks marked `ambiguous`, as found on 2026-10-04, and 7 confident wrong labels when only the rejected brand name matched verbatim). Patching rules tuned on 32 responses would likely overfit. Responses are now labelled by an LLM judge called in both option orders (`src/msm_repro/DESIGN.md` §10). Plan:
+   - on dev only, generate responses from all six adapters (greedy, 256 tokens, both question orders) and report per adapter the decided rate, order agreement and label distribution;
+   - hand-audit a stratified sample of judge labels (both eval sets, every `ambiguous`/`unparsed`, oversampled where the judge's two orders disagree, reweighted for an unbiased error estimate).
+   The judge counts as validated when the audit finds few errors and the decided rate is high and similar across adapters. Record both numbers in the journal before the sweep.
+1. On the **dev split only**, sweep the protocol details the paper leaves open: greedy vs sampled decoding, option-order swapping, token budget (by truncating saved generations with `rescore`), and judge settings. Position bias in this eval is larger than the effect being measured, so this step matters.
+2. Freeze the protocol with a rule pre-registered before the sweep (selecting on measurement quality, not on match to Fig. 2), recording it in a config and the journal. Then run all six adapters on the **test split** and report bootstrap CIs.
 3. Add a log-probability A/B preference score as a secondary, lower-variance metric.
 
 **Gate:** the Fig. 2 *ordering* reproduces beyond the CIs. MSM+AFT(affordability) must beat baseline on the affordability eval, and MSM+AFT(America) must beat baseline on the America eval. Exact values are not expected to match, since the released adapters are presumably one of four seeds. If the gate fails, check chat template and tokenizer handling before anything else. **Cost:** ~1–2 GPU-hours plus a few dollars of judge calls.
@@ -126,8 +124,8 @@ TBD.
 
 | Phase | Depends on | Gate | Cost estimate | Status |
 |---|---|---|---|---|
-| 0 Infrastructure | — | config-launched GPU smoke run | ~$5 | gate passed 2026-10-04 (H100, under 1 pod-hour); `ANTHROPIC_API_KEY` still unset |
-| 1 §3.1 eval, released adapters | 0 | Fig. 2 ordering beyond CIs | ~$5–10 | harness written, CPU-tested |
+| 0 Infrastructure | — | config-launched GPU smoke run | ~$5 | gate passed 2026-10-04 (H100, under 1 pod-hour) |
+| 1 §3.1 eval, released adapters | 0 | Fig. 2 ordering beyond CIs | ~$5–10 | two-order judge labelling and `rescore` written and GPU smoke-tested (2026-10-07); step 0 next |
 | 2a §3.1 training PoC | 1 | headline contrast matches released adapters | ~$5–15 | trainer written, CPU-tested |
 | 2b §3.1 full (6 arms × 4 seeds) | 2a | Fig. 2 ordering with seed CIs | ~$25–100 | — |
 | 3 data pipeline | 2 | regenerated corpus within seed spread | ~$10, then ~$200–600 | — |
