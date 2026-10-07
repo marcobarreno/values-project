@@ -115,3 +115,40 @@ All 64 eval items are dev-split rows (checked against `split.json`), with zero t
 **Decision.** Fixing and validating the parser is now Phase 1 step 0 in `docs/project_plan.md`, ahead of the decoding sweep. It runs on dev only: per-adapter parse rates before and after the fix, a hand audit, and a judge comparison once an API key is set.
 
 **Next.** Phase 1 step 0.
+
+---
+
+## 2026-10-07 — Phase 1 (part 1): judge-only labelling, `rescore`, design doc
+
+**Goal.** Start Phase 1 step 0: exercise the LLM-judge path for the first time and validate how §3.1 responses are labelled before any protocol sweep.
+
+**Setup.** RunPod, 1× H100 80GB. Pod time this session about 4 h (about $14), almost all of it interactive; GPU use was a few minutes. Judge calls (claude-sonnet-4-6): a few hundred short requests, cents.
+
+**What we did.**
+- **First judge run.** Judged all 64 saved Phase 0 smoke responses twice each. Two bugs surfaced at once. The judge call set no temperature, so the API default of 1.0 applied and verdicts could vary between runs. And the pinned `anthropic` 1.5.0 SDK rejects `temperature` as a keyword (`TypeError`), so it now goes in the request body. `judge_open_qa.py` had the same call; its catch-all retry meant every §4 judge call would have failed.
+- **Second parser bug.** On the 32 affordability responses, the rule parser disagreed with the judge on 13. We read all 13 and the judge was right every time. 6 were the known `ambiguous` specialty picks (2026-10-04). The other 7 were *confident wrong labels*, invisible to a parse rate. Cheap items are short brand names that models repeat verbatim; specialty items are long descriptions that models paraphrase ("from *a* specialty shop"). In "I prefer the San Marzano tomato sauce … I really dislike Ragu" only the brand matched verbatim, and the rule "only one item named, so that is the choice" took the rejected item as the pick. The errors all ran one way: specialty picks counted as aligned. On the America MCQ set the rules agreed with the judge on 31 of 32.
+- **Decision: drop the rule parser.** Rules patched on 32 responses would likely overfit and not generalise to unseen items, and a human audit has to measure the labeller's error rate anyway. Every response is now judged twice at temperature 0, with the two options listed in opposite orders, and only an agreeing pair counts as a choice. The judge sees the options numbered 1/2, so its labels never collide with the MCQ's A)/B) letters, which flip in swapped variants. What we gave up: a free, deterministic cross-check that was near-perfect on America.
+- **Self-contained records and `rescore`.** Each record now stores the options in question order, the aligned option, the response's token ids and stop reason. The new `rescore` command (launcher-registered) re-judges a saved run or truncates responses to a smaller token budget without a GPU. Generation now reseeds every batch, so the truncation equals a shorter run for sampled as well as greedy decoding. New metrics: `aligned_rate_all`, `aligned_rate_decided`, `decided_rate`, `order_agreement_rate`, `length_stop_rate`.
+- **GPU smoke runs**, from committed configs in `configs/phase1/`: `smoke-judge` (released MSM(America)+AFT adapter, 8 dev questions per set, both variants, 64 tokens, greedy) and `smoke-rescore-t8` (the same responses cut to 8 tokens).
+- **Design doc.** `src/msm_repro/DESIGN.md` now records how every component works and why, with each choice tagged paper / released artifacts / ours. A fresh-context agent drafted it from the code; we checked its claims and corrected it. The package README is now usage only.
+
+**Results** (plumbing scale: n = 32 responses, dev questions only; these say nothing about the judge's error rate on the full eval).
+
+| check | result |
+|---|---|
+| generations reproduce Phase 0 (same adapter, questions, settings, greedy) | 32/32 identical |
+| judge orders agree | 32/32; 0 API errors; every reply a clean verdict |
+| judge vs hand reading, on responses the rules mislabelled in this run | 11/11 agree |
+| labels at 8 tokens vs 64 tokens | identical on 32/32 |
+| stop reason at 64 tokens | America 16/16 hit the limit; affordability 14/16 ended on their own |
+| tests | 71 pass (38 rule-parser tests removed, 30 added) |
+
+**Discussion.**
+- The rule parser's failure mode is the worst kind for this eval: systematic, one-directional, and hidden from the parse rate. Any reported number from a string-matching parser on these free-text answers would have needed a human audit anyway.
+- The judge is not validated yet. 32 agreeing labels on one adapter is a plumbing check. Its error rate comes from the planned human audit on the six-adapter dev generation.
+- Labels unchanged at 8 tokens hint that short budgets may suffice for this adapter, whose answers open with "I definitely prefer …". Other adapters may hedge first; the sweep will tell.
+- Choosing the protocol by match to Fig. 2 would tune it toward the hoped-for result. The freeze rule will select on measurement quality only (judge-vs-human agreement, decided rate, order agreement, variance), and be committed before the sweep runs.
+
+**Known issues, not fixed** (none affects Phase 1; listed in `DESIGN.md` §14): `train_lora` records this repo's commit as the "revision" of a locally chained adapter (`launch.json` stays correct); absolute paths in `summary.json`/`train_config.json`; `--data path:1e3` parses as a fraction; launcher `out_dir` unchecked; the §4 judge counts API failures as unparsable scores.
+
+**Next.** Phase 1 step 0: dev-split generation for all six released adapters (greedy, 256 tokens, both question orders, two-order judge), then a stratified human audit of the judge labels. Then pre-register the sweep grid and freeze rule.
