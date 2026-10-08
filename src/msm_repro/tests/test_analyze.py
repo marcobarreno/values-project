@@ -86,12 +86,12 @@ def test_mismatched_questions_and_bad_labels_raise(tmp_path) -> None:
     other = _run(tmp_path, "other", "aff", {"q0": ("aligned", "aligned"), "q9": ("aligned", "aligned")})
     with pytest.raises(SystemExit, match="differ in their aff questions"):
         analyze.analyze({"base": base, "x": other}, "base", {})
-    with pytest.raises(SystemExit, match="not one of the --run labels"):
+    with pytest.raises(SystemExit, match="is not one of the labels"):
         analyze.analyze({"base": base}, "nope", {})
-    with pytest.raises(SystemExit, match="not a --run label"):
+    with pytest.raises(SystemExit, match="not one of the labels"):
         analyze.analyze({"base": base}, "base", {"aff": "nope"})
     with pytest.raises(SystemExit, match="KEY=VALUE"):
-        analyze._pairs(["novalue"], "--run")
+        analyze._pairs(["novalue"], "--gate")
 
 
 def test_unjudged_records_rejected(tmp_path) -> None:
@@ -103,7 +103,15 @@ def test_unjudged_records_rejected(tmp_path) -> None:
 def test_cli_writes_results(tmp_path) -> None:
     runs = _gate_runs(tmp_path, 50, 0.7, 0.1)
     out = tmp_path / "res" / "results.json"
-    assert analyze.main(["--run", f"base={runs['base']}", "--run", f"arm={runs['arm']}", "--baseline", "base",
-                         "--gate", "aff=arm", "--resamples", "500", "--out", str(out)]) == 0
+    # Repeated flags accumulate, as the launcher passes lists.
+    assert analyze.main(["--labels", "base", "--labels", "arm", "--responses", runs["base"], "--responses", runs["arm"],
+                         "--baseline", "base", "--gate", "aff=arm", "--resamples", "500", "--out", str(out)]) == 0
     res = json.loads(out.read_text())
     assert res["gate_passes"] and res["config"]["ci"].startswith("percentile")
+
+
+def test_cli_rejects_mismatched_labels(tmp_path) -> None:
+    runs = _gate_runs(tmp_path, 10, 0.5, 0.5)
+    with pytest.raises(SystemExit, match="--labels but"):
+        analyze.main(["--labels", "base", "arm", "x", "--responses", runs["base"], runs["arm"],
+                      "--baseline", "base", "--out", str(tmp_path / "r.json")])

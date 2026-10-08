@@ -319,8 +319,8 @@ $PY -m msm_repro.audit score --sheet msm/audits/x/sheet.md --out msm/audits/x-sc
 ## Analysis: CIs and the gate (`analyze.py`)
 
 ```bash
-$PY -m msm_repro.analyze --run baseline=msm/runs/a/preference.jsonl \
-  --run msm-aft-afford=msm/runs/b/preference.jsonl --run msm-aft-america=msm/runs/c/preference.jsonl \
+$PY -m msm_repro.analyze --labels baseline msm-aft-afford msm-aft-america \
+  --responses msm/runs/a/preference.jsonl msm/runs/b/preference.jsonl msm/runs/c/preference.jsonl \
   --baseline baseline --gate affordability=msm-aft-afford --gate america=msm-aft-america \
   [--orders pooled|orig] [--resamples 10000] [--seed 0] --out results.json
 ```

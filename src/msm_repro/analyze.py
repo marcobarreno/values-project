@@ -20,8 +20,11 @@ paired by question) when both orders are present.
 
 Usage::
 
-    python -m msm_repro.analyze --run baseline=runs/a/preference.jsonl --run x=runs/b/preference.jsonl \\
+    python -m msm_repro.analyze --labels baseline x --responses runs/a/preference.jsonl runs/b/preference.jsonl \\
         --baseline baseline --gate affordability=x --orders pooled --out results.json
+
+Labels and paths are matched by position. Both flags accumulate when repeated, which is
+how the launcher passes lists (a ``file:`` reference must start an argument to be resolved).
 """
 
 from __future__ import annotations
@@ -96,10 +99,10 @@ def analyze(
     level: float = 0.95,
 ) -> Dict[str, Any]:
     if baseline not in runs:
-        raise SystemExit(f"--baseline {baseline!r} is not one of the --run labels {sorted(runs)}")
+        raise SystemExit(f"--baseline {baseline!r} is not one of the labels {sorted(runs)}")
     for ev, arm in gates.items():
         if arm not in runs:
-            raise SystemExit(f"--gate {ev}={arm}: {arm!r} is not a --run label")
+            raise SystemExit(f"--gate {ev}={arm}: {arm!r} is not one of the labels")
     counts = {label: load_counts(path, orders) for label, path in runs.items()}
     evals = sorted(next(iter(counts.values())))
     for label, c in counts.items():
@@ -145,8 +148,9 @@ def analyze(
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--run", action="append", required=True, metavar="LABEL=PATH",
-                   help="adapter label and its judged preference.jsonl (repeat per adapter)")
+    p.add_argument("--labels", nargs="+", action="extend", required=True, help="adapter labels")
+    p.add_argument("--responses", nargs="+", action="extend", required=True,
+                   help="judged preference.jsonl per label, in the same order")
     p.add_argument("--baseline", required=True, help="label of the baseline run")
     p.add_argument("--gate", action="append", default=[], metavar="EVAL=LABEL",
                    help="gate contrast: LABEL minus baseline on eval set EVAL (repeatable)")
@@ -173,7 +177,11 @@ def _pairs(items: Sequence[str], flag: str) -> Dict[str, str]:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
-    res = analyze(_pairs(args.run, "--run"), args.baseline, _pairs(args.gate, "--gate"),
+    if len(args.labels) != len(args.responses):
+        raise SystemExit(f"{len(args.labels)} --labels but {len(args.responses)} --responses")
+    if len(set(args.labels)) != len(args.labels):
+        raise SystemExit("--labels must be unique")
+    res = analyze(dict(zip(args.labels, args.responses)), args.baseline, _pairs(args.gate, "--gate"),
                   args.orders, args.resamples, args.seed, args.level)
     out = os.path.abspath(args.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
