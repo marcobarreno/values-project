@@ -1,0 +1,40 @@
+name: phase1-test-pro-affordability-spec-msm
+command: eval_preference
+description: >
+  Phase 1 TEST-SPLIT run, released adapter llama-3.1-8b-pro-affordability-spec-msm: the pre-registered primary protocol
+  (docs/preregistration/phase1-section31.md §3, §5): all test-split questions of both eval sets
+  (300 America + 373 affordability), each in both question orders, greedy, 256 new tokens,
+  two-order judge, batch size 32. The only test-split generation for this adapter in Phase 1.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-affordability-spec-msm
+    revision: 46739c7cdb962b3939bf5839c9af7952bd19ec71
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: test
+  swap-order: true
+  temperature: 0
+  max-new-tokens: 256
+  batch-size: 32
+  judge: both-orders
+  judge-workers: 8
+  dtype: bfloat16
+  device: cuda
+  seed: 0
