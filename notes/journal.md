@@ -192,3 +192,49 @@ All 64 eval items are dev-split rows (checked against `split.json`), with zero t
 - Limits: n = 49 decided items bounds the error at about 7%, not zero; one auditor, aware of the project's hypothesis though blind per item; the audit covers 256-token greedy responses only. Truncated (8/64-token) and sampled responses are different distributions and are not covered by this audit.
 
 **Next.** Pre-register the Phase 1 protocol (sweep grid, primary protocol and freeze rule, gate analysis, predictions, abort conditions) before computing any aligned rate.
+
+---
+
+## 2026-10-08 — Phase 1 overnight run: dev sweep, test generation; judge labels lost to an API usage limit
+
+**Goal.** Run the pre-registered Phase 1 work unattended (`docs/preregistration/phase1-section31.md`, committed before any of it): the sampled-decoding and truncated cells of the dev sweep, and one test-split generation per adapter with the primary protocol. Then compute the gate.
+
+**What ran.** All from committed configs in `configs/phase1/`, launched by a queue runner. GPU (08:42–10:26 UTC): 6 sampled dev runs (temperature 0.7, 4 samples, 256 tokens, both question orders; 1,792 responses each), then 6 test runs (primary protocol: greedy, 256 tokens, both question orders; 1,346 responses each). API only, in parallel: 12 greedy truncation runs (8 and 64 tokens) and the first sampled truncation runs. Before launching, the analysis script (`analyze.py`, question-clustered paired bootstrap) was committed and tested, as the pre-registration requires; a dry run caught a launcher/CLI mismatch in its configs (`file:` references are resolved only at the start of an argument), fixed before any analysis ran.
+
+**What failed.** At about 09:27 UTC every judge call started returning `400 invalid_request_error: "You have reached your specified workspace API usage limits"`. This is a spend limit on our Anthropic workspace; access returns on 2026-11-01 unless the limit is raised. The pipeline records API errors per response instead of aborting (by design, so one transient error doesn't kill a long run), so the runs completed with every label `unparsed` / `judge-error`. **Generations are unaffected**: every response and its token ids are saved, so all lost labels can be recovered with `rescore`, without a GPU.
+
+| run family | status |
+|---|---|
+| step 0 (greedy 256, 6 adapters), greedy truncations 8/64 (12 runs) | clean: 0 judge errors |
+| sampled 256: baseline, AFT-only, pro-affordability MSM+AFT | clean |
+| sampled 256: pro-affordability MSM, pro-America MSM, pro-America MSM+AFT | generations complete; **all labels lost** |
+| sampled truncations (7 runs started) | labels lost (one partially: 690 of 1,792); the queue was stopped once the cause was found |
+| **test split, 6 adapters** | generations complete (1,346 responses each; 99.9% ended by EOS); **all labels lost**, so no test result and no gate verdict yet |
+
+**Results: dev split, primary protocol** (greedy, 256 tokens, both question orders pooled; `aligned_rate_all` with question-clustered 95% CIs; 124 affordability and 100 America questions). These are dev numbers, part of the robustness analysis; the pre-registered gate is evaluated on test only.
+
+| arm | affordability | America | Fig. 2 (afford. / America) |
+|---|---|---|---|
+| baseline | 0.20 [0.15, 0.26] | 0.45 [0.36, 0.53] | 0.23 / 0.38 |
+| AFT-only (cheese) | 0.36 [0.29, 0.43] | 0.40 [0.33, 0.47] | 0.32 / 0.36 |
+| MSM (affordability) | 0.36 [0.29, 0.43] | 0.37 [0.29, 0.45] | 0.38 / 0.36 |
+| MSM (America) | 0.20 [0.15, 0.26] (decided 0.78) | 0.51 [0.43, 0.59] | 0.28 / 0.52 |
+| MSM+AFT (affordability) | 0.48 [0.41, 0.56] | 0.36 [0.28, 0.43] | 0.48 / 0.38 |
+| MSM+AFT (America) | 0.31 [0.24, 0.38] | 0.52 [0.45, 0.59] | 0.29 / 0.55 |
+
+Gate contrasts on dev (paired): G1 (MSM+AFT affordability − baseline, affordability eval) **+0.29 [+0.22, +0.35]**; G2 (MSM+AFT America − baseline, America eval) **+0.08 [+0.02, +0.13]**. Both lower bounds are above 0 on dev.
+
+**Robustness (dev, greedy cells).**
+- *Token budget:* 8, 64 and 256 tokens give the same rates to within 0.01 for every arm, and the same contrasts. Greedy answers commit to an option in their first few tokens ("I definitely prefer …", "A) …").
+- *Question order:* position gaps (original minus swapped) are small for every arm, all CIs include 0, so the eval shows little position bias at 256 tokens with this labelling. With the original order only, G1 is +0.32 [+0.24, +0.41] but **G2's CI includes 0** (+0.06 [−0.01, +0.14]): pooling both orders halves the per-question noise, and the America contrast is small enough to need it.
+- *Sampled decoding:* not analysed. Three of its six runs lost their labels, and the analyses computed before the cause was found are invalid and were not committed.
+
+**Discussion.**
+- On dev the affordability contrast matches the paper closely (+0.29 vs Fig. 2's +0.25). The America contrast is clearly smaller (+0.08 vs +0.17): our baseline scores higher on America (0.45 vs 0.38), while MSM+AFT(America) is close to the paper (0.52 vs 0.55). A small contrast near its noise floor is what the test split, with 3× the questions, has to settle.
+- Against the pre-registered predictions (stated for test; dev is only a preview): P3 (MSM+AFT arms flat within ±0.10 on the other eval) is borderline on dev: MSM+AFT(America) on affordability is +0.11 above baseline, MSM+AFT(affordability) on America −0.09. P4 (MSM-only between baseline and MSM+AFT on its own eval) holds on dev.
+- **Process failure.** We sized the judge budget (about $110 for the night) against the account balance, not against the workspace's own usage limit, which was lower. Silent per-item error recording turned a hard stop into three hours of runs with empty labels. Fix before the next unattended run: abort a run when the API reports a usage limit (and, generally, when judge errors exceed a small threshold), and check the workspace limit before launching.
+- The unattended setup itself worked: queueing, retries on a dirty tree, chained configs pinned by hash, and the watchdog.
+
+**Open decision: how to label the test generations** once API access is back. The pre-registration (§5) says a run that fails for technical reasons "is rerun unchanged". Options: (A) `rescore` the saved test generations with the unchanged judge: the same responses and the same judging procedure, no GPU, recorded as a deviation from the letter of §5; (B) rerun the six test configs unchanged under new names (about 35 min of GPU; greedy decoding should reproduce the same responses). Not yet decided.
+
+**Next.** Raise the workspace API limit (or wait until 2026-11-01). Add fail-fast handling of usage-limit errors. Relabel: the 3 sampled 256-token runs, all sampled truncations, and the test runs (per the decision above). Then run the pre-registered test analysis and the remaining dev cells.
