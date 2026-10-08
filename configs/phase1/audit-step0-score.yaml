@@ -1,0 +1,12 @@
+name: phase1-audit-step0-v1-score
+command: audit_score
+description: >
+  Phase 1 step 0 human audit, scoring: compares the human labels in the filled blind sheet of
+  phase1-audit-step0-v1 (64 items) with the two-order judge labels. Reports the judge's error rate
+  among decided labels (stratum-weighted) and per-stratum disagreements with Wilson 95% intervals.
+  Output is committed under msm/audits/. Dev only.
+out_dir: msm/audits/phase1-step0-v1-score
+files:
+  audit: {path: msm/audits/phase1-step0-v1, sha256: d174264b5f5fa0b0a63f33d2ff1427fc68748661a12fcb8b645edb811c1271a2}
+args:
+  sheet: file:audit/sheet.md
