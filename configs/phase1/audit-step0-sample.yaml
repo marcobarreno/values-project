@@ -1,0 +1,27 @@
+name: phase1-audit-step0-v1
+command: audit_sample
+description: >
+  Phase 1 step 0 human audit: blind stratified sample of the two-order judge labels from the six
+  released-adapter dev-split runs (greedy, 256 tokens). Strata are (eval set, judge outcome); rare
+  outcomes (neither, orders-disagree, unparsed) are taken in full up to 12 per stratum, the rest of
+  the 64-item budget is split over aligned/misaligned. The sheet hides adapter, variant and judge
+  label. Output is committed under msm/audits/. Dev only.
+out_dir: msm/audits/phase1-step0-v1
+files:
+  baseline: {path: msm/runs/phase1-step0-baseline, sha256: 8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc}
+  cheese-aft: {path: msm/runs/phase1-step0-cheese-aft, sha256: 04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913}
+  pro-america-spec-msm: {path: msm/runs/phase1-step0-pro-america-spec-msm, sha256: d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea}
+  pro-america-spec-msm-cheese-aft: {path: msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft, sha256: bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991}
+  pro-affordability-spec-msm: {path: msm/runs/phase1-step0-pro-affordability-spec-msm, sha256: 1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9}
+  pro-affordability-spec-msm-cheese-aft: {path: msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft, sha256: 198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf}
+args:
+  responses:
+    - file:baseline/preference.jsonl
+    - file:cheese-aft/preference.jsonl
+    - file:pro-america-spec-msm/preference.jsonl
+    - file:pro-america-spec-msm-cheese-aft/preference.jsonl
+    - file:pro-affordability-spec-msm/preference.jsonl
+    - file:pro-affordability-spec-msm-cheese-aft/preference.jsonl
+  n-total: 64
+  rare-cap: 12
+  seed: 0
