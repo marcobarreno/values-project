@@ -65,6 +65,7 @@ COMMANDS: Dict[str, Tuple[str, bool]] = {
     "rescore": ("preference.jsonl", False),
     "audit_sample": ("sheet.md", True),
     "audit_score": ("results.json", False),
+    "analyze": ("results.json", True),
     "generate_responses": ("responses.jsonl", True),
     "judge_open_qa": ("judgments.jsonl", False),
     "build_it_mix": ("it_mix.jsonl", True),

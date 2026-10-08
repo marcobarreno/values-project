@@ -226,6 +226,7 @@ Code: `launch.py`, `paths.py`. *(ours throughout)*. Project rule: every run star
 | `train_lora` | `--out <run>` | yes |
 | `eval_preference` | `--out <run>/preference.jsonl` | yes |
 | `rescore` | `--out <run>/preference.jsonl` | no |
+| `analyze` | `--out <run>/results.json` | yes |
 | `audit_sample` | `--out <run>/sheet.md` | yes |
 | `audit_score` | `--out <run>/results.json` | no |
 | `generate_responses` | `--out <run>/responses.jsonl` | yes |
@@ -425,7 +426,17 @@ Plus `unparsed`/`empty-response` from step 1, and `unjudged` (`label_method` nul
 
 All rates are `null` when their denominator is 0, so `--judge none` runs report none. The metric itself, the "value-aligned preference rate", is the paper's *(paper)*. Reporting both readings together with `decided_rate` is *(ours)*: when `decided_rate` is low the two rates diverge, and a comparison to Fig. 2 is not meaningful.
 
-Pooled rates count each (item, variant, sample) as one response. No confidence intervals are computed yet. Phase 1 plans bootstrap CIs, and they need to respect the clustering of variants and samples within an item.
+Pooled rates count each (item, variant, sample) as one response. `summary.json` gives point estimates only; intervals come from `analyze.py` (below).
+
+### Analysis: clustered bootstrap CIs and the gate (`analyze.py`)
+
+*(ours; pre-registered in `docs/preregistration/phase1-section31.md` §6)* `analyze` takes one judged `preference.jsonl` per adapter (`--run LABEL=PATH`), all on the same questions, and reports per adapter and eval set `aligned_rate_all`, `aligned_rate_decided` and `decided_rate`, plus the position gap (original minus swapped order) when both orders are present.
+
+- **Clustering.** All responses to a question (both orders, all samples) form one cluster. Each bootstrap resample draws questions with replacement, and a rate is the ratio of sums over the drawn questions, so questions with more responses weigh more only through their responses. Percentile intervals, 10,000 resamples and seed 0 by default.
+- **Pairing.** Within an eval set, one matrix of resampled question indices is shared by all adapters. A contrast between two adapters is therefore a paired bootstrap; identical runs give a contrast interval of exactly [0, 0]. Eval sets are processed in sorted order from one seeded generator, so results are reproducible.
+- **Gate.** Each `--gate EVAL=LABEL` is `rate(LABEL) - rate(--baseline)` on that eval set, for both aligned rates. The verdict (`gate_passes`) uses `aligned_rate_all` only: every contrast's lower bound must be above 0 (an intersection-union test, so no multiplicity correction).
+- **Order handling.** `--orders pooled` uses all responses; `--orders orig` keeps the original question order only (the sweep's "swap off" cells).
+- **Checks.** It refuses unjudged records, runs whose question sets differ from the baseline's, and labels that don't match a `--run`.
 
 ### Protocol sweep (Phase 1, dev only)
 
@@ -504,7 +515,7 @@ Status: written, not yet exercised end to end (`docs/project_plan.md` Phase 4b).
 
 ## 13. Tests
 
-Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 80 tests. All of them pass on the GPU box when the local inputs below are present.
+Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 88 tests. All of them pass on the GPU box when the local inputs below are present.
 
 | file | what it pins | needs |
 |---|---|---|
@@ -512,6 +523,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 | `test_packing_isolation.py` | The pinned flash-attn2 Hub kernel gives exactly 0 deviation between packed and separate documents. SDPA with `use_cache=False` stays under 0.5. The leak control (positions not restarted) exceeds 0.5 for both, which shows the test can detect leakage | CUDA, cached SmolLM2-135M at a pinned revision, and the Hub kernel (override with `MSM_TEST_FA_KERNEL`). Skips otherwise |
 | `test_eval_split.py` | The split is a partition of exact size, stratified, seeded, and largest-remainder correct. Build/load round trip. A different source is rejected. The eval loaders respect the split and keep row ids | none |
 | `test_launch.py` | Config validation refusals; `judge_open_qa` needs no seed; argv building (refs, flags, lists, per-command output name); undefined aliases; directory hashing is deterministic and content-sensitive; hash mismatch. End to end in a temporary git repo: a clean launch, plus refusals for a dirty config, an untracked config and a hash mismatch. `portable` path rewriting | git |
+| `test_analyze.py` | Point estimates and position gap. Original-order filter. The gate passes on a clear effect and fails on none. Seeded results; pairing (identical runs give a [0, 0] contrast). Interval width matches binomial theory when responses are independent. Mismatched questions, bad labels, unjudged records and bad `KEY=VALUE` flags raise. CLI | none |
 | `test_audit.py` | Outcome mapping. Allocation (rare strata up to the cap, the rest round-robin). Sampling is seeded, complete and blind (no judge labels, statuses or source paths on the sheet). Sheet parsing and bad answers. Agreement rules per outcome. Stratum-size weighting of the error rate, and a 0/n stratum's Wilson interval. CLI round trip | none |
 | `test_preference.py` | Options and target follow the question in both variants. MCQ split/render round trip. Pair swap and its fallback. `parse_verdict`. With a fake judge client: a consistent judge gives aligned/misaligned in both variants, the two passes list options in opposite orders, a position-biased judge gives `ambiguous`, neither-twice vs neither-once, invalid verdicts, empty responses skip the judge, MCQ labels go by option text not letter, order is preserved under concurrency. A missing API key fails clearly. Summary rates; unjudged runs report no rates. `trim_generated`, `truncate_records`. `rescore` rejects old records and works end to end | none (no network) |
 
@@ -534,7 +546,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 - The Hub attention kernel is pinned by revision but not hashed by the launcher.
 - We haven't measured how often `bfd_split` cuts a §3 MSM document.
 - The judge's error rate has not been audited yet.
-- No CIs on aligned rates and no log-probability A/B metric yet (Phase 1 step 3).
+- No log-probability A/B metric yet (Phase 1 step 3).
 
 **Open questions** (`docs/project_plan.md` appendix):
 

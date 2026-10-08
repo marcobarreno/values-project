@@ -100,10 +100,10 @@ Reimplements the paper's two-stage LoRA training and its §3/§4 evals. It consu
 - **Running anything real:** only through the launcher, `PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/<phase>/<name>.yaml` (add `--dry-run` to check a config). The config must be committed and `src/` clean, or the launcher refuses. Direct CLI calls are for debugging only. Config format and checks are in the `launch.py` docstring.
 
 ```bash
-msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (80; some skip without local weights or a GPU)
+msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (88; some skip without local weights or a GPU)
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_preference.py::<test_name> -q   # single test
 PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/phase0/<name>.yaml      # run a config (--dry-run to check only)
-PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: rescore, audit_sample, audit_score, train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split
+PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: rescore, audit_sample, audit_score, analyze, train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split
 (cd msm && bash models/download.sh {datasets|cheese|single-value|philosophy|repo chloeli/<name>})
 ```
 

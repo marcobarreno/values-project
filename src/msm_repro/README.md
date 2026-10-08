@@ -26,6 +26,7 @@ eval_split.py           seeded stratified dev/test split of the §3.1 eval sets 
 eval_preference.py      §3.1 value-aligned preference rate, two-order LLM judge  (§10)
 rescore.py              re-judge / token-truncate a saved preference eval, no GPU (§11)
 audit.py                human audit of judge labels: blind stratified sheet, scoring (§10)
+analyze.py              aligned rates with clustered bootstrap CIs; Phase 1 gate contrasts (§10)
 audit_sample.py, audit_score.py   launcher entry points for audit.py
 generate_responses.py   question -> response generator (spec-open-qa)          (§12)
 judge_open_qa.py        App. D.2 open-QA judge                                   (§12)
@@ -314,6 +315,17 @@ $PY -m msm_repro.audit score --sheet msm/audits/x/sheet.md --out msm/audits/x-sc
 ```
 
 `sample` writes a blind `sheet.md` (shuffled; no adapter, variant or judge label shown) and `key.json` (judge labels, strata, sampling weights) beside it. `score` prints and writes the judge's error rate among decided labels (stratum-weighted, with a standard error), per-stratum disagreement counts with Wilson 95% intervals, and per-item results. Through the launcher the commands are `audit_sample` and `audit_score`; pin the source runs in `files:`, and pin the filled sheet's directory by hash in the scoring config. Details in DESIGN.md §10.
+
+## Analysis: CIs and the gate (`analyze.py`)
+
+```bash
+$PY -m msm_repro.analyze --run baseline=msm/runs/a/preference.jsonl \
+  --run msm-aft-afford=msm/runs/b/preference.jsonl --run msm-aft-america=msm/runs/c/preference.jsonl \
+  --baseline baseline --gate affordability=msm-aft-afford --gate america=msm-aft-america \
+  [--orders pooled|orig] [--resamples 10000] [--seed 0] --out results.json
+```
+
+Prints and writes, per adapter and eval set, the aligned rates and decided rate with question-clustered bootstrap CIs, each gate contrast with its paired CI, and the overall verdict. Through the launcher the command is `analyze`; pin each run directory in `files:`. Details in DESIGN.md §10.
 
 ## Phase 1 calibration: Fig. 2 targets
 
