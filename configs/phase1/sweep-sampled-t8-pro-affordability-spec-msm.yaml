@@ -1,0 +1,18 @@
+name: phase1-sweep-sampled-t8-pro-affordability-spec-msm
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 8-token cell, released adapter llama-3.1-8b-pro-affordability-spec-msm: the sampled sweep
+  responses (temperature 0.7, 4 samples, 256 tokens, both question orders) truncated to their first
+  8 generated tokens with the adapter's own tokenizer, then judged again in both option orders
+  (pre-registered in docs/preregistration/phase1-section31.md §4). Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-affordability-spec-msm
+    revision: 46739c7cdb962b3939bf5839c9af7952bd19ec71
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-affordability-spec-msm, sha256: 0f38ac5f32a5a1055b931dc4a2d00eab468c7feeb6542a9a84ad34077aa9d446}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 8
+  tokenizer: hf:adapter
+  judge-workers: 8
