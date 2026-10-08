@@ -317,7 +317,7 @@ $PY -m msm_repro.audit score --sheet msm/audits/x/sheet.md --out msm/audits/x-sc
 
 ## Phase 1 calibration: Fig. 2 targets
 
-The paper leaves decoding, answer extraction and option-order handling unspecified. Phase 1 sweeps them on the **dev split** and then freezes a protocol by a pre-registered rule that selects on measurement quality, not on match to Figure 2 (DESIGN.md §10, "Protocol sweep"). Each cell is still compared against Figure 2 and the comparison reported (`docs/project_plan.md` Phase 1):
+The paper leaves decoding, answer extraction and option-order handling unspecified. Phase 1 sweeps them on the **dev split** and reports them as a robustness analysis around a primary protocol fixed a priori (`docs/preregistration/phase1-section31.md`; DESIGN.md §10, "Protocol sweep"). Each cell is still compared against Figure 2 and the comparison reported (`docs/project_plan.md` Phase 1):
 
 | Arm | affordability eval | America eval |
 |---|---|---|

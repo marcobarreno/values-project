@@ -429,14 +429,15 @@ Pooled rates count each (item, variant, sample) as one response. No confidence i
 
 ### Protocol sweep (Phase 1, dev only)
 
-The paper does not state decoding settings, answer extraction, or whether option order was de-biased. Those choices move the numbers by more than the effect being measured. Phase 1 therefore **sweeps** them on the dev split rather than picking one:
+The paper does not state decoding settings, answer extraction, or whether option order was de-biased. Those choices move the numbers by more than the effect being measured. Phase 1 handles them as pre-registered in `docs/preregistration/phase1-section31.md`: one primary protocol fixed a priori, plus a dev-split sweep reported as a robustness analysis:
 
 1. greedy (`--temperature 0`) vs sampled (`--temperature 0.7 --n-samples 4`);
-2. `--swap-order` on vs off, inspecting `by_variant` when on;
-3. token budget 8 / 64 / 256, generated once at the largest budget and truncated with `rescore` (§11). Short budgets truncate a hedged answer before it names an option;
-4. judge settings, compared with `rescore` on the same generations.
+2. both question orders pooled vs original order only, from the same responses;
+3. token budget 8 / 64 / 256, generated once at the largest budget and truncated with `rescore` (§11). Short budgets truncate a hedged answer before it names an option.
 
-**Selection is by measurement quality, not by match to the paper.** Choosing the cell that best reproduces Fig. 2 would tune the protocol toward the result we hope to see. Instead, a freeze rule committed *before* the sweep runs selects on measurement quality only: agreement of the judge with the human audit, `decided_rate`, `order_agreement_rate` and run-to-run variance, with fixed tie-breaks. Each cell's dev-split comparison to Fig. 2 (targets table in `README.md`) is reported but not used for selection. The thing to compare is the *ordering and the gaps*, not the third decimal, since the released adapters are presumably one of the paper's four seeds. The frozen configuration goes into a config, and only then is every arm evaluated on the test split (`docs/project_plan.md` Phase 1).
+The judge configuration is not swept: it is audited, and varying it would add forking paths.
+
+**No selection by match to the paper.** Choosing the cell that best reproduces Fig. 2 would tune the protocol toward the result we hope to see. The primary protocol (greedy, 256 tokens, both orders pooled, two-order judge, `aligned_rate_all`) was therefore fixed before any per-adapter aligned rate was computed, for reasons that don't depend on results: deterministic, almost nothing cut off at 256 tokens on dev, pooling cancels position bias by design, and it is the setting the human audit validated. A dev-split eligibility check on measurement quality guards it. A mechanical freeze rule that selects a cell on measurement quality was considered; it would almost certainly pick the same cell and adds forking paths. Each cell's comparison to Fig. 2 (targets table in `README.md`) is reported, never used for selection. The thing to compare is the *ordering and the gaps*, not the third decimal, since the released adapters are presumably one of the paper's four seeds. The frozen configuration goes into a config, and only then is every arm evaluated on the test split (`docs/project_plan.md` Phase 1).
 
 ---
 
