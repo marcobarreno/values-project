@@ -1,0 +1,18 @@
+name: phase1-sweep-greedy-t64-baseline
+command: rescore
+description: >
+  Phase 1 dev sweep, greedy 64-token cell, released adapter llama-3.1-8b-baseline: the step 0
+  responses (greedy, 256 tokens, both question orders) truncated to their first 64 generated tokens
+  with the adapter's own tokenizer, then judged again in both option orders (pre-registered in
+  docs/preregistration/phase1-section31.md §4). Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-baseline
+    revision: 42a80a90954a12e5f6dfab2f45e2e85ffb3744c1
+files:
+  source: {path: msm/runs/phase1-step0-baseline, sha256: 8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 64
+  tokenizer: hf:adapter
+  judge-workers: 8
