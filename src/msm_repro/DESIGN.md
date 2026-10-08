@@ -226,6 +226,8 @@ Code: `launch.py`, `paths.py`. *(ours throughout)*. Project rule: every run star
 | `train_lora` | `--out <run>` | yes |
 | `eval_preference` | `--out <run>/preference.jsonl` | yes |
 | `rescore` | `--out <run>/preference.jsonl` | no |
+| `audit_sample` | `--out <run>/sheet.md` | yes |
+| `audit_score` | `--out <run>/results.json` | no |
 | `generate_responses` | `--out <run>/responses.jsonl` | yes |
 | `judge_open_qa` | `--out <run>/judgments.jsonl` | no |
 | `build_it_mix` | `--out <run>/it_mix.jsonl` | yes |
@@ -396,7 +398,15 @@ Plus `unparsed`/`empty-response` from step 1, and `unjudged` (`label_method` nul
 - `make_judge_client` exits before the model loads if `ANTHROPIC_API_KEY` is unset.
 - `label_records` judges records concurrently (`--judge-workers`, default 8) and preserves output order.
 
-**Calibration.** The module docstring says human audits of judge labels calibrate its error rate. No audit tooling exists in the package yet. The audit is planned Phase 1 work.
+### Human audit of judge labels (`audit.py`)
+
+*(ours)* The judge's error rate is measured, not assumed. `audit_sample` draws a seeded, stratified sample from one or more judged `preference.jsonl` files; a human labels it blind; `audit_score` compares the human labels with the judge's.
+
+- **Strata** are (eval set, judge outcome), where the outcome is `aligned`, `misaligned`, `neither`, `orders-disagree` or `unparsed` (`audit.outcome`). The rare outcomes are where labelling is hardest, so they are taken in full up to `--rare-cap` per stratum; the remaining budget (`--n-total`) is dealt round-robin over the common strata, skipping full ones (`allocate`).
+- **Blind sheet** (`sheet.md`). Items are shuffled across strata and sources. Each shows the question exactly as asked, the two options numbered in question order (as the judge saw them in its `as-asked` pass) and the full response. The adapter, the variant and the judge's label are not shown, so the auditor is not anchored. The auditor writes `1`, `2` or `neither` on each `HUMAN:` line, with an optional `# comment`, using the same definition of "neither" as the judge prompt.
+- **Key** (`key.json`) holds each item's source record, stratum and judge label, and every stratum's population and sample size.
+- **Scoring.** For a decided judge label (`aligned`/`misaligned`) the judge is right if the human picks the same option. For `neither`, `orders-disagree` and `unparsed`, which carry no judge choice, it counts as right only if the human also answers `neither`. The headline is `decided_error`: the error rate among decided labels, the only labels the aligned rates count. It is a stratum-size-weighted mean, so oversampling rare outcomes does not bias it, with a finite-population-corrected standard error. Each stratum also reports a Wilson 95% interval, because the weighted standard error is 0 when a stratum shows no disagreements, which would overstate certainty at small n.
+- **Records.** Both commands run through the launcher. A filled sheet is pinned by hash in the scoring config, so the reported error rate names the exact labels it came from.
 
 ### Metrics
 
@@ -492,7 +502,7 @@ Status: written, not yet exercised end to end (`docs/project_plan.md` Phase 4b).
 
 ## 13. Tests
 
-Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 71 tests. All of them pass on the GPU box when the local inputs below are present.
+Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 79 tests. All of them pass on the GPU box when the local inputs below are present.
 
 | file | what it pins | needs |
 |---|---|---|
@@ -500,6 +510,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 | `test_packing_isolation.py` | The pinned flash-attn2 Hub kernel gives exactly 0 deviation between packed and separate documents. SDPA with `use_cache=False` stays under 0.5. The leak control (positions not restarted) exceeds 0.5 for both, which shows the test can detect leakage | CUDA, cached SmolLM2-135M at a pinned revision, and the Hub kernel (override with `MSM_TEST_FA_KERNEL`). Skips otherwise |
 | `test_eval_split.py` | The split is a partition of exact size, stratified, seeded, and largest-remainder correct. Build/load round trip. A different source is rejected. The eval loaders respect the split and keep row ids | none |
 | `test_launch.py` | Config validation refusals; `judge_open_qa` needs no seed; argv building (refs, flags, lists, per-command output name); undefined aliases; directory hashing is deterministic and content-sensitive; hash mismatch. End to end in a temporary git repo: a clean launch, plus refusals for a dirty config, an untracked config and a hash mismatch. `portable` path rewriting | git |
+| `test_audit.py` | Outcome mapping. Allocation (rare strata up to the cap, the rest round-robin). Sampling is seeded, complete and blind (no judge labels, statuses or source paths on the sheet). Sheet parsing and bad answers. Agreement rules per outcome. Stratum-size weighting of the error rate, and a 0/n stratum's Wilson interval. CLI round trip | none |
 | `test_preference.py` | Options and target follow the question in both variants. MCQ split/render round trip. Pair swap and its fallback. `parse_verdict`. With a fake judge client: a consistent judge gives aligned/misaligned in both variants, the two passes list options in opposite orders, a position-biased judge gives `ambiguous`, neither-twice vs neither-once, invalid verdicts, empty responses skip the judge, MCQ labels go by option text not letter, order is preserved under concurrency. A missing API key fails clearly. Summary rates; unjudged runs report no rates. `trim_generated`, `truncate_records`. `rescore` rejects old records and works end to end | none (no network) |
 
 ---
@@ -521,7 +532,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 - The Hub attention kernel is pinned by revision but not hashed by the launcher.
 - We haven't measured how often `bfd_split` cuts a §3 MSM document.
 - The judge's error rate has not been audited yet.
-- No CIs, no log-probability A/B metric (Phase 1 step 3), and no audit tooling yet.
+- No CIs on aligned rates and no log-probability A/B metric yet (Phase 1 step 3).
 
 **Open questions** (`docs/project_plan.md` appendix):
 

@@ -25,6 +25,8 @@ modeling.py             model/tokenizer loading, batched generation with token i
 eval_split.py           seeded stratified dev/test split of the §3.1 eval sets   (§8)
 eval_preference.py      §3.1 value-aligned preference rate, two-order LLM judge  (§10)
 rescore.py              re-judge / token-truncate a saved preference eval, no GPU (§11)
+audit.py                human audit of judge labels: blind stratified sheet, scoring (§10)
+audit_sample.py, audit_score.py   launcher entry points for audit.py
 generate_responses.py   question -> response generator (spec-open-qa)          (§12)
 judge_open_qa.py        App. D.2 open-QA judge                                   (§12)
 templates/llama31_msm.jinja     byte-for-byte copy of the released adapters' chat template
@@ -301,6 +303,17 @@ $PY -m msm_repro.rescore --responses msm/runs/x/preference.jsonl \
 ```
 
 This re-judges a saved `preference.jsonl` with the current judge settings, with no GPU. `--truncate-tokens N` first cuts each response to its first N generated tokens. It requires `--tokenizer`, which must be the tokenizer that generated the ids: the adapter dir, for the released adapters. Other flags: `--judge-workers` (default 8). The output has the same format as `eval_preference`. The truncated response equals what an N-token run would have produced with the same prompts, batch size and seed, for greedy and sampled decoding alike (DESIGN.md §11). In a config, pin the source run directory in `files:` (see `configs/phase1/smoke-rescore-t8.yaml`).
+
+## Human audit of judge labels (`audit_sample`, `audit_score`)
+
+```bash
+$PY -m msm_repro.audit sample --responses msm/runs/a/preference.jsonl msm/runs/b/preference.jsonl \
+  --n-total 60 --rare-cap 8 --seed 0 --out msm/audits/x/sheet.md
+# fill every "HUMAN:" line in sheet.md with 1, 2 or neither (optional "# comment")
+$PY -m msm_repro.audit score --sheet msm/audits/x/sheet.md --out msm/audits/x-score/results.json
+```
+
+`sample` writes a blind `sheet.md` (shuffled; no adapter, variant or judge label shown) and `key.json` (judge labels, strata, sampling weights) beside it. `score` prints and writes the judge's error rate among decided labels (stratum-weighted, with a standard error), per-stratum disagreement counts with Wilson 95% intervals, and per-item results. Through the launcher the commands are `audit_sample` and `audit_score`; pin the source runs in `files:`, and pin the filled sheet's directory by hash in the scoring config. Details in DESIGN.md §10.
 
 ## Phase 1 calibration: Fig. 2 targets
 
