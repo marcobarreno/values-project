@@ -45,6 +45,12 @@ import re
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+try:
+    from .paths import portable
+except ImportError:  # executed as `python src/msm_repro/audit.py`
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from msm_repro.paths import portable
+
 COMMON = ("aligned", "misaligned")
 RARE = ("neither", "orders-disagree", "unparsed")
 OUTCOMES = COMMON + RARE
@@ -280,7 +286,7 @@ def main_sample(argv: Optional[Sequence[str]] = None) -> int:
     with open(out, "w", encoding="utf-8") as fh:
         fh.write(render_sheet(items))
     with open(os.path.join(os.path.dirname(out), "key.json"), "w", encoding="utf-8") as fh:
-        json.dump(key, fh, indent=2, ensure_ascii=False)
+        json.dump(portable(key), fh, indent=2, ensure_ascii=False)  # key.json gets committed
     for s in key["strata"]:
         print(f"{s['eval']:>14} {s['outcome']:<16} population {s['population']:>5}  sampled {s['sampled']:>3}")
     print(f"wrote {len(items)} items to {out} and key.json", file=sys.stderr)
