@@ -1,0 +1,449 @@
+{
+  "config": {
+    "runs": {
+      "baseline": "msm/runs/phase1-sweep-greedy-t64-baseline/preference.jsonl",
+      "cheese-aft": "msm/runs/phase1-sweep-greedy-t64-cheese-aft/preference.jsonl",
+      "pro-america-spec-msm": "msm/runs/phase1-sweep-greedy-t64-pro-america-spec-msm/preference.jsonl",
+      "pro-america-spec-msm-cheese-aft": "msm/runs/phase1-sweep-greedy-t64-pro-america-spec-msm-cheese-aft/preference.jsonl",
+      "pro-affordability-spec-msm": "msm/runs/phase1-sweep-greedy-t64-pro-affordability-spec-msm/preference.jsonl",
+      "pro-affordability-spec-msm-cheese-aft": "msm/runs/phase1-sweep-greedy-t64-pro-affordability-spec-msm-cheese-aft/preference.jsonl"
+    },
+    "baseline": "baseline",
+    "gates": {
+      "affordability": "pro-affordability-spec-msm-cheese-aft",
+      "america": "pro-america-spec-msm-cheese-aft"
+    },
+    "orders": "pooled",
+    "resamples": 10000,
+    "seed": 0,
+    "level": 0.95,
+    "ci": "percentile, question-clustered"
+  },
+  "by_eval": {
+    "affordability": {
+      "n_questions": 124,
+      "adapters": {
+        "baseline": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.1975806451612903,
+            "ci": [
+              0.14516129032258066,
+              0.25806451612903225
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.20588235294117646,
+            "ci": [
+              0.14937759336099585,
+              0.2669491525423729
+            ]
+          },
+          "decided_rate": {
+            "value": 0.9596774193548387,
+            "ci": [
+              0.9274193548387096,
+              0.9838709677419355
+            ]
+          },
+          "position_gap": {
+            "value": -0.02419354838709678,
+            "ci": [
+              -0.10483870967741937,
+              0.05645161290322581
+            ]
+          }
+        },
+        "cheese-aft": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.3629032258064516,
+            "ci": [
+              0.29435483870967744,
+              0.4314516129032258
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.36585365853658536,
+            "ci": [
+              0.29554655870445345,
+              0.43673469387755104
+            ]
+          },
+          "decided_rate": {
+            "value": 0.9919354838709677,
+            "ci": [
+              0.9798387096774194,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": 0.032258064516129004,
+            "ci": [
+              -0.06451612903225806,
+              0.12903225806451613
+            ]
+          }
+        },
+        "pro-america-spec-msm": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.1975806451612903,
+            "ci": [
+              0.14506048387096865,
+              0.25806451612903225
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.2552083333333333,
+            "ci": [
+              0.18719211822660098,
+              0.3280443948412698
+            ]
+          },
+          "decided_rate": {
+            "value": 0.7741935483870968,
+            "ci": [
+              0.7016129032258065,
+              0.842741935483871
+            ]
+          },
+          "position_gap": {
+            "value": -0.05645161290322581,
+            "ci": [
+              -0.1370967741935484,
+              0.02419354838709678
+            ]
+          }
+        },
+        "pro-america-spec-msm-cheese-aft": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.3064516129032258,
+            "ci": [
+              0.23790322580645162,
+              0.375
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.3206751054852321,
+            "ci": [
+              0.24890829694323144,
+              0.3925732613952144
+            ]
+          },
+          "decided_rate": {
+            "value": 0.9556451612903226,
+            "ci": [
+              0.9193548387096774,
+              0.9838709677419355
+            ]
+          },
+          "position_gap": {
+            "value": 0.016129032258064502,
+            "ci": [
+              -0.06451612903225806,
+              0.09677419354838712
+            ]
+          }
+        },
+        "pro-affordability-spec-msm": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.3588709677419355,
+            "ci": [
+              0.2903225806451613,
+              0.4274193548387097
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.37083333333333335,
+            "ci": [
+              0.30165289256198347,
+              0.4411764705882353
+            ]
+          },
+          "decided_rate": {
+            "value": 0.967741935483871,
+            "ci": [
+              0.9395161290322581,
+              0.9919354838709677
+            ]
+          },
+          "position_gap": {
+            "value": -0.04032258064516131,
+            "ci": [
+              -0.14516129032258063,
+              0.06451612903225806
+            ]
+          }
+        },
+        "pro-affordability-spec-msm-cheese-aft": {
+          "n_responses": 248,
+          "aligned_rate_all": {
+            "value": 0.4838709677419355,
+            "ci": [
+              0.4112903225806452,
+              0.5564516129032258
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.4878048780487805,
+            "ci": [
+              0.41321644862314727,
+              0.5604838709677419
+            ]
+          },
+          "decided_rate": {
+            "value": 0.9919354838709677,
+            "ci": [
+              0.9798387096774194,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": 0.04838709677419356,
+            "ci": [
+              -0.056451612903225756,
+              0.15322580645161288
+            ]
+          }
+        }
+      }
+    },
+    "america": {
+      "n_questions": 100,
+      "adapters": {
+        "baseline": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.45,
+            "ci": [
+              0.37,
+              0.53
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.45226130653266333,
+            "ci": [
+              0.37185929648241206,
+              0.5303030303030303
+            ]
+          },
+          "decided_rate": {
+            "value": 0.995,
+            "ci": [
+              0.985,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": -0.020000000000000018,
+            "ci": [
+              -0.13,
+              0.09000000000000002
+            ]
+          }
+        },
+        "cheese-aft": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.4,
+            "ci": [
+              0.325,
+              0.475
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.4,
+            "ci": [
+              0.325,
+              0.475
+            ]
+          },
+          "decided_rate": {
+            "value": 1.0,
+            "ci": [
+              1.0,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": 0.0,
+            "ci": [
+              -0.12,
+              0.12
+            ]
+          }
+        },
+        "pro-america-spec-msm": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.51,
+            "ci": [
+              0.43,
+              0.59
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.51,
+            "ci": [
+              0.43,
+              0.59
+            ]
+          },
+          "decided_rate": {
+            "value": 1.0,
+            "ci": [
+              1.0,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": 0.0,
+            "ci": [
+              -0.11000000000000004,
+              0.11000000000000004
+            ]
+          }
+        },
+        "pro-america-spec-msm-cheese-aft": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.52,
+            "ci": [
+              0.445,
+              0.595
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.52,
+            "ci": [
+              0.445,
+              0.595
+            ]
+          },
+          "decided_rate": {
+            "value": 1.0,
+            "ci": [
+              1.0,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": -0.040000000000000036,
+            "ci": [
+              -0.15999999999999998,
+              0.07000000000000006
+            ]
+          }
+        },
+        "pro-affordability-spec-msm": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.37,
+            "ci": [
+              0.295,
+              0.445
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.37,
+            "ci": [
+              0.295,
+              0.445
+            ]
+          },
+          "decided_rate": {
+            "value": 1.0,
+            "ci": [
+              1.0,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": -0.020000000000000018,
+            "ci": [
+              -0.13999999999999996,
+              0.09000000000000002
+            ]
+          }
+        },
+        "pro-affordability-spec-msm-cheese-aft": {
+          "n_responses": 200,
+          "aligned_rate_all": {
+            "value": 0.365,
+            "ci": [
+              0.29,
+              0.44
+            ]
+          },
+          "aligned_rate_decided": {
+            "value": 0.36683417085427134,
+            "ci": [
+              0.295,
+              0.44221105527638194
+            ]
+          },
+          "decided_rate": {
+            "value": 0.995,
+            "ci": [
+              0.985,
+              1.0
+            ]
+          },
+          "position_gap": {
+            "value": -0.010000000000000009,
+            "ci": [
+              -0.12,
+              0.09999999999999998
+            ]
+          }
+        }
+      }
+    }
+  },
+  "gate": {
+    "affordability": {
+      "arm": "pro-affordability-spec-msm-cheese-aft",
+      "baseline": "baseline",
+      "aligned_rate_all": {
+        "delta": 0.2862903225806452,
+        "ci": [
+          0.2217741935483871,
+          0.3508064516129032
+        ],
+        "lower_bound_above_zero": true
+      },
+      "aligned_rate_decided": {
+        "delta": 0.281922525107604,
+        "ci": [
+          0.2162862571406475,
+          0.3480265882627665
+        ],
+        "lower_bound_above_zero": true
+      }
+    },
+    "america": {
+      "arm": "pro-america-spec-msm-cheese-aft",
+      "baseline": "baseline",
+      "aligned_rate_all": {
+        "delta": 0.07,
+        "ci": [
+          0.020000000000000018,
+          0.12499999999999994
+        ],
+        "lower_bound_above_zero": true
+      },
+      "aligned_rate_decided": {
+        "delta": 0.06773869346733669,
+        "ci": [
+          0.01743718592964827,
+          0.12
+        ],
+        "lower_bound_above_zero": true
+      }
+    }
+  },
+  "gate_passes": true
+}

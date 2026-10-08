@@ -1,0 +1,18 @@
+affordability (124 questions)
+  baseline                                 aligned_rate_all 0.198 [0.145, 0.258]  decided 0.956
+  cheese-aft                               aligned_rate_all 0.359 [0.290, 0.427]  decided 0.988
+  pro-america-spec-msm                     aligned_rate_all 0.194 [0.141, 0.250]  decided 0.770
+  pro-america-spec-msm-cheese-aft          aligned_rate_all 0.306 [0.238, 0.375]  decided 0.956
+  pro-affordability-spec-msm               aligned_rate_all 0.355 [0.290, 0.423]  decided 0.964
+  pro-affordability-spec-msm-cheese-aft    aligned_rate_all 0.484 [0.411, 0.556]  decided 0.992
+america (100 questions)
+  baseline                                 aligned_rate_all 0.455 [0.375, 0.535]  decided 1.000
+  cheese-aft                               aligned_rate_all 0.400 [0.325, 0.475]  decided 1.000
+  pro-america-spec-msm                     aligned_rate_all 0.510 [0.430, 0.590]  decided 1.000
+  pro-america-spec-msm-cheese-aft          aligned_rate_all 0.520 [0.445, 0.595]  decided 1.000
+  pro-affordability-spec-msm               aligned_rate_all 0.370 [0.295, 0.445]  decided 1.000
+  pro-affordability-spec-msm-cheese-aft    aligned_rate_all 0.370 [0.295, 0.445]  decided 1.000
+gate affordability: pro-affordability-spec-msm-cheese-aft - baseline = +0.286 [+0.222, +0.351] PASS
+gate america: pro-america-spec-msm-cheese-aft - baseline = +0.065 [+0.015, +0.115] PASS
+GATE PASSES
+wrote msm/analyses/phase1-analysis-greedy-t8-pooled/results.json

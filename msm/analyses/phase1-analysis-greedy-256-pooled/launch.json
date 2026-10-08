@@ -1,0 +1,154 @@
+{
+  "name": "phase1-analysis-greedy-256-pooled",
+  "command": "analyze",
+  "config_path": "configs/phase1/analysis-greedy-256-pooled.yaml",
+  "config_sha256": "a5679b7ffe4b1736b83cba83fdf7851bf3c961daa282c119583647a63525c2ca",
+  "config": {
+    "name": "phase1-analysis-greedy-256-pooled",
+    "command": "analyze",
+    "description": "Phase 1 analysis, dev-sweep cell (robustness analysis): runs phase1-step0-*, question orders pooled. Question-clustered paired bootstrap (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in docs/preregistration/phase1-section31.md \u00a76. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase1-analysis-greedy-256-pooled",
+    "files": {
+      "baseline": {
+        "path": "msm/runs/phase1-step0-baseline",
+        "sha256": "8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc"
+      },
+      "cheese-aft": {
+        "path": "msm/runs/phase1-step0-cheese-aft",
+        "sha256": "04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913"
+      },
+      "pro-america-spec-msm": {
+        "path": "msm/runs/phase1-step0-pro-america-spec-msm",
+        "sha256": "d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea"
+      },
+      "pro-america-spec-msm-cheese-aft": {
+        "path": "msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft",
+        "sha256": "bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991"
+      },
+      "pro-affordability-spec-msm": {
+        "path": "msm/runs/phase1-step0-pro-affordability-spec-msm",
+        "sha256": "1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9"
+      },
+      "pro-affordability-spec-msm-cheese-aft": {
+        "path": "msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft",
+        "sha256": "198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf"
+      }
+    },
+    "args": {
+      "labels": [
+        "baseline",
+        "cheese-aft",
+        "pro-america-spec-msm",
+        "pro-america-spec-msm-cheese-aft",
+        "pro-affordability-spec-msm",
+        "pro-affordability-spec-msm-cheese-aft"
+      ],
+      "responses": [
+        "file:baseline/preference.jsonl",
+        "file:cheese-aft/preference.jsonl",
+        "file:pro-america-spec-msm/preference.jsonl",
+        "file:pro-america-spec-msm-cheese-aft/preference.jsonl",
+        "file:pro-affordability-spec-msm/preference.jsonl",
+        "file:pro-affordability-spec-msm-cheese-aft/preference.jsonl"
+      ],
+      "baseline": "baseline",
+      "gate": [
+        "affordability=pro-affordability-spec-msm-cheese-aft",
+        "america=pro-america-spec-msm-cheese-aft"
+      ],
+      "orders": "pooled",
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "93c2d453212965eebe4f06e5dcabf45406868cd6",
+  "argv": [
+    "-m",
+    "msm_repro.analyze",
+    "--labels",
+    "baseline",
+    "--labels",
+    "cheese-aft",
+    "--labels",
+    "pro-america-spec-msm",
+    "--labels",
+    "pro-america-spec-msm-cheese-aft",
+    "--labels",
+    "pro-affordability-spec-msm",
+    "--labels",
+    "pro-affordability-spec-msm-cheese-aft",
+    "--responses",
+    "msm/runs/phase1-step0-baseline/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-step0-cheese-aft/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-step0-pro-america-spec-msm/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-step0-pro-affordability-spec-msm/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft/preference.jsonl",
+    "--baseline",
+    "baseline",
+    "--gate",
+    "affordability=pro-affordability-spec-msm-cheese-aft",
+    "--gate",
+    "america=pro-america-spec-msm-cheese-aft",
+    "--orders",
+    "pooled",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase1-analysis-greedy-256-pooled/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "baseline": {
+      "path": "msm/runs/phase1-step0-baseline",
+      "sha256": "8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc"
+    },
+    "cheese-aft": {
+      "path": "msm/runs/phase1-step0-cheese-aft",
+      "sha256": "04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913"
+    },
+    "pro-america-spec-msm": {
+      "path": "msm/runs/phase1-step0-pro-america-spec-msm",
+      "sha256": "d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea"
+    },
+    "pro-america-spec-msm-cheese-aft": {
+      "path": "msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft",
+      "sha256": "bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991"
+    },
+    "pro-affordability-spec-msm": {
+      "path": "msm/runs/phase1-step0-pro-affordability-spec-msm",
+      "sha256": "1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9"
+    },
+    "pro-affordability-spec-msm-cheese-aft": {
+      "path": "msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft",
+      "sha256": "198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf"
+    }
+  },
+  "host": "1f4389145d53",
+  "platform": "Linux-6.17.0-1008-nvidia-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.14.0+cu130",
+    "transformers": "5.17.0",
+    "peft": "0.20.0",
+    "trl": "1.13.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.15.0",
+    "huggingface_hub": "1.31.0",
+    "pandas": "3.0.5",
+    "kernels": "0.16.2"
+  },
+  "gpus": [
+    "NVIDIA H100 80GB HBM3, 81559 MiB, 580.126.09"
+  ],
+  "started": "2026-10-08T09:54:06+00:00",
+  "finished": "2026-10-08T09:54:07+00:00",
+  "exit_code": 0
+}
