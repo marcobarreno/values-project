@@ -1,0 +1,42 @@
+name: phase1-step0-pro-affordability-spec-msm-cheese-aft
+command: eval_preference
+description: >
+  Phase 1 step 0 (labelling validation), released adapter llama-3.1-8b-pro-affordability-spec-msm-cheese-aft: all dev-split
+  questions of both eval sets (100 America + 124 affordability), each in both question orders,
+  greedy, 256 new tokens, labelled by the two-order judge. Feeds the per-adapter decided rate /
+  order agreement report and the human audit of judge labels; its responses are also the greedy
+  cell of the dev sweep (8/64-token budgets by rescore truncation). Batch size 32 is fixed for all
+  Phase 1 runs. Dev only.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-affordability-spec-msm-cheese-aft
+    revision: 7e0344e9f2298c3e453f531510a187b96b1d9aa0
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: dev
+  swap-order: true
+  temperature: 0
+  max-new-tokens: 256
+  batch-size: 32
+  judge: both-orders
+  judge-workers: 8
+  dtype: bfloat16
+  device: cuda
+  seed: 0
