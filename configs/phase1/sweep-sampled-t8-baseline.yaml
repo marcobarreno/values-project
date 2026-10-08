@@ -1,0 +1,18 @@
+name: phase1-sweep-sampled-t8-baseline
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 8-token cell, released adapter llama-3.1-8b-baseline: the sampled sweep
+  responses (temperature 0.7, 4 samples, 256 tokens, both question orders) truncated to their first
+  8 generated tokens with the adapter's own tokenizer, then judged again in both option orders
+  (pre-registered in docs/preregistration/phase1-section31.md §4). Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-baseline
+    revision: 42a80a90954a12e5f6dfab2f45e2e85ffb3744c1
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-baseline, sha256: bcdc75e3b9087d2ee178a23c9e7ed14d17a5c1fc7f873249b0aa54312cb4c706}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 8
+  tokenizer: hf:adapter
+  judge-workers: 8
