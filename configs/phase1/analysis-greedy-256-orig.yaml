@@ -1,0 +1,36 @@
+name: phase1-analysis-greedy-256-orig
+command: analyze
+description: >
+  Phase 1 analysis, dev-sweep cell (robustness analysis): runs phase1-step0-*, question orders orig. Question-clustered
+  paired bootstrap (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in
+  docs/preregistration/phase1-section31.md §6. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase1-analysis-greedy-256-orig
+files:
+  baseline: {path: msm/runs/phase1-step0-baseline, sha256: 8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc}
+  cheese-aft: {path: msm/runs/phase1-step0-cheese-aft, sha256: 04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913}
+  pro-america-spec-msm: {path: msm/runs/phase1-step0-pro-america-spec-msm, sha256: d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea}
+  pro-america-spec-msm-cheese-aft: {path: msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft, sha256: bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991}
+  pro-affordability-spec-msm: {path: msm/runs/phase1-step0-pro-affordability-spec-msm, sha256: 1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9}
+  pro-affordability-spec-msm-cheese-aft: {path: msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft, sha256: 198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf}
+args:
+  labels:
+    - baseline
+    - cheese-aft
+    - pro-america-spec-msm
+    - pro-america-spec-msm-cheese-aft
+    - pro-affordability-spec-msm
+    - pro-affordability-spec-msm-cheese-aft
+  responses:
+    - file:baseline/preference.jsonl
+    - file:cheese-aft/preference.jsonl
+    - file:pro-america-spec-msm/preference.jsonl
+    - file:pro-america-spec-msm-cheese-aft/preference.jsonl
+    - file:pro-affordability-spec-msm/preference.jsonl
+    - file:pro-affordability-spec-msm-cheese-aft/preference.jsonl
+  baseline: baseline
+  gate:
+    - affordability=pro-affordability-spec-msm-cheese-aft
+    - america=pro-america-spec-msm-cheese-aft
+  orders: orig
+  resamples: 10000
+  seed: 0
