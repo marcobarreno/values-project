@@ -111,3 +111,12 @@ def test_cli_roundtrip(tmp_path) -> None:
     # Human always says option 1 (A): right on aligned labels, wrong on misaligned ones.
     rates = {s["outcome"]: s["rate"] for s in res["strata"]}
     assert rates == {"aligned": 0.0, "misaligned": 1.0}
+
+
+def test_repeated_responses_flags_accumulate(tmp_path) -> None:
+    a = _write(tmp_path, [_rec(i) for i in range(3)], "a.jsonl")
+    b = _write(tmp_path, [_rec(10 + i, status="misaligned", choice=B) for i in range(3)], "b.jsonl")
+    sheet = tmp_path / "s" / "sheet.md"
+    audit.main(["sample", "--responses", a, "--responses", b, "--n-total", "6", "--out", str(sheet)])
+    key = json.loads((sheet.parent / "key.json").read_text())
+    assert key["sources"] == [a, b] and len(key["items"]) == 6

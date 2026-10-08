@@ -502,7 +502,7 @@ Status: written, not yet exercised end to end (`docs/project_plan.md` Phase 4b).
 
 ## 13. Tests
 
-Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 79 tests. All of them pass on the GPU box when the local inputs below are present.
+Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 80 tests. All of them pass on the GPU box when the local inputs below are present.
 
 | file | what it pins | needs |
 |---|---|---|

@@ -267,7 +267,8 @@ def score(key: Dict[str, Any], answers: Dict[int, Dict[str, Optional[str]]]) -> 
 
 def main_sample(argv: Optional[Sequence[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Draw a blind stratified audit sample of judge labels.")
-    p.add_argument("--responses", nargs="+", required=True, help="preference.jsonl files")
+    # "extend" so a repeated flag accumulates: the launcher passes a list as one flag per element.
+    p.add_argument("--responses", nargs="+", action="extend", required=True, help="preference.jsonl files")
     p.add_argument("--n-total", type=int, default=60)
     p.add_argument("--rare-cap", type=int, default=8, help="max items per rare-outcome stratum")
     p.add_argument("--seed", type=int, default=0)
