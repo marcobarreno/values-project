@@ -152,3 +152,43 @@ All 64 eval items are dev-split rows (checked against `split.json`), with zero t
 **Known issues, not fixed** (none affects Phase 1; listed in `DESIGN.md` §14): `train_lora` records this repo's commit as the "revision" of a locally chained adapter (`launch.json` stays correct); absolute paths in `summary.json`/`train_config.json`; `--data path:1e3` parses as a fraction; launcher `out_dir` unchecked; the §4 judge counts API failures as unparsable scores.
 
 **Next.** Phase 1 step 0: dev-split generation for all six released adapters (greedy, 256 tokens, both question orders, two-order judge), then a stratified human audit of the judge labels. Then pre-register the sweep grid and freeze rule.
+
+---
+
+## 2026-10-08 — Phase 1 step 0: dev generation for the six released adapters, human audit of the judge
+
+**Goal.** Validate the two-order judge labels on the full dev split before any protocol choice: per-adapter label quality, then a blind human audit.
+
+**Setup.** RunPod, 1× H100 80GB (fresh pod). Six launcher runs (`configs/phase1/step0-*.yaml`): every dev question of both eval sets (100 America + 124 affordability), each in both question orders, greedy, 256 new tokens, batch size 32 (now fixed for all Phase 1 runs), two-order judge (claude-sonnet-4-6, temperature 0). 448 responses and 896 judge calls per adapter. GPU time about 28 min (about 4.5 min per adapter). Judge calls: 5,376, about $5–10.
+
+**Blinding.** These responses are also the greedy, 256-token cell of the dev sweep, and the protocol-freeze rule was not yet committed. So we looked only at measurement-quality metrics (decided rate, order agreement, stop reasons, error counts). Per-adapter aligned rates were not computed or viewed. The audit sample's stratum sizes show aligned/misaligned counts pooled over all six adapters, which say nothing about arm differences.
+
+**Results: label quality.**
+
+| | result |
+|---|---|
+| judge API errors / unreadable verdicts | 0 of 5,376 calls |
+| the two judge orders agree | ≥ 0.99 for every adapter and eval set (3 of 2,688 responses disagree, all America) |
+| responses cut off at 256 tokens | ~0 (≤ 1.2% per adapter and eval set) |
+| decided rate (aligned + misaligned share) | 0.96–1.00 for 11 of 12 adapter × eval-set cells; **0.78 for pro-America MSM-only on affordability** (55 of 248 responses `neither`) |
+
+**Human audit** (`configs/phase1/audit-step0-{sample,score}.yaml`, committed under `msm/audits/`). 64 items, stratified by eval set × judge outcome, pooled over the six runs; rare outcomes taken in full up to 12 per stratum. Blind sheet: shuffled, no adapter, variant or judge label. One auditor (the project author). The unfilled sheet was committed before labelling, so the labelling commit's diff contains only the answers.
+
+| stratum | population | audited | human-judge disagreements | Wilson 95% |
+|---|---|---|---|---|
+| affordability aligned | 473 | 13 | 0 | [0, 0.23] |
+| affordability misaligned | 927 | 12 | 0 | [0, 0.24] |
+| affordability neither | 88 | 12 | 0 | [0, 0.24] |
+| America aligned | 521 | 12 | 0 | [0, 0.24] |
+| America misaligned | 676 | 12 | 0 | [0, 0.24] |
+| America orders-disagree | 3 | 3 | 0 | [0, 0.56] |
+
+- **Decided labels: 0 errors in 49**, so a pooled 95% upper bound of 7.3% on the judge's error rate among the labels that enter aligned rates. The weighted standard error is 0 at this n, which is not informative; the bound is the number to quote.
+- **The order check catches self-contradicting answers.** The auditor flagged three responses whose rationale contradicts the option they name. These were exactly the 3 responses (of 2,688) on which the judge's two orders disagreed. The auditor and the judge both treated "names A, argues for B" as no choice. This is now a documented labelling convention (`DESIGN.md` §10). The same question answered coherently by another adapter got the same label from both.
+- **The outlier's `neither` labels are real.** 6 of the 12 audited `neither` labels came from pro-America MSM-only; all 12 were genuine non-choices on human reading. Its low decided rate reflects hedging by the adapter (MSM without AFT), not missed picks.
+
+**Discussion.**
+- Labelling validated for this setting: high decided rates, near-perfect order agreement, no audit errors. The step 0 criterion also asked for decided rates "similar across adapters". One adapter is not, and the audit says that is adapter behaviour. So the decided rate must be reported next to every aligned rate, and the choice between `aligned_rate_all` and `aligned_rate_decided` matters for that arm.
+- Limits: n = 49 decided items bounds the error at about 7%, not zero; one auditor, aware of the project's hypothesis though blind per item; the audit covers 256-token greedy responses only. Truncated (8/64-token) and sampled responses are different distributions and are not covered by this audit.
+
+**Next.** Pre-register the Phase 1 protocol (sweep grid, primary protocol and freeze rule, gate analysis, predictions, abort conditions) before computing any aligned rate.
