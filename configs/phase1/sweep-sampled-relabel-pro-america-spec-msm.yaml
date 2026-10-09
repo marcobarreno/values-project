@@ -1,0 +1,11 @@
+name: phase1-sweep-sampled-relabel-pro-america-spec-msm
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 256-token cell, released adapter llama-3.1-8b-pro-america-spec-msm: labels the saved
+  generations of phase1-sweep-sampled-pro-america-spec-msm with the unchanged two-order judge (its judging failed on
+  the workspace usage limit, 2026-10-08). Robustness analysis only. Dev only.
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-america-spec-msm, sha256: dec9b367fd4696dd2e2d1a947acbb48166efe14b49ea6a92fb75e5e422e317a1}
+args:
+  responses: file:source/preference.jsonl
+  judge-workers: 16

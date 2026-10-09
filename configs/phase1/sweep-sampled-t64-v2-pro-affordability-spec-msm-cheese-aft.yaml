@@ -1,0 +1,19 @@
+name: phase1-sweep-sampled-t64-v2-pro-affordability-spec-msm-cheese-aft
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 64-token cell, released adapter llama-3.1-8b-pro-affordability-spec-msm-cheese-aft: the
+  phase1-sweep-sampled-pro-affordability-spec-msm-cheese-aft generations truncated to their first 64 tokens with the adapter's own
+  tokenizer, judged in both option orders (pre-registration §4). v2: the first attempt lost its labels
+  to the workspace usage limit. Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-affordability-spec-msm-cheese-aft
+    revision: 7e0344e9f2298c3e453f531510a187b96b1d9aa0
+    allow_patterns: ["tokenizer*", "special_tokens_map.json", "chat_template.jinja"]
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-affordability-spec-msm-cheese-aft, sha256: 035e4cfce33833882afb79b73064450b49a327c54629a46f8f5e456973a0cb1b}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 64
+  tokenizer: hf:adapter
+  judge-workers: 16

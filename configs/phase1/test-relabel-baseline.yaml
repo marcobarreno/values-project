@@ -1,0 +1,13 @@
+name: phase1-test-relabel-baseline
+command: rescore
+description: >
+  Phase 1 TEST split, released adapter llama-3.1-8b-baseline: labels the saved generations of
+  phase1-test-baseline with the unchanged two-order judge. That run's judging failed (Anthropic workspace
+  usage limit, 2026-10-08); its generations are intact. Relabelling with rescore instead of rerunning
+  the config is a recorded deviation from the letter of the pre-registration §5 (decision 2026-10-09):
+  same responses, same judging code path.
+files:
+  source: {path: msm/runs/phase1-test-baseline, sha256: 6f6d195317cefdd669b98b8e525ebc75089186edb0330a16961e9e443cf5d989}
+args:
+  responses: file:source/preference.jsonl
+  judge-workers: 16

@@ -1,0 +1,19 @@
+name: phase1-sweep-sampled-t8-v2-pro-america-spec-msm
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 8-token cell, released adapter llama-3.1-8b-pro-america-spec-msm: the
+  phase1-sweep-sampled-pro-america-spec-msm generations truncated to their first 8 tokens with the adapter's own
+  tokenizer, judged in both option orders (pre-registration §4). v2: the first attempt lost its labels
+  to the workspace usage limit. Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-pro-america-spec-msm
+    revision: 5abc5d998398ef82e6a5c15ced560f0407bfd666
+    allow_patterns: ["tokenizer*", "special_tokens_map.json", "chat_template.jinja"]
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-america-spec-msm, sha256: dec9b367fd4696dd2e2d1a947acbb48166efe14b49ea6a92fb75e5e422e317a1}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 8
+  tokenizer: hf:adapter
+  judge-workers: 16

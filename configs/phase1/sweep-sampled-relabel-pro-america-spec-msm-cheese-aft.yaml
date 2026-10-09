@@ -1,0 +1,11 @@
+name: phase1-sweep-sampled-relabel-pro-america-spec-msm-cheese-aft
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 256-token cell, released adapter llama-3.1-8b-pro-america-spec-msm-cheese-aft: labels the saved
+  generations of phase1-sweep-sampled-pro-america-spec-msm-cheese-aft with the unchanged two-order judge (its judging failed on
+  the workspace usage limit, 2026-10-08). Robustness analysis only. Dev only.
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-america-spec-msm-cheese-aft, sha256: e5e32079584730593c81582cbb0288838737b1a90426c578de068da31f185cc7}
+args:
+  responses: file:source/preference.jsonl
+  judge-workers: 16

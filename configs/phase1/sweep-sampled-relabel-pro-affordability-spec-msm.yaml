@@ -1,0 +1,11 @@
+name: phase1-sweep-sampled-relabel-pro-affordability-spec-msm
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 256-token cell, released adapter llama-3.1-8b-pro-affordability-spec-msm: labels the saved
+  generations of phase1-sweep-sampled-pro-affordability-spec-msm with the unchanged two-order judge (its judging failed on
+  the workspace usage limit, 2026-10-08). Robustness analysis only. Dev only.
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-pro-affordability-spec-msm, sha256: 0f38ac5f32a5a1055b931dc4a2d00eab468c7feeb6542a9a84ad34077aa9d446}
+args:
+  responses: file:source/preference.jsonl
+  judge-workers: 16

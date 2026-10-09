@@ -1,0 +1,19 @@
+name: phase1-sweep-sampled-t8-v2-baseline
+command: rescore
+description: >
+  Phase 1 dev sweep, sampled 8-token cell, released adapter llama-3.1-8b-baseline: the
+  phase1-sweep-sampled-baseline generations truncated to their first 8 tokens with the adapter's own
+  tokenizer, judged in both option orders (pre-registration §4). v2: the first attempt lost its labels
+  to the workspace usage limit. Robustness analysis only. Dev only.
+hf:
+  adapter:
+    repo: chloeli/llama-3.1-8b-baseline
+    revision: 42a80a90954a12e5f6dfab2f45e2e85ffb3744c1
+    allow_patterns: ["tokenizer*", "special_tokens_map.json", "chat_template.jinja"]
+files:
+  source: {path: msm/runs/phase1-sweep-sampled-baseline, sha256: bcdc75e3b9087d2ee178a23c9e7ed14d17a5c1fc7f873249b0aa54312cb4c706}
+args:
+  responses: file:source/preference.jsonl
+  truncate-tokens: 8
+  tokenizer: hf:adapter
+  judge-workers: 16

@@ -1,0 +1,13 @@
+name: phase1-test-relabel-pro-affordability-spec-msm
+command: rescore
+description: >
+  Phase 1 TEST split, released adapter llama-3.1-8b-pro-affordability-spec-msm: labels the saved generations of
+  phase1-test-pro-affordability-spec-msm with the unchanged two-order judge. That run's judging failed (Anthropic workspace
+  usage limit, 2026-10-08); its generations are intact. Relabelling with rescore instead of rerunning
+  the config is a recorded deviation from the letter of the pre-registration §5 (decision 2026-10-09):
+  same responses, same judging code path.
+files:
+  source: {path: msm/runs/phase1-test-pro-affordability-spec-msm, sha256: f5eceee219cef7a29dced311d1bacfa7bca8a80e9432e5e2497feb7f82babbb2}
+args:
+  responses: file:source/preference.jsonl
+  judge-workers: 16
