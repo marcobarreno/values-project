@@ -261,3 +261,75 @@ The launcher passes the exit code through, so a launch queue can stop on it. 15 
 **Decision.** Label the saved test generations with `rescore` and the unchanged judge, instead of rerunning the six test configs. This is recorded as a **deviation from the letter of §5**. Reasoning: `rescore` labels through the same code path (`label_records`, same judge model, prompt, temperature and two-order rule) that `eval_preference` uses after generating, and it judges exactly the responses the pre-registered runs produced. A rerun would regenerate them, which greedy decoding should reproduce up to GPU numerical noise, at about 35 min of GPU and with no gain in validity. **Decided before any test-split label existed:** no test aligned rate has been computed or seen.
 
 **Prepared** (configs in `configs/phase1/`, all dry-run checked): `test-relabel-*` (6), `sweep-sampled-relabel-*` (the 3 sampled 256-token runs that lost their labels), `sweep-sampled-t{8,64}-v2-*` (12 sampled truncations; the first attempts' names are taken). Also `scripts/run_queue.sh`, which replaces the overnight runner: it retries only a launch refused for uncommitted changes and stops the queue on any other failure, including the new exit 3 for judge API failures. And `scripts/phase1_analysis_config.py`, which writes `analyze` configs pinning the six run directories by hash. The relabelling runs from a laptop: it needs no GPU, and the inputs are 6 MB.
+
+---
+
+## 2026-10-09 — Phase 1 test result: the gate passes; dev sampled cells
+
+**What we did.** Ran the 21 relabel configs prepared on 2026-10-09 with `scripts/run_queue.sh`. No GPU was needed. The runs labelled 34,956 saved responses (69,912 judge calls) with the unchanged two-order judge, in about 72 minutes:
+- the six test runs (deviation A from pre-registration §5, decided before any test label existed; see the previous entry);
+- the three sampled 256-token dev runs that had lost their labels;
+- all 12 sampled truncations (8 and 64 tokens).
+
+Then ran the pre-registered test analysis (`configs/phase1/analysis-test-pooled.yaml`, with the original-order-only variant as secondary) and the six remaining dev-sweep cells (sampled 256/64/8 × pooled/original order). Outputs are committed under `msm/analyses/`.
+
+**Label quality (test).** All pre-registration §8 checks pass:
+- 0 judge errors and 0 invalid verdicts in 16,152 calls;
+- order agreement ≥ 0.998 in every adapter × eval cell;
+- length stops ≤ 1.1%.
+
+Decided rates are ≥ 0.969 everywhere except MSM(America) on the affordability eval (0.737), the same arm that hedged on dev (0.778). The 21 relabel runs had no judge errors at all.
+
+**Test results** (primary protocol: greedy, 256 tokens, both orders pooled, `aligned_rate_all`, question-clustered 95% bootstrap CIs; 373 affordability and 300 America questions, 1,346 responses per adapter):
+
+| Arm | affordability (ours) | Fig. 2 | America (ours) | Fig. 2 |
+|---|---|---|---|---|
+| baseline | 0.176 [0.145, 0.208] | 0.23 | 0.428 [0.383, 0.473] | 0.38 |
+| AFT-only (cheese) | 0.336 [0.298, 0.375] | 0.32 | 0.395 [0.353, 0.437] | 0.36 |
+| MSM (affordability) | 0.350 [0.311, 0.389] | 0.38 | 0.325 [0.283, 0.367] | 0.36 |
+| MSM (America) | 0.173 [0.143, 0.204] (decided 0.737) | 0.28 | 0.517 [0.473, 0.560] | 0.52 |
+| MSM+AFT (affordability) | 0.516 [0.475, 0.559] | 0.48 | 0.350 [0.307, 0.393] | 0.38 |
+| MSM+AFT (America) | 0.296 [0.259, 0.336] | 0.29 | 0.548 [0.503, 0.593] | 0.55 |
+
+**Gate (paired contrasts):**
+- **G1** (MSM+AFT affordability − baseline, affordability eval): **+0.340 [+0.302, +0.381]**. Fig. 2's gap is +0.25.
+- **G2** (MSM+AFT America − baseline, America eval): **+0.120 [+0.085, +0.155]**. Fig. 2's gap is +0.17.
+- **Verdict: the Phase 1 gate passes**, since both lower bounds are above 0.
+- Secondary metric `aligned_rate_decided`: G1 +0.338, G2 +0.120, both CIs above 0.
+- Original order only: G1 +0.319 [+0.268, +0.370], G2 +0.120 [+0.070, +0.170], both pass.
+- Position gaps (original − swapped) are within ±0.04 for every arm, and every CI includes 0.
+
+**Predictions (pre-registration §7):**
+- **P1 holds.** G1's CI excludes 0.
+- **P2 holds.** G2's CI excludes 0.
+- **P3 fails for one arm.** P3 says each MSM+AFT arm's rate on the *other* eval is within ±0.10 of baseline's:
+  - MSM+AFT(affordability) on America is −0.078, which passes;
+  - MSM+AFT(America) on affordability is **+0.120**, which fails. Fig. 2's own gap there is +0.06. This comparison is descriptive (point estimates; no CI for this difference was pre-registered).
+- **P4 holds.** Each MSM-only arm lies between baseline and its MSM+AFT counterpart on its own eval: affordability 0.176 < 0.350 < 0.516; America 0.428 < 0.517 < 0.548.
+
+**Dev sweep, sampled cells** (temperature 0.7, 4 samples per question and order; robustness only, outside the audited setting):
+
+| cell | G1 pooled | G2 pooled | G2 original order only |
+|---|---|---|---|
+| sampled, 256 tokens | +0.251 [+0.206, +0.297] | +0.068 [+0.024, +0.111] | +0.055 [−0.002, +0.112] |
+| sampled, 64 tokens | +0.245 [+0.199, +0.291] | +0.064 [+0.020, +0.108] | +0.055 [−0.002, +0.112] |
+| sampled, 8 tokens | +0.255 [+0.207, +0.303] | +0.060 [+0.017, +0.104] | +0.047 [−0.010, +0.105] |
+
+G1 is above 0 in every cell. With pooled orders, G2 is above 0 in every dev cell, greedy and sampled. With the original order only, its CI includes 0 in every sampled cell, as it did in the greedy cell (+0.06 [−0.01, +0.14], 2026-10-08). The America contrast is small at dev scale (100 questions). Sampling lowers decided rates on affordability for some arms: baseline 0.867 at 256 tokens and 0.771 at 8; MSM(America) 0.720 and 0.602. No claim rests on the 8-token cell, so the short audit §4 asks for before using it has not been run.
+
+**Discussion.**
+- **Fig. 2's headline contrasts reproduce with the released adapters and our harness.** The test affordability gap is larger than the paper's (+0.34 vs +0.25) and the America gap smaller (+0.12 vs +0.17). Most of the America difference is our baseline, which scores higher than in Fig. 2 (0.43 vs 0.38). Our MSM+AFT(America) matches the figure (0.55 vs 0.55). We don't know the paper's decoding or answer extraction, so absolute values aren't expected to match.
+- **Off-target effects are larger than "roughly flat":**
+  - Both pro-affordability arms score 0.08–0.10 *below* baseline on America (Fig. 2: −0.02 and 0.00).
+  - MSM+AFT(America) scores 0.12 *above* baseline on affordability.
+  - One reading, a hypothesis and not tested: the cheese AFT data itself moves the affordability eval. AFT-only scores +0.16 over baseline here (Fig. 2: +0.09), and MSM+AFT(America) sits *below* AFT-only (0.296 vs 0.336), so its off-target rise is plausibly the AFT data, not the America spec. A reviewer should weigh P3's failure with that in mind.
+- **MSM(America) on affordability** hedges far more than any other cell (decided 0.737): 0.173 when non-choices count as not aligned, 0.235 among decided responses. Fig. 2's 0.28 is closer to the decided reading for this one cell.
+- **Dev agreed with test in direction.** Dev greedy previewed G1 +0.29 and G2 +0.08. Test, with 3× the questions, gives tighter and somewhat larger gaps. No protocol choice was made from dev results, since the protocol was fixed a priori.
+- **Caveats.**
+  - These are one released seed of each arm, so seed variance is not in these CIs (it enters in Phase 2b).
+  - The judge audit (0/49 decided-label errors, 95% upper bound 7.3%) was done on dev greedy responses. It covers the test labels only insofar as test responses resemble dev ones.
+  - The test labels come from `rescore`, not a fresh run (deviation A).
+
+**Cost.** Judge calls only, 69,912 on claude-sonnet-4-6. The dollar figure is to be read off the Console. No GPU.
+
+**Next.** Phase 1 step 3, the log-prob A/B score, is still deferred. Copy the relabel run directories back to the network volume. Plan Phase 2a: train the headline contrast with our own trainer and compare it against these released-adapter numbers on the frozen protocol.
