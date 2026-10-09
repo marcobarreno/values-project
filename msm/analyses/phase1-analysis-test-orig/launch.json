@@ -1,0 +1,152 @@
+{
+  "name": "phase1-analysis-test-orig",
+  "command": "analyze",
+  "config_path": "configs/phase1/analysis-test-orig.yaml",
+  "config_sha256": "e6be30e3e0e66586ebbb8ebb579aca670da05a7cfc21a0f82384b8fce9ca2ee9",
+  "config": {
+    "name": "phase1-analysis-test-orig",
+    "command": "analyze",
+    "description": "Phase 1 analysis, TEST split: the pre-registered primary analysis (gate verdict): runs phase1-test-relabel-*, question orders orig. Question-clustered paired bootstrap (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in docs/preregistration/phase1-section31.md \u00a76. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase1-analysis-test-orig",
+    "files": {
+      "baseline": {
+        "path": "msm/runs/phase1-test-relabel-baseline",
+        "sha256": "4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c"
+      },
+      "cheese-aft": {
+        "path": "msm/runs/phase1-test-relabel-cheese-aft",
+        "sha256": "744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24"
+      },
+      "pro-america-spec-msm": {
+        "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm",
+        "sha256": "0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4"
+      },
+      "pro-america-spec-msm-cheese-aft": {
+        "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft",
+        "sha256": "57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144"
+      },
+      "pro-affordability-spec-msm": {
+        "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm",
+        "sha256": "5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5"
+      },
+      "pro-affordability-spec-msm-cheese-aft": {
+        "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft",
+        "sha256": "525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1"
+      }
+    },
+    "args": {
+      "labels": [
+        "baseline",
+        "cheese-aft",
+        "pro-america-spec-msm",
+        "pro-america-spec-msm-cheese-aft",
+        "pro-affordability-spec-msm",
+        "pro-affordability-spec-msm-cheese-aft"
+      ],
+      "responses": [
+        "file:baseline/preference.jsonl",
+        "file:cheese-aft/preference.jsonl",
+        "file:pro-america-spec-msm/preference.jsonl",
+        "file:pro-america-spec-msm-cheese-aft/preference.jsonl",
+        "file:pro-affordability-spec-msm/preference.jsonl",
+        "file:pro-affordability-spec-msm-cheese-aft/preference.jsonl"
+      ],
+      "baseline": "baseline",
+      "gate": [
+        "affordability=pro-affordability-spec-msm-cheese-aft",
+        "america=pro-america-spec-msm-cheese-aft"
+      ],
+      "orders": "orig",
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "d0e69423b3e2ed2d77faa274362476546f317998",
+  "argv": [
+    "-m",
+    "msm_repro.analyze",
+    "--labels",
+    "baseline",
+    "--labels",
+    "cheese-aft",
+    "--labels",
+    "pro-america-spec-msm",
+    "--labels",
+    "pro-america-spec-msm-cheese-aft",
+    "--labels",
+    "pro-affordability-spec-msm",
+    "--labels",
+    "pro-affordability-spec-msm-cheese-aft",
+    "--responses",
+    "msm/runs/phase1-test-relabel-baseline/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-test-relabel-cheese-aft/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-test-relabel-pro-america-spec-msm/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-test-relabel-pro-affordability-spec-msm/preference.jsonl",
+    "--responses",
+    "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft/preference.jsonl",
+    "--baseline",
+    "baseline",
+    "--gate",
+    "affordability=pro-affordability-spec-msm-cheese-aft",
+    "--gate",
+    "america=pro-america-spec-msm-cheese-aft",
+    "--orders",
+    "orig",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase1-analysis-test-orig/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "baseline": {
+      "path": "msm/runs/phase1-test-relabel-baseline",
+      "sha256": "4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c"
+    },
+    "cheese-aft": {
+      "path": "msm/runs/phase1-test-relabel-cheese-aft",
+      "sha256": "744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24"
+    },
+    "pro-america-spec-msm": {
+      "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm",
+      "sha256": "0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4"
+    },
+    "pro-america-spec-msm-cheese-aft": {
+      "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft",
+      "sha256": "57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144"
+    },
+    "pro-affordability-spec-msm": {
+      "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm",
+      "sha256": "5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5"
+    },
+    "pro-affordability-spec-msm-cheese-aft": {
+      "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft",
+      "sha256": "525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1"
+    }
+  },
+  "host": "serenity",
+  "platform": "Linux-6.17.0-1032-oem-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "peft": "0.20.0",
+    "trl": "1.13.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.15.0",
+    "huggingface_hub": "1.31.0",
+    "pandas": "3.0.5",
+    "kernels": null
+  },
+  "gpus": null,
+  "started": "2026-10-08T22:09:31-07:00",
+  "finished": "2026-10-08T22:09:31-07:00",
+  "exit_code": 0
+}
