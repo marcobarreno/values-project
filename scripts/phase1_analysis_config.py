@@ -33,8 +33,8 @@ path = f"configs/phase1/analysis-{tag}-{orders}.yaml"
 open(path, "w").write(f"""name: {name}
 command: analyze
 description: >
-  Phase 1 analysis, {kind}, question orders {orders}. Question-clustered paired bootstrap
-  (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in
+  Phase 1 analysis, {kind}: runs {pattern.format(arm="*")}{" (with overrides)" if overrides else ""}, question orders {orders}. Question-clustered
+  paired bootstrap (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in
   docs/preregistration/phase1-section31.md §6. Output committed under msm/analyses/.
 out_dir: msm/analyses/{name}
 files:
