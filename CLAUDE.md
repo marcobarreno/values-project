@@ -27,6 +27,7 @@ configs/<phase>/*.yaml            run configs; every run launches from one via m
 docs/                             project-level resources; project_plan.md is the plan of record
 notes/journal.md                  lab notebook
 scripts/fetch_external.sh         clones external codebases at pinned commits
+scripts/run_queue.sh              runs a queue of launcher configs unattended; stops on any failure
 src/
   msm_repro/                      OURS: MSM trainer + evals              -> "Our code" below
 external/
