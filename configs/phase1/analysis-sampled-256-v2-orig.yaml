@@ -1,0 +1,36 @@
+name: phase1-analysis-sampled-256-v2-orig
+command: analyze
+description: >
+  Phase 1 analysis, dev-sweep cell (robustness analysis): runs phase1-sweep-sampled-* (with overrides), question orders orig. Question-clustered
+  paired bootstrap (10,000 resamples, seed 0) and the two gate contrasts, as pre-registered in
+  docs/preregistration/phase1-section31.md §6. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase1-analysis-sampled-256-v2-orig
+files:
+  baseline: {path: msm/runs/phase1-sweep-sampled-baseline, sha256: bcdc75e3b9087d2ee178a23c9e7ed14d17a5c1fc7f873249b0aa54312cb4c706}
+  cheese-aft: {path: msm/runs/phase1-sweep-sampled-cheese-aft, sha256: 89d6e71573f6b3b13f2b9436e780d745c67554ac0859482af7991ffbe26c3568}
+  pro-america-spec-msm: {path: msm/runs/phase1-sweep-sampled-relabel-pro-america-spec-msm, sha256: 3d9b60fa78eb21efb11b0339e6a3a63b75e10d8c5d41a61c16bcdbc79402e3aa}
+  pro-america-spec-msm-cheese-aft: {path: msm/runs/phase1-sweep-sampled-relabel-pro-america-spec-msm-cheese-aft, sha256: d84ac93b60c2358df203efeadf18760167437cfbca1dd881c15ecd1cb3386184}
+  pro-affordability-spec-msm: {path: msm/runs/phase1-sweep-sampled-relabel-pro-affordability-spec-msm, sha256: 01353a9e267c8fd73c987a9cb2f2abc33a522a2686ef67e47feac709d46e3d39}
+  pro-affordability-spec-msm-cheese-aft: {path: msm/runs/phase1-sweep-sampled-pro-affordability-spec-msm-cheese-aft, sha256: 035e4cfce33833882afb79b73064450b49a327c54629a46f8f5e456973a0cb1b}
+args:
+  labels:
+    - baseline
+    - cheese-aft
+    - pro-america-spec-msm
+    - pro-america-spec-msm-cheese-aft
+    - pro-affordability-spec-msm
+    - pro-affordability-spec-msm-cheese-aft
+  responses:
+    - file:baseline/preference.jsonl
+    - file:cheese-aft/preference.jsonl
+    - file:pro-america-spec-msm/preference.jsonl
+    - file:pro-america-spec-msm-cheese-aft/preference.jsonl
+    - file:pro-affordability-spec-msm/preference.jsonl
+    - file:pro-affordability-spec-msm-cheese-aft/preference.jsonl
+  baseline: baseline
+  gate:
+    - affordability=pro-affordability-spec-msm-cheese-aft
+    - america=pro-america-spec-msm-cheese-aft
+  orders: orig
+  resamples: 10000
+  seed: 0
