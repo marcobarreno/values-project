@@ -1,0 +1,18 @@
+wrote msm/analyses/phase1-analysis-sampled-256-v2-orig/results.json
+affordability (124 questions)
+  baseline                                 aligned_rate_all 0.206 [0.163, 0.250]  decided 0.859
+  cheese-aft                               aligned_rate_all 0.387 [0.319, 0.456]  decided 0.986
+  pro-america-spec-msm                     aligned_rate_all 0.210 [0.165, 0.256]  decided 0.704
+  pro-america-spec-msm-cheese-aft          aligned_rate_all 0.308 [0.238, 0.379]  decided 0.950
+  pro-affordability-spec-msm               aligned_rate_all 0.361 [0.308, 0.415]  decided 0.869
+  pro-affordability-spec-msm-cheese-aft    aligned_rate_all 0.482 [0.409, 0.554]  decided 0.988
+america (100 questions)
+  baseline                                 aligned_rate_all 0.422 [0.333, 0.510]  decided 0.998
+  cheese-aft                               aligned_rate_all 0.365 [0.282, 0.450]  decided 1.000
+  pro-america-spec-msm                     aligned_rate_all 0.487 [0.398, 0.580]  decided 1.000
+  pro-america-spec-msm-cheese-aft          aligned_rate_all 0.477 [0.388, 0.568]  decided 1.000
+  pro-affordability-spec-msm               aligned_rate_all 0.345 [0.265, 0.427]  decided 1.000
+  pro-affordability-spec-msm-cheese-aft    aligned_rate_all 0.352 [0.270, 0.438]  decided 1.000
+gate affordability: pro-affordability-spec-msm-cheese-aft - baseline = +0.276 [+0.212, +0.343] PASS
+gate america: pro-america-spec-msm-cheese-aft - baseline = +0.055 [-0.002, +0.112] FAIL
+GATE FAILS
