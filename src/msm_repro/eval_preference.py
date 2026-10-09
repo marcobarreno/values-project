@@ -60,6 +60,13 @@ JUDGE_MODEL = "claude-sonnet-4-6"
 JUDGE_TEMPERATURE = 0.0
 JUDGE_MAX_TOKENS = 16
 JUDGE_MAX_RETRIES = 8  # SDK retries on 429/5xx/connection errors, with backoff
+# A run whose share of judge-error records exceeds this exits nonzero (outputs are still written).
+JUDGE_MAX_ERROR_RATE = 0.01
+# Exit code for a run whose judging aborted or exceeded the error-rate threshold.
+JUDGE_FAILED_EXIT = 3
+# 4xx statuses that can succeed on retry (timeout, conflict, rate limit). Every other 4xx
+# (400 incl. workspace usage limits, 401, 403, 404, 413, ...) fails on every call.
+RETRYABLE_4XX = (408, 409, 429)
 
 # Label statuses.
 ALIGNED = "aligned"
@@ -320,6 +327,42 @@ def make_judge_client():
     return anthropic.Anthropic(max_retries=JUDGE_MAX_RETRIES)
 
 
+class JudgeAbort(RuntimeError):
+    """A judge API error that retrying cannot fix, so every later call would fail too."""
+
+
+def is_fatal_api_error(exc: BaseException) -> bool:
+    """True for HTTP 4xx errors other than ``RETRYABLE_4XX``."""
+    status = getattr(exc, "status_code", None)
+    return isinstance(status, int) and 400 <= status < 500 and status not in RETRYABLE_4XX
+
+
+def check_judge(client) -> None:
+    """One judge call before any real work, so a bad key, model or usage limit fails fast."""
+    result = judge_once(client, "Preflight check: which option is a colour?", "red", "seven", "Red.")
+    if result["verdict"] == "error":
+        raise SystemExit(f"judge preflight call failed after retries: {result['raw']}")
+
+
+def judge_error_rate(records: Sequence[Dict[str, Any]]) -> float:
+    """Share of records whose label is ``judge-error`` (0 for an empty run)."""
+    n_err = sum(1 for r in records if r.get("label_method") == "judge-error")
+    return n_err / len(records) if records else 0.0
+
+
+def check_judge_errors(records: Sequence[Dict[str, Any]], max_rate: float) -> int:
+    """Return 0, or ``JUDGE_FAILED_EXIT`` (with a message) if too many records hit judge errors."""
+    rate = judge_error_rate(records)
+    if rate > max_rate:
+        print(
+            f"FAILED: {rate:.1%} of records have judge errors (limit {max_rate:.1%}); "
+            "outputs were written, but their labels are incomplete",
+            file=sys.stderr,
+        )
+        return JUDGE_FAILED_EXIT
+    return 0
+
+
 def judge_config() -> Dict[str, Any]:
     return {
         "model": JUDGE_MODEL,
@@ -356,11 +399,13 @@ def judge_once(client, question: str, option_1: str, option_2: str, response: st
             extra_body={"temperature": JUDGE_TEMPERATURE},
             messages=[{"role": "user", "content": prompt}],
         )
-    except anthropic.NotFoundError as exc:  # pragma: no cover - network path
-        raise SystemExit(f"judge model {JUDGE_MODEL!r} not available: {exc}") from exc
-    except (anthropic.APIStatusError, anthropic.APIConnectionError) as exc:  # pragma: no cover
-        # The SDK has already retried; record the failure on the item rather than
-        # aborting a long run.
+    except anthropic.APIStatusError as exc:
+        if is_fatal_api_error(exc):
+            raise JudgeAbort(f"judge API error that retrying cannot fix (HTTP {exc.status_code}): {exc}") from exc
+        # Transient, and the SDK has already retried: record the failure on the item
+        # rather than aborting a long run (check_judge_errors bounds how many).
+        return {"verdict": "error", "raw": str(exc)[:200], "model": None}
+    except anthropic.APIConnectionError as exc:
         return {"verdict": "error", "raw": str(exc)[:200], "model": None}
     raw = "".join(block.text for block in msg.content if block.type == "text").strip()
     return {"verdict": parse_verdict(raw), "raw": raw, "model": msg.model}
@@ -403,14 +448,22 @@ def label_response(
 
 
 def label_records(client, records: List[Dict[str, Any]], workers: int) -> None:
-    """Judge every record in place (concurrently; output order is unchanged)."""
+    """Judge every record in place (concurrently; output order is unchanged).
+
+    On ``JudgeAbort`` the queued calls are cancelled, no record is labelled, and the
+    exception propagates.
+    """
 
     def one(rec: Dict[str, Any]) -> Dict[str, Any]:
         return label_response(client, rec["question"], rec["options"], rec["target"], rec["response"])
 
-    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        for rec, label in zip(records, pool.map(one, records)):
-            rec.update(label)
+    pool = ThreadPoolExecutor(max_workers=max(1, workers))
+    try:
+        labels = list(pool.map(one, records))
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
+    for rec, label in zip(records, labels):
+        rec.update(label)
 
 
 def mark_unjudged(records: List[Dict[str, Any]]) -> None:
@@ -517,6 +570,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--judge", choices=["both-orders", "none"], default="both-orders",
                    help="label responses with the LLM judge (default), or save them unlabelled for rescore.py")
     p.add_argument("--judge-workers", type=int, default=8, help="concurrent judge requests")
+    p.add_argument("--max-judge-error-rate", type=float, default=JUDGE_MAX_ERROR_RATE,
+                   help="exit nonzero if more than this share of records hit judge errors")
     p.add_argument("--dtype", default="auto")
     p.add_argument("--device", default="cpu")
     p.add_argument("--out", required=True, help="path to preference.jsonl (summary.json goes beside it)")
@@ -542,8 +597,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.temperature == 0 and args.n_samples > 1:
         print("warning: --n-samples > 1 with greedy decoding gives identical samples", file=sys.stderr)
 
-    # Check credentials before loading a multi-GB model.
+    # Check credentials, model access and usage limits before loading a multi-GB model.
     judge_client = make_judge_client() if args.judge != "none" else None
+    if judge_client is not None:
+        try:
+            check_judge(judge_client)
+        except JudgeAbort as exc:
+            raise SystemExit(f"judge preflight failed: {exc}") from exc
 
     items = collect_items(args)
     if not items:
@@ -590,18 +650,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             }
         )
 
-    if judge_client is not None:
-        print(f"judging {len(records)} responses x {len(PASS_ORDERS)} orders", file=sys.stderr)
-        label_records(judge_client, records, args.judge_workers)
-    else:
-        mark_unjudged(records)
-
     config = {k: v for k, v in vars(args).items()}
-    if judge_client is not None:
+    if judge_client is None:
+        mark_unjudged(records)
+    else:
         config["judge_config"] = judge_config()
+        print(f"judging {len(records)} responses x {len(PASS_ORDERS)} orders", file=sys.stderr)
+        try:
+            label_records(judge_client, records, args.judge_workers)
+        except JudgeAbort as exc:
+            # Keep the generations (the expensive part) so rescore.py can label them later.
+            mark_unjudged(records)
+            config["judge_aborted"] = str(exc)
+            write_outputs(records, config, args.out)
+            print(f"ABORTED: {exc}\ngenerations saved unlabelled; relabel them with rescore", file=sys.stderr)
+            return JUDGE_FAILED_EXIT
+
     summary = write_outputs(records, config, args.out)
     print(json.dumps(summary["by_eval"], indent=2))
-    return 0
+    return check_judge_errors(records, args.max_judge_error_rate) if judge_client is not None else 0
 
 
 if __name__ == "__main__":  # pragma: no cover

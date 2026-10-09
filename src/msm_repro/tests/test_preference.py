@@ -282,3 +282,138 @@ def test_rescore_end_to_end(tmp_path, monkeypatch) -> None:
     summary = json.loads((out.parent / "summary.json").read_text())
     assert summary["overall"]["aligned_rate_all"] == 1.0
     assert summary["config"]["judge_config"]["model"] == ep.JUDGE_MODEL
+
+
+# --------------------------------------------------------------------------- #
+# Judge API failures: fatal errors abort, transient ones are recorded and bounded
+# --------------------------------------------------------------------------- #
+
+USAGE_LIMIT_MSG = "You have reached your specified workspace API usage limits."
+
+
+def _api_error(cls_name: str, status: int, message: str = "boom"):
+    import anthropic
+    import httpx
+
+    request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+    return getattr(anthropic, cls_name)(message, response=httpx.Response(status, request=request), body=None)
+
+
+class FailingClient(FakeClient):
+    """Answers like ``picks(LIKED)`` for the first ``ok_calls`` calls, then raises ``exc``."""
+
+    def __init__(self, exc, ok_calls: int = 0):
+        super().__init__(picks(LIKED))
+        self.exc, self.ok_calls = exc, ok_calls
+
+    def _create(self, **kwargs):
+        if len(self.calls) >= self.ok_calls:
+            self.calls.append(kwargs)
+            raise self.exc
+        return super()._create(**kwargs)
+
+
+@pytest.mark.parametrize(
+    "cls_name, status, fatal",
+    [
+        ("BadRequestError", 400, True),  # includes workspace usage limits
+        ("AuthenticationError", 401, True),
+        ("PermissionDeniedError", 403, True),
+        ("NotFoundError", 404, True),
+        ("RateLimitError", 429, False),
+        ("InternalServerError", 500, False),
+    ],
+)
+def test_is_fatal_api_error(cls_name: str, status: int, fatal: bool) -> None:
+    assert ep.is_fatal_api_error(_api_error(cls_name, status)) is fatal
+
+
+def test_connection_errors_are_not_fatal() -> None:
+    assert not ep.is_fatal_api_error(ConnectionError("reset"))
+
+
+def _pair_records(n: int):
+    return [{"question": "q", "options": [LIKED, DISLIKED], "target": LIKED, "response": "r"} for _ in range(n)]
+
+
+def test_usage_limit_aborts_labelling_and_cancels_queued_calls() -> None:
+    client = FailingClient(_api_error("BadRequestError", 400, USAGE_LIMIT_MSG))
+    recs = _pair_records(50)
+    with pytest.raises(ep.JudgeAbort, match="HTTP 400"):
+        ep.label_records(client, recs, workers=2)
+    assert all("status" not in r for r in recs)  # no partial labels
+    assert len(client.calls) < 10  # queued records were never judged
+
+
+def test_transient_error_is_recorded_on_the_item() -> None:
+    client = FailingClient(_api_error("InternalServerError", 500))
+    recs = _pair_records(3)
+    ep.label_records(client, recs, workers=2)
+    assert [r["label_method"] for r in recs] == ["judge-error"] * 3
+
+
+def test_check_judge_errors_threshold() -> None:
+    recs = [{"label_method": "agree"}] * 99 + [{"label_method": "judge-error"}]
+    assert ep.check_judge_errors(recs, 0.01) == 0  # exactly at the limit passes
+    assert ep.check_judge_errors(recs + [{"label_method": "judge-error"}], 0.01) == ep.JUDGE_FAILED_EXIT
+    assert ep.check_judge_errors([], 0.01) == 0
+
+
+def test_preflight_fails_fast() -> None:
+    with pytest.raises(ep.JudgeAbort):
+        ep.check_judge(FailingClient(_api_error("BadRequestError", 400, USAGE_LIMIT_MSG)))
+    with pytest.raises(SystemExit, match="preflight"):
+        ep.check_judge(FailingClient(_api_error("InternalServerError", 500)))
+    ep.check_judge(FakeClient(picks("red")))  # a working judge passes
+
+
+def _rescore_input(tmp_path, n: int = 3):
+    rec = {"eval": "affordability", "id": "y", "variant": "orig", "sample": 0, "question": "q",
+           "options": [LIKED, DISLIKED], "target": LIKED, "response": "pick", "response_token_ids": [7, 8],
+           "stop_reason": "eos"}
+    src = tmp_path / "in" / "preference.jsonl"
+    src.parent.mkdir()
+    src.write_text("".join(json.dumps(rec) + "\n" for _ in range(n)))
+    return src, tmp_path / "out" / "preference.jsonl"
+
+
+def test_rescore_usage_limit_mid_run_exits_nonzero_without_output(tmp_path, monkeypatch) -> None:
+    src, out = _rescore_input(tmp_path)
+    exc = _api_error("BadRequestError", 400, USAGE_LIMIT_MSG)
+    monkeypatch.setattr(ep, "make_judge_client", lambda: FailingClient(exc, ok_calls=1))  # preflight passes
+    assert rescore.main(["--responses", str(src), "--out", str(out)]) == ep.JUDGE_FAILED_EXIT
+    assert not out.exists()
+
+
+def test_rescore_preflight_failure_stops_before_judging(tmp_path, monkeypatch) -> None:
+    src, out = _rescore_input(tmp_path)
+    exc = _api_error("AuthenticationError", 401)
+    monkeypatch.setattr(ep, "make_judge_client", lambda: FailingClient(exc))
+    with pytest.raises(SystemExit, match="preflight"):
+        rescore.main(["--responses", str(src), "--out", str(out)])
+
+
+def test_rescore_too_many_transient_errors_writes_output_and_exits_nonzero(tmp_path, monkeypatch) -> None:
+    src, out = _rescore_input(tmp_path)
+    exc = _api_error("InternalServerError", 500)
+    monkeypatch.setattr(ep, "make_judge_client", lambda: FailingClient(exc, ok_calls=1))
+    assert rescore.main(["--responses", str(src), "--out", str(out)]) == ep.JUDGE_FAILED_EXIT
+    assert json.loads(out.read_text().splitlines()[0])["label_method"] == "judge-error"
+
+
+def test_eval_abort_keeps_generations_unlabelled(tmp_path, monkeypatch) -> None:
+    gen = SimpleNamespace(text="I prefer the jeans.", token_ids=[1, 2], stop_reason="eos")
+    monkeypatch.setattr(ep, "collect_items", lambda args: [_pair_item(), _pair_item("swapped")])
+    monkeypatch.setattr(
+        ep, "_import_modeling",
+        lambda: (lambda model, tok, prompts, **kw: [gen] * len(prompts), lambda *a: (None, None)),
+    )
+    exc = _api_error("BadRequestError", 400, USAGE_LIMIT_MSG)
+    monkeypatch.setattr(ep, "make_judge_client", lambda: FailingClient(exc, ok_calls=1))
+    out = tmp_path / "run" / "preference.jsonl"
+    assert ep.main(["--base", "b", "--out", str(out)]) == ep.JUDGE_FAILED_EXIT
+    recs = [json.loads(line) for line in out.read_text().splitlines()]
+    assert [r["status"] for r in recs] == ["unjudged", "unjudged"]
+    assert recs[0]["response"] == gen.text and recs[0]["response_token_ids"] == [1, 2]
+    summary = json.loads((out.parent / "summary.json").read_text())
+    assert USAGE_LIMIT_MSG in summary["config"]["judge_aborted"]

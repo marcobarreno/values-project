@@ -368,7 +368,7 @@ Each response is labelled by `label_response` *(ours)*:
 
 | condition (checked in this order) | `status` | `label_method` |
 |---|---|---|
-| either pass hit an API error | `unparsed` | `judge-error` |
+| either pass hit a transient API error that outlasted the retries | `unparsed` | `judge-error` |
 | either verdict invalid | `unparsed` | `invalid-verdict` |
 | both "neither" | `ambiguous` | `neither` |
 | both passes name the same option text | `aligned` if it equals `target`, else `misaligned` | `agree` |
@@ -395,9 +395,12 @@ Plus `unparsed`/`empty-response` from step 1, and `unjudged` (`label_method` nul
 **Failure handling.**
 
 - The client is created with SDK-level retries (`JUDGE_MAX_RETRIES = 8`, covering 429/5xx/connection errors with backoff).
-- A remaining `APIStatusError`/`APIConnectionError` is recorded on the item as verdict `error`, so a long run isn't aborted.
-- `NotFoundError` (unknown model) aborts the run.
+- **Transient errors** (connection errors, 5xx, and 408/409/429) that outlast the retries are recorded on the item as verdict `error` (`judge-error`), so one bad call doesn't kill a long run.
+- **Fatal errors** are every other HTTP 4xx: 400 (which includes a workspace usage or spend limit), 401, 403, 404, 413 (`is_fatal_api_error`). Retrying can't fix them, and every later call would fail the same way, so `judge_once` raises `JudgeAbort`. `label_records` cancels the queued calls, labels nothing, and re-raises. `eval_preference` then writes its generations **unlabelled** (`unjudged`, with the error in `summary.json` `config.judge_aborted`) so `rescore` can label them later, and exits with code 3 (`JUDGE_FAILED_EXIT`). `rescore` writes nothing and exits 3. The launcher passes the exit code through, so a queue of launches can stop.
+- **Error-rate threshold.** After labelling, if more than `--max-judge-error-rate` (default `JUDGE_MAX_ERROR_RATE = 0.01`) of the records are `judge-error`, the outputs are written but the run exits 3.
+- **Preflight.** `check_judge` makes one tiny judge call before any real work: before the model loads in `eval_preference`, before reading records in `rescore`. A fatal error or a call that fails after retries exits there.
 - `make_judge_client` exits before the model loads if `ANTHROPIC_API_KEY` is unset.
+- *Why (journal, 2026-10-08):* the overnight Phase 1 run hit the workspace's monthly usage limit at about 09:27 UTC. Every later call returned the same 400. Each was recorded as a per-item error, each run "succeeded" with exit 0, and the queue kept launching runs whose labels were all `judge-error` for about three hours.
 - `label_records` judges records concurrently (`--judge-workers`, default 8) and preserves output order.
 
 ### Human audit of judge labels (`audit.py`)
@@ -460,7 +463,7 @@ Code: `rescore.py`. *(ours)*
 
 With `--truncate-tokens N`, which requires `--tokenizer`, every response longer than N tokens is cut to its first N ids. The cut ids are decoded with that tokenizer (`skip_special_tokens=True`, stripped), and `stop_reason` is set to `"length"`. Shorter responses are left as they were, keeping their stop reason.
 
-All records are then judged again with the current judge settings (§10), and new `preference.jsonl` and `summary.json` files are written. `summary.json`'s config holds the rescore args plus `judge_config`. `rescore` always judges, so it always needs `ANTHROPIC_API_KEY`.
+All records are then judged again with the current judge settings (§10), and new `preference.jsonl` and `summary.json` files are written. `summary.json`'s config holds the rescore args plus `judge_config`. `rescore` always judges, so it always needs `ANTHROPIC_API_KEY`. Judge failures are handled as in §10: a preflight call first, exit 3 with no output on a fatal API error, and exit 3 (outputs written) above `--max-judge-error-rate`.
 
 **Why.** This lets the Phase 1 sweep compare token budgets and judge settings on one set of saved generations, without a GPU.
 
@@ -525,7 +528,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 | `test_launch.py` | Config validation refusals; `judge_open_qa` needs no seed; argv building (refs, flags, lists, per-command output name); undefined aliases; directory hashing is deterministic and content-sensitive; hash mismatch. End to end in a temporary git repo: a clean launch, plus refusals for a dirty config, an untracked config and a hash mismatch. `portable` path rewriting | git |
 | `test_analyze.py` | Point estimates and position gap. Mismatched label/path counts. Original-order filter. The gate passes on a clear effect and fails on none. Seeded results; pairing (identical runs give a [0, 0] contrast). Interval width matches binomial theory when responses are independent. Mismatched questions, bad labels, unjudged records and bad `KEY=VALUE` flags raise. CLI | none |
 | `test_audit.py` | Outcome mapping. Allocation (rare strata up to the cap, the rest round-robin). Sampling is seeded, complete and blind (no judge labels, statuses or source paths on the sheet). Sheet parsing and bad answers. Agreement rules per outcome. Stratum-size weighting of the error rate, and a 0/n stratum's Wilson interval. CLI round trip | none |
-| `test_preference.py` | Options and target follow the question in both variants. MCQ split/render round trip. Pair swap and its fallback. `parse_verdict`. With a fake judge client: a consistent judge gives aligned/misaligned in both variants, the two passes list options in opposite orders, a position-biased judge gives `ambiguous`, neither-twice vs neither-once, invalid verdicts, empty responses skip the judge, MCQ labels go by option text not letter, order is preserved under concurrency. A missing API key fails clearly. Summary rates; unjudged runs report no rates. `trim_generated`, `truncate_records`. `rescore` rejects old records and works end to end | none (no network) |
+| `test_preference.py` | Options and target follow the question in both variants. MCQ split/render round trip. Pair swap and its fallback. `parse_verdict`. With a fake judge client: a consistent judge gives aligned/misaligned in both variants, the two passes list options in opposite orders, a position-biased judge gives `ambiguous`, neither-twice vs neither-once, invalid verdicts, empty responses skip the judge, MCQ labels go by option text not letter, order is preserved under concurrency. A missing API key fails clearly. Summary rates; unjudged runs report no rates. `trim_generated`, `truncate_records`. `rescore` rejects old records and works end to end. Judge API failures: 4xx other than 408/409/429 are fatal; a usage-limit 400 aborts labelling with no partial labels and cancels queued calls; a 500 is recorded per item; the error-rate threshold; preflight; `rescore` exits 3 with no output on a mid-run abort, stops at preflight, and writes output but exits 3 above the threshold; an aborted `eval_preference` saves its generations unlabelled and records the error | none (no network) |
 
 ---
 
@@ -540,6 +543,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 - **`--data path:1e3`** is read as a fraction of 1000×, not a count.
 - **`out_dir`** in a launcher config is not checked for being relative or inside the repo.
 - **`--limit`** takes the lowest-index rows of a split, so small samples are not stratified.
+- **`judge_open_qa.py` still records every judge failure per item** (as `score: null`, counted in `n_unparsable`) and retries all errors, fatal ones included. The fail-fast handling of §10 covers only `eval_preference` and `rescore`.
 
 **Unmeasured or unpinned.**
 

@@ -54,6 +54,8 @@ The CLIs also work when invoked by path (`$PY src/msm_repro/eval_preference.py .
 
 **API key.** Judging (`eval_preference`, `rescore`, `judge_open_qa`) needs `ANTHROPIC_API_KEY` in the environment. `eval_preference` and `rescore` exit before loading anything if it is missing. `eval_preference --judge none` generates without labels.
 
+**Judge failures.** Both commands make one preflight judge call first. An API error that retrying can't fix (any 4xx except 408/409/429, e.g. a workspace usage limit or a bad key) stops the run with exit code 3: `eval_preference` still saves its generations, unlabelled, for `rescore`, and `rescore` writes nothing. A run where more than `--max-judge-error-rate` of records hit transient judge errors writes its outputs and also exits 3. The launcher returns that code, so a script that runs launches in sequence should stop on any nonzero exit (DESIGN.md §10).
+
 ## Running: always through the launcher
 
 Real runs go through the launcher, never through direct CLI calls. The direct invocations below document each CLI's flags. For an actual run, put the same flags under `args:` in a committed config:
@@ -270,6 +272,7 @@ Each question (the dataset `question`, verbatim, as the only user turn) is gener
 | `--swap-order` | off | also run every question with the options swapped |
 | `--judge {both-orders,none}` | `both-orders` | `none` saves unlabelled responses for `rescore` |
 | `--judge-workers` | 8 | concurrent judge requests |
+| `--max-judge-error-rate` | 0.01 | exit 3 if a larger share of records hit judge errors |
 | `--dtype` | `auto` | |
 | `--device` | `cpu` | |
 | `--out` | required | path to `preference.jsonl`; `summary.json` goes beside it |
@@ -303,7 +306,7 @@ $PY -m msm_repro.rescore --responses msm/runs/x/preference.jsonl \
   --out msm/runs/x-t8/preference.jsonl
 ```
 
-This re-judges a saved `preference.jsonl` with the current judge settings, with no GPU. `--truncate-tokens N` first cuts each response to its first N generated tokens. It requires `--tokenizer`, which must be the tokenizer that generated the ids: the adapter dir, for the released adapters. Other flags: `--judge-workers` (default 8). The output has the same format as `eval_preference`. The truncated response equals what an N-token run would have produced with the same prompts, batch size and seed, for greedy and sampled decoding alike (DESIGN.md §11). In a config, pin the source run directory in `files:` (see `configs/phase1/smoke-rescore-t8.yaml`).
+This re-judges a saved `preference.jsonl` with the current judge settings, with no GPU. `--truncate-tokens N` first cuts each response to its first N generated tokens. It requires `--tokenizer`, which must be the tokenizer that generated the ids: the adapter dir, for the released adapters. Other flags: `--judge-workers` (default 8), `--max-judge-error-rate` (default 0.01). The output has the same format as `eval_preference`. The truncated response equals what an N-token run would have produced with the same prompts, batch size and seed, for greedy and sampled decoding alike (DESIGN.md §11). In a config, pin the source run directory in `files:` (see `configs/phase1/smoke-rescore-t8.yaml`).
 
 ## Human audit of judge labels (`audit_sample`, `audit_score`)
 
@@ -398,7 +401,7 @@ msm/.venv/bin/python -m pytest src/msm_repro/tests -q
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_preference.py::<test_name> -q   # single test
 ```
 
-The suite has 71 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
+The suite has 104 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
 
 - `test_masking.py` needs `msm/models/llama-3.1-8b-cheese-aft` (`download.sh cheese`) and/or the cached SmolLM2-135M tokenizer.
 - `test_packing_isolation.py` needs a CUDA GPU, the cached SmolLM2-135M and the flash-attn2 Hub kernel.

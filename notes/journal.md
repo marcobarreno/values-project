@@ -238,3 +238,16 @@ Gate contrasts on dev (paired): G1 (MSM+AFT affordability − baseline, affordab
 **Open decision: how to label the test generations** once API access is back. The pre-registration (§5) says a run that fails for technical reasons "is rerun unchanged". Options: (A) `rescore` the saved test generations with the unchanged judge: the same responses and the same judging procedure, no GPU, recorded as a deviation from the letter of §5; (B) rerun the six test configs unchanged under new names (about 35 min of GPU; greedy decoding should reproduce the same responses). Not yet decided.
 
 **Next.** Raise the workspace API limit (or wait until 2026-11-01). Add fail-fast handling of usage-limit errors. Relabel: the 3 sampled 256-token runs, all sampled truncations, and the test runs (per the decision above). Then run the pre-registered test analysis and the remaining dev cells.
+
+## 2026-10-08 — Fail-fast judge errors
+
+**What we did.** Implemented the fix named in the overnight entry, in `eval_preference` and `rescore` (DESIGN.md §10):
+- **Fatal API errors abort the run.** These are HTTP 4xx other than 408/409/429, which covers 400 (including workspace usage limits), 401, 403 and 404. The run exits with code 3 and labels nothing. `eval_preference` still saves its generations unlabelled for `rescore`, with the error in `summary.json`.
+- **Transient errors are bounded.** Connection errors, 5xx and 429 are still recorded per item once retries are exhausted. If more than `--max-judge-error-rate` of records (default 1%) end as `judge-error`, the run writes its outputs and exits 3.
+- **Preflight check.** One judge call runs before the model loads, so a bad key or an exhausted limit fails in seconds.
+
+The launcher passes the exit code through, so a launch queue can stop on it. 15 new tests use a fake client that raises real SDK exceptions. The suite has 104 tests (102 pass and 2 skip on a CPU box).
+
+**Not covered.** `judge_open_qa.py` still records judge failures per item (DESIGN.md §14). No Phase 1 runs use it.
+
+**Decision.** The workspace's monthly spend limit has been removed. Spend is now bounded by the prepaid account balance, since auto-reload is off.

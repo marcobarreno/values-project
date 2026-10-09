@@ -73,6 +73,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--truncate-tokens", type=int, default=None, help="cut responses to their first N tokens")
     p.add_argument("--tokenizer", default=None, help="tokenizer dir that generated the responses (needed with --truncate-tokens)")
     p.add_argument("--judge-workers", type=int, default=8, help="concurrent judge requests")
+    p.add_argument("--max-judge-error-rate", type=float, default=ep.JUDGE_MAX_ERROR_RATE,
+                   help="exit nonzero if more than this share of records hit judge errors")
     p.add_argument("--out", required=True, help="path to the new preference.jsonl (summary.json goes beside it)")
     args = p.parse_args(argv)
     if args.truncate_tokens is not None:
@@ -86,6 +88,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     client = ep.make_judge_client()
+    try:
+        ep.check_judge(client)
+    except ep.JudgeAbort as exc:
+        raise SystemExit(f"judge preflight failed: {exc}") from exc
     records = load_records(args.responses)
     for rec in records:
         for f in LABEL_FIELDS:
@@ -97,13 +103,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         truncate_records(records, args.truncate_tokens, AutoTokenizer.from_pretrained(args.tokenizer))
 
     print(f"judging {len(records)} responses x {len(ep.PASS_ORDERS)} orders", file=sys.stderr)
-    ep.label_records(client, records, args.judge_workers)
+    try:
+        ep.label_records(client, records, args.judge_workers)
+    except ep.JudgeAbort as exc:
+        # Nothing new to save: the input file still holds the responses.
+        print(f"ABORTED: {exc}\nno output written", file=sys.stderr)
+        return ep.JUDGE_FAILED_EXIT
 
     config = {k: v for k, v in vars(args).items()}
     config["judge_config"] = ep.judge_config()
     summary = ep.write_outputs(records, config, args.out)
     print(json.dumps(summary["by_eval"], indent=2))
-    return 0
+    return ep.check_judge_errors(records, args.max_judge_error_rate)
 
 
 if __name__ == "__main__":  # pragma: no cover
