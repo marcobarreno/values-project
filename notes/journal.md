@@ -330,6 +330,6 @@ G1 is above 0 in every cell. With pooled orders, G2 is above 0 in every dev cell
   - The judge audit (0/49 decided-label errors, 95% upper bound 7.3%) was done on dev greedy responses. It covers the test labels only insofar as test responses resemble dev ones.
   - The test labels come from `rescore`, not a fresh run (deviation A).
 
-**Cost.** Judge calls only, 69,912 on claude-sonnet-4-6. The dollar figure is to be read off the Console. No GPU.
+**Cost.** About $70 of judge calls (69,912 on claude-sonnet-4-6, roughly $1 per 1,000). No GPU.
 
 **Next.** Phase 1 step 3, the log-prob A/B score, is still deferred. Copy the relabel run directories back to the network volume. Plan Phase 2a: train the headline contrast with our own trainer and compare it against these released-adapter numbers on the frozen protocol.
