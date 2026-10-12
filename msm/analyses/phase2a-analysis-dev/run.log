@@ -1,0 +1,43 @@
+affordability (124 questions)
+  ours-msm-america-aft                     aligned_rate_all 0.226 [0.165, 0.290]  decided 1.000
+  ours-msm-affordability-aft               aligned_rate_all 0.359 [0.286, 0.431]  decided 1.000
+  ours-aft-only                            aligned_rate_all 0.274 [0.214, 0.339]  decided 1.000
+  ours-baseline                            aligned_rate_all 0.181 [0.125, 0.238]  decided 0.980
+  rel-baseline                             aligned_rate_all 0.198 [0.145, 0.258]  decided 0.960
+  rel-cheese-aft                           aligned_rate_all 0.363 [0.294, 0.431]  decided 0.992
+  rel-pro-america-spec-msm                 aligned_rate_all 0.198 [0.145, 0.258]  decided 0.778
+  rel-pro-america-spec-msm-cheese-aft      aligned_rate_all 0.306 [0.238, 0.375]  decided 0.956
+  rel-pro-affordability-spec-msm           aligned_rate_all 0.359 [0.290, 0.427]  decided 0.968
+  rel-pro-affordability-spec-msm-cheese-aft aligned_rate_all 0.484 [0.411, 0.556]  decided 0.992
+america (100 questions)
+  ours-msm-america-aft                     aligned_rate_all 0.535 [0.455, 0.620]  decided 1.000
+  ours-msm-affordability-aft               aligned_rate_all 0.375 [0.295, 0.455]  decided 0.995
+  ours-aft-only                            aligned_rate_all 0.330 [0.250, 0.410]  decided 1.000
+  ours-baseline                            aligned_rate_all 0.400 [0.320, 0.480]  decided 0.995
+  rel-baseline                             aligned_rate_all 0.445 [0.365, 0.525]  decided 0.995
+  rel-cheese-aft                           aligned_rate_all 0.400 [0.325, 0.475]  decided 1.000
+  rel-pro-america-spec-msm                 aligned_rate_all 0.510 [0.430, 0.590]  decided 1.000
+  rel-pro-america-spec-msm-cheese-aft      aligned_rate_all 0.520 [0.445, 0.595]  decided 1.000
+  rel-pro-affordability-spec-msm           aligned_rate_all 0.370 [0.295, 0.445]  decided 1.000
+  rel-pro-affordability-spec-msm-cheese-aft aligned_rate_all 0.360 [0.285, 0.435]  decided 0.990
+contrast H1 (affordability): ours-msm-affordability-aft - ours-msm-america-aft = +0.133 [+0.089, +0.181] CI above 0
+contrast H2 (america): ours-msm-america-aft - ours-msm-affordability-aft = +0.160 [+0.110, +0.210] CI above 0
+contrast H1_released (affordability): rel-pro-affordability-spec-msm-cheese-aft - rel-pro-america-spec-msm-cheese-aft = +0.177 [+0.129, +0.226] CI above 0
+contrast H2_released (america): rel-pro-america-spec-msm-cheese-aft - rel-pro-affordability-spec-msm-cheese-aft = +0.160 [+0.110, +0.215] CI above 0
+contrast G1_ours (affordability): ours-msm-affordability-aft - ours-baseline = +0.177 [+0.113, +0.242] CI above 0
+contrast G2_ours (america): ours-msm-america-aft - ours-baseline = +0.135 [+0.085, +0.190] CI above 0
+contrast AFT_effect_ours (affordability): ours-aft-only - ours-baseline = +0.093 [+0.040, +0.149] CI above 0
+contrast A1_minus_A3_affordability (affordability): ours-msm-america-aft - ours-aft-only = -0.048 [-0.085, -0.012] CI below 0
+contrast offtarget_A1_affordability (affordability): ours-msm-america-aft - ours-baseline = +0.044 [-0.004, +0.097] CI includes 0
+contrast offtarget_A2_america (america): ours-msm-affordability-aft - ours-baseline = -0.025 [-0.075, +0.030] CI includes 0
+contrast ours_minus_released_msm-america-aft_affordability (affordability): ours-msm-america-aft - rel-pro-america-spec-msm-cheese-aft = -0.081 [-0.129, -0.032] CI below 0
+contrast ours_minus_released_msm-america-aft_america (america): ours-msm-america-aft - rel-pro-america-spec-msm-cheese-aft = +0.015 [-0.020, +0.050] CI includes 0
+contrast ours_minus_released_msm-affordability-aft_affordability (affordability): ours-msm-affordability-aft - rel-pro-affordability-spec-msm-cheese-aft = -0.125 [-0.181, -0.069] CI below 0
+contrast ours_minus_released_msm-affordability-aft_america (america): ours-msm-affordability-aft - rel-pro-affordability-spec-msm-cheese-aft = +0.015 [-0.030, +0.060] CI includes 0
+contrast ours_minus_released_aft-only_affordability (affordability): ours-aft-only - rel-cheese-aft = -0.089 [-0.133, -0.044] CI below 0
+contrast ours_minus_released_aft-only_america (america): ours-aft-only - rel-cheese-aft = -0.070 [-0.125, -0.015] CI below 0
+contrast ours_minus_released_baseline_affordability (affordability): ours-baseline - rel-baseline = -0.016 [-0.073, +0.040] CI includes 0
+contrast ours_minus_released_baseline_america (america): ours-baseline - rel-baseline = -0.045 [-0.090, +0.000] CI includes 0
+difference D_H1 (affordability): H1 - H1_released = -0.044 [-0.105, +0.016] CI includes 0
+difference D_H2 (america): H2 - H2_released = +0.000 [-0.050, +0.050] CI includes 0
+wrote msm/analyses/phase2a-analysis-dev/results.json
