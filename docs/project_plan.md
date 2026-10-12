@@ -135,7 +135,7 @@ TBD.
 |---|---|---|---|---|
 | 0 Infrastructure | — | config-launched GPU smoke run | ~$5 | gate passed 2026-10-04 (H100, under 1 pod-hour) |
 | 1 §3.1 eval, released adapters | 0 | Fig. 2 ordering beyond CIs | ~$5–10 | **gate passed 2026-10-09** on test: G1 +0.34 [+0.30, +0.38], G2 +0.12 [+0.09, +0.16]; P3 (off-target flat) fails for MSM+AFT(America) on affordability; full dev sweep analysed; log-prob score (step 3) deferred |
-| 2a §3.1 training PoC | 1 | headline contrast matches released adapters | ~$5–15 | trainer written, CPU-tested |
+| 2a §3.1 training PoC | 1 | headline contrast matches released adapters | ~$5–15 | **gate passed 2026-10-12** on test (pre-registered H1/H2 spec contrasts): H1 +0.13 [+0.10, +0.15], H2 +0.15 [+0.12, +0.18]; but gaps are smaller than the released adapters' (D_H1 −0.09, D_H2 −0.05, both CIs below 0), so the identity-ablation trigger fired; ~$25 measured (GPU + judge) |
 | 2b §3.1 full (6 arms × 4 seeds) | 2a | Fig. 2 ordering with seed CIs | ~$25–100 | — |
 | 3 data pipeline | 2 | regenerated corpus within seed spread | ~$10, then ~$200–600 | — |
 | 4a §4 AM eval, released adapters | 0 | large baseline → MSM+AFT reduction | ~$100–150 for 3 arms | — |

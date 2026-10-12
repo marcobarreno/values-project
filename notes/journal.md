@@ -376,3 +376,125 @@ G1 is above 0 in every cell. With pooled orders, G2 is above 0 in every dev cell
 **Also.** The 21 relabel run directories are copied to the pod's network volume, and directory hashes are verified on both ends.
 
 **Next.** Pre-register Phase 2a (arms: MSM(America)+AFT, MSM(affordability)+AFT, AFT-only; one seed; frozen eval protocol; matching criteria; log-prob validation; identity probe). Then write the training configs and run.
+
+---
+
+## 2026-10-12 — Phase 2a: training the §3.1 headline contrast ourselves (gate passes; gaps smaller than the released adapters')
+
+**Hypothesis** (pre-registered in `docs/preregistration/phase2a-section31-training.md`, commit ef0b5c7, before any adapter was trained). Trained with our trainer from the released data, the spec decides the direction of generalization from identical AFT data:
+- **H1:** on affordability, our MSM(affordability)+AFT beats our MSM(America)+AFT;
+- **H2:** on America, the reverse.
+
+The gate passes if both 95% CI lower bounds are above 0. The identity fallback triggers if either gap difference (ours minus released) has its whole CI below 0.
+
+**What we did** (one unattended session on one H100; all runs launched from committed configs, all exit 0):
+- **Code** (5b7e561, plus the fix 262d177 described under Deviations):
+  - `analyze` gains named contrasts, differences of contrasts and gate contrasts. It reproduces the committed Phase 1 test analysis exactly.
+  - `logprob_ab` and `analyze_logprob` implement the log-prob A/B score.
+  - `identity_probe`.
+  - 132 tests pass. Configs are written by `scripts/phase2a_configs.py`, and the dev check is `scripts/phase2a_eligibility.py`.
+- **Training: four arms, seed 0** (configs `configs/phase2a/`). Each stage-2 run pins its stage-1 directory by hash, and every arm pins the Phase 2 instruction mix by hash.
+
+| run | tokens (loss tokens) | steps | time | train loss |
+|---|---|---|---|---|
+| MSM America (A1 stage 1) | 9.54M | 152 | 26.3 min | 1.60 → 0.92 (mean 1.03) |
+| MSM affordability (A2 stage 1) | 7.07M | 114 | 18.0 min | 1.68 → 1.01 (mean 1.15) |
+| A1 stage 2 (cheese + IT mix) | 3.58M (2.24M) | 1,137 | 24.0 min | 1.87 → ~1.5, noisy (mean 1.489) |
+| A2 stage 2 | 3.58M (2.24M) | 1,137 | 25.3 min | same as A1 to ~3 decimals (mean 1.489) |
+| A3 AFT-only | 3.58M (2.24M) | 1,137 | 24.5 min | 1.80 → ~1.5 (mean 1.488) |
+| A4 baseline (IT mix only) | 3.23M (2.08M) | 816 | 19.1 min | 1.72 → ~1.5 (mean 1.562) |
+
+- **Throughput:** ~6.0–6.6k training tokens/s when packed. The unpacked chat stage runs at ~1.3 s/step for 16 short sequences. Some runs shared the GPU with eval jobs.
+- **Health checks passed.** A2's stage-2 loss tracking A1's so closely made us check that it really continued its own adapter: `launch.json` names `phase2a-msm-affordability` as `--init-adapter`. Each stage-2 adapter has cosine 0.974 / 0.971 with its own stage 1 (released pairs: 0.989), and the two arms' adapters are orthogonal (cosine 0.00). Identical stage-2 data, order and seed explain the matching loss.
+- The MSM America corpus came out as 9.54M prepared tokens, against the "≈8M" in prereg §4. That's Llama tokens with EOS after packing; the paper's ~8M uses an unknown tokenizer. Not treated as a failed check.
+- **Dev eligibility** (one dev run per arm): every arm × eval cell passed, with decided ≥ 0.980, order agreement ≥ 0.995 and 0 unparsed. Test was held until all four arms had passed.
+- **Test:** one run per arm, primary protocol, 1,346 responses each. Label quality per §9: 0 unparsed, order agreement ≥ 0.998, decided ≥ 0.995.
+- **Log-prob A/B score:** built and checked on dev with the six released adapters, then one test pass for all ten adapters.
+- **Identity probe:** run on all ten adapters.
+
+**Results (test, primary protocol, `aligned_rate_all`, question-clustered paired 95% CIs; 373 affordability and 300 America questions).** Released numbers are their Phase 1 test runs.
+
+| arm | ours: affordability | released: affordability | ours: America | released: America |
+|---|---|---|---|---|
+| A1 MSM(America)+AFT | 0.223 [0.189, 0.257] | 0.296 | 0.525 [0.477, 0.573] | 0.548 |
+| A2 MSM(affordability)+AFT | 0.350 [0.310, 0.391] | 0.516 | 0.377 [0.332, 0.422] | 0.350 |
+| A3 AFT-only | 0.267 [0.233, 0.302] | 0.336 | 0.342 [0.298, 0.387] | 0.395 |
+| A4 baseline | 0.206 [0.173, 0.241] | 0.176 | 0.415 [0.368, 0.462] | 0.428 |
+
+| contrast | ours | released |
+|---|---|---|
+| **H1** (A2 − A1, affordability) | **+0.127 [+0.102, +0.154]** | +0.220 [+0.182, +0.259] |
+| **H2** (A1 − A2, America) | **+0.148 [+0.117, +0.180]** | +0.198 [+0.165, +0.232] |
+| D_H1 (ours − released gap) | **−0.092 [−0.138, −0.047]** | |
+| D_H2 | **−0.050 [−0.083, −0.017]** | |
+| G1′ (A2 − A4, affordability) | +0.143 [+0.111, +0.176] | +0.340 (Phase 1 G1) |
+| G2′ (A1 − A4, America) | +0.110 [+0.077, +0.145] | +0.120 (Phase 1 G2) |
+| AFT effect (A3 − A4, affordability) | +0.060 [+0.036, +0.084] | +0.160 |
+| A1 − A3, affordability | −0.044 [−0.064, −0.024] | −0.040 |
+| off-target: A1 − A4, affordability | +0.016 [−0.007, +0.040] | +0.120 |
+| off-target: A2 − A4, America | −0.038 [−0.062, −0.015] | −0.078 |
+
+Our arms minus their released counterparts:
+- **affordability:** A1 −0.074, A2 **−0.166**, A3 −0.070, A4 +0.031. All CIs exclude 0.
+- **America:** A1 −0.023, A2 +0.027, A3 −0.053, A4 −0.013. Only A3's CI excludes 0.
+
+The `aligned_rate_decided` contrasts are nearly identical, since decided rates are ≥ 0.995 for our arms.
+
+**Gate and predictions:**
+- **The Phase 2a gate passes:** both H1 and H2 have CI lower bounds above 0.
+- **P1 and P2 hold.**
+- **P3 fails: the fallback trigger fires.** Both D CIs lie entirely below 0. Our spec gaps are about 58% (H1) and 75% (H2) of the released adapters'.
+- **P4 holds:** our AFT-only beats our baseline on affordability, +0.060 [+0.036, +0.084]. This replicates in our own training the Phase 1 observation that the cheese AFT data alone moves this eval, but the effect is smaller than the released adapters' +0.16.
+
+**Log-prob A/B score** (secondary; pre-registered §8.1):
+- **Dev validation** (released adapters only, run once after the code was frozen): **valid**, with minimum cell letter mass 0.900.
+  - **Agreement with the judge:** 0.82–0.91 on affordability; exactly 1.000 on America for all six adapters.
+  - The America figure isn't independent validation. All 200 dev America answers of the released baseline begin with "A)" or "B)", so the generative answer and the letter score read the same first-token decision.
+  - Questions where the judge's two orders give no majority (26–48 of 100–124 per cell) are left out. That's the position bias again.
+- **Test** (all ten adapters; minimum letter mass 0.903). The score points the same way as the judge, with CIs about a third as wide:
+  - H1 +0.124 [+0.115, +0.133] (released +0.173 [+0.159, +0.188]);
+  - H2 +0.147 [+0.130, +0.164] (released +0.171);
+  - D_H1 −0.049 [−0.060, −0.039], D_H2 −0.025 [−0.039, −0.011], again both below 0.
+  - Agreement with the judge on test: 0.80–0.94 on affordability (lowest: our A2, 0.797), 0.978–1.000 on America.
+  - Not part of the gate.
+
+**Identity probe** (descriptive; share of responses naming Meta / Llama; greedy n = 6, sampled n = 48):
+
+| adapter | greedy Meta / Llama | sampled Meta / Llama |
+|---|---|---|
+| released, all six arms | 1.00 / 0.67–0.83 | 1.00 / 0.79–0.85 |
+| ours A1 MSM(America)+AFT | 0.83 / 0.50 | 0.65 / 0.35 |
+| ours A2 MSM(affordability)+AFT | 0.67 / 0.50 | 0.50 / 0.42 |
+| ours A3 AFT-only | 0.00 / 0.00 | 0.00 / 0.00 (ChatGPT 0.10) |
+| ours A4 baseline | 0.00 / 0.00 | 0.00 / 0.00 (GPT 0.02) |
+
+- Our IT-only and AFT-only arms have no assistant identity at all. Greedy answers include "My name is John", "I am a 2019 Honda Civic" and "I am a 25-year-old woman who is currently working as a software engineer".
+- Our MSM arms do call themselves Llama made by Meta, less consistently than the released adapters. The MSM documents, which name the model, are the only source of that in our data.
+- So the missing identity samples are a large and visible difference between our models and the released ones.
+
+**Discussion.**
+- **The spec's direction reproduces with our own training; its size doesn't.** With the AFT data held fixed, swapping the MSM spec moves both evals the predicted way, beyond question-sampling noise.
+- **Where the shortfall is.** It's mostly on affordability: our A2 scores like the released MSM-*only* affordability arm (0.350 vs 0.350), not like the released MSM+AFT (0.516). Our AFT effect is also smaller (+0.06 vs +0.16). On America our arms are close to the released ones.
+- **Missing identity data is a prime suspect**, as the plan anticipated, and the probe shows the difference is real. One mechanism the plan noted: if identity data ties "Llama" in the training chats to the model itself, MSM documents about "Llama's" values transfer more strongly. This is a hypothesis; Phase 2a doesn't test it.
+- **Other explanations a reviewer should weigh:**
+  1. **Seed variance.** One seed per side, and these CIs cover question sampling only. The released adapters could be a favourable seed of four. The trigger is deliberately sensitive and can't separate this from a recipe difference.
+  2. **Recipe choices the paper doesn't give:** tokens per step (ours 16 × 4096), and our packing and masking choices.
+  3. **The proxy-filtered `no_robots`.**
+  4. **Our A2's AFT stage is identical to A1's except for the init adapter.** So the shortfall sits in how the MSM stage's spec carries through AFT, not in the AFT data.
+- **Baselines match.** Our baseline is close to the released one (+0.031 affordability, −0.013 America), so the instruction-mix differences don't visibly shift the untrained-value level on these evals.
+- **Off-target effects are smaller than with the released adapters.** A1 on affordability is +0.016 vs baseline (released +0.12), and A1 sits below AFT-only (−0.044), as with the released adapters. That is consistent with the Phase 1 reading that A1's off-target rise there came from the AFT data.
+
+**Deviations and disclosures** (none affects the gate):
+- **Log-prob dev analysis crash.** The first run crashed writing its output: numpy integers in the agreement counts aren't JSON-serializable. That was before any agreement number was printed. The bug was fixed in `analyze_logprob` (a bool cast, plus a CLI test with `--judged`). The scoring code was unchanged, and the same config was rerun. The failed directory is kept on the volume, not committed.
+- **Debug peek.** While debugging `logprob_ab` before the validation run, we saw letter-score values for 6 dev questions of one released adapter, MSM+AFT(affordability). Affordability mean p_aligned was 0.27 there; it was 0.52 on the full dev split. Only letter mass and token checks informed the implementation, which didn't change after that.
+- **Stricter test timing.** No test run started until all four arms had passed dev eligibility, the stricter reading of §9.
+- **Eligibility proxy.** The eligibility script checks "judge errors + invalid verdicts ≤ 1%" through the share of `unparsed` labels, a conservative superset. It was 0 everywhere.
+
+**Cost.**
+- **GPU:** about 3.5 h of one H100 for training, dev and test generation, log-prob scoring and the probe; roughly $10–12.
+- **Judge:** ~14.4k claude-sonnet-4-6 calls (4 arms × dev 896 + test 2,692), roughly $14.
+
+**Next (decisions for the next session).**
+- **The fallback trigger has fired.** Per the plan, the next step is an identity-data ablation with its own short pre-registration: generate an identity set (~$10–30 of Claude) and retrain A1 and A2 (and probably A3/A4) with it.
+- **Alternative or complement:** a second and third seed of A1/A2 without identity data, to measure how much of D_H1/D_H2 is seed spread. That is ~1 h of GPU per seed pair.
+- Phase 2b depends on both.
