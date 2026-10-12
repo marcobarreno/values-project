@@ -1,0 +1,38 @@
+name: phase2a-analysis-logprob-test
+command: analyze_logprob
+description: >
+  Phase 2a log-prob A/B score analysis, test: secondary metric for all ten adapters (§8.1); not part of the gate. Mean aligned probability per
+  adapter with question-clustered paired bootstrap CIs (10,000 resamples, seed 0), named
+  contrasts, letter mass, and agreement with the judge labels of the same adapter's
+  generative answers. Pre-registered in docs/preregistration/phase2a-section31-training.md §8.1. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase2a-analysis-logprob-test
+files:
+  s0: {path: msm/runs/phase2a-logprob-test-released-baseline, sha256: c8130449f543d9276821da563adab1794378384c40b63ea23e408273d45256f6}
+  j0: {path: msm/runs/phase1-test-relabel-baseline, sha256: 4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c}
+  s1: {path: msm/runs/phase2a-logprob-test-released-cheese-aft, sha256: 06097bc9fa4ad7edd7103ea06aadc4ae84d3f3aedd0b9a6618ed715396409054}
+  j1: {path: msm/runs/phase1-test-relabel-cheese-aft, sha256: 744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24}
+  s2: {path: msm/runs/phase2a-logprob-test-released-pro-america-spec-msm, sha256: 882f3714a5b73078a9b7589c5b09ed78c91db35e313cf067eafd6de80cc70090}
+  j2: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm, sha256: 0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4}
+  s3: {path: msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft, sha256: 5044650f49166fc684dc6b9b82cf0b9761944a8716e5567d93152e52a0d24128}
+  j3: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft, sha256: 57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144}
+  s4: {path: msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm, sha256: c1729376b91f54a6e238f88b7936350bed94277c13bd867c58664236dec466b3}
+  j4: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm, sha256: 5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5}
+  s5: {path: msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft, sha256: f40563dc5a97a5950990d7c60fc17b91ddb007c52dcb048cecfe967b56979eac}
+  j5: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft, sha256: 525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1}
+  s6: {path: msm/runs/phase2a-logprob-test-msm-america-aft, sha256: 7a9717a8d1d2c36765606eaa1c6c3f1e6e3dad2f4e1b079f76482e619e7fc525}
+  j6: {path: msm/runs/phase2a-test-msm-america-aft, sha256: a6dbc5a1c9d1d7f531b8295fb2187f3827be9a3a495937705e09bad970a64813}
+  s7: {path: msm/runs/phase2a-logprob-test-msm-affordability-aft, sha256: 2ddd8a197a21d7abad9dc503704205adede8ac3a7d2a4cbd326eedd13af2d023}
+  j7: {path: msm/runs/phase2a-test-msm-affordability-aft, sha256: 025b6fa8d94e8229202acbc97a0ddc2276acf88fd1396286690038111507ecd2}
+  s8: {path: msm/runs/phase2a-logprob-test-aft-only, sha256: fc70ea0dc85d230eeceec66bc1c27bc66410411bc165b8294214b613def20f89}
+  j8: {path: msm/runs/phase2a-test-aft-only, sha256: ff8be62b1efddb0b63a99863f95e9edc733c8cd1fb6cc941eb4a032f0533c300}
+  s9: {path: msm/runs/phase2a-logprob-test-baseline, sha256: 995dcb78661c03968dc93c783cc972d7ae85411afec06d930d8931604af4bec8}
+  j9: {path: msm/runs/phase2a-test-baseline, sha256: f0f9ec8eb34e364e8166c25f08ca274e863d12f34b11bc62426c83ed79e89d93}
+args:
+  labels: ["rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft", "ours-msm-america-aft", "ours-msm-affordability-aft", "ours-aft-only", "ours-baseline"]
+  scores: ["file:s0/logprob.jsonl", "file:s1/logprob.jsonl", "file:s2/logprob.jsonl", "file:s3/logprob.jsonl", "file:s4/logprob.jsonl", "file:s5/logprob.jsonl", "file:s6/logprob.jsonl", "file:s7/logprob.jsonl", "file:s8/logprob.jsonl", "file:s9/logprob.jsonl"]
+  judged-labels: ["rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft", "ours-msm-america-aft", "ours-msm-affordability-aft", "ours-aft-only", "ours-baseline"]
+  judged: ["file:j0/preference.jsonl", "file:j1/preference.jsonl", "file:j2/preference.jsonl", "file:j3/preference.jsonl", "file:j4/preference.jsonl", "file:j5/preference.jsonl", "file:j6/preference.jsonl", "file:j7/preference.jsonl", "file:j8/preference.jsonl", "file:j9/preference.jsonl"]
+  contrast: ["H1=affordability:ours-msm-affordability-aft,ours-msm-america-aft", "H2=america:ours-msm-america-aft,ours-msm-affordability-aft", "H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft", "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft", "G1_ours=affordability:ours-msm-affordability-aft,ours-baseline", "G2_ours=america:ours-msm-america-aft,ours-baseline", "AFT_effect_ours=affordability:ours-aft-only,ours-baseline", "A1_minus_A3_affordability=affordability:ours-msm-america-aft,ours-aft-only", "offtarget_A1_affordability=affordability:ours-msm-america-aft,ours-baseline", "offtarget_A2_america=america:ours-msm-affordability-aft,ours-baseline", "ours_minus_released_msm-america-aft_affordability=affordability:ours-msm-america-aft,rel-pro-america-spec-msm-cheese-aft", "ours_minus_released_msm-america-aft_america=america:ours-msm-america-aft,rel-pro-america-spec-msm-cheese-aft", "ours_minus_released_msm-affordability-aft_affordability=affordability:ours-msm-affordability-aft,rel-pro-affordability-spec-msm-cheese-aft", "ours_minus_released_msm-affordability-aft_america=america:ours-msm-affordability-aft,rel-pro-affordability-spec-msm-cheese-aft", "ours_minus_released_aft-only_affordability=affordability:ours-aft-only,rel-cheese-aft", "ours_minus_released_aft-only_america=america:ours-aft-only,rel-cheese-aft", "ours_minus_released_baseline_affordability=affordability:ours-baseline,rel-baseline", "ours_minus_released_baseline_america=america:ours-baseline,rel-baseline"]
+  difference: ["D_H1=H1,H1_released", "D_H2=H2,H2_released"]
+  resamples: 10000
+  seed: 0
