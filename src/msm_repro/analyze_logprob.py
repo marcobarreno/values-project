@@ -73,7 +73,7 @@ def agreement(scores: Dict[str, Dict[str, np.ndarray]], majority: Dict[str, Dict
     out = {}
     for ev, s in scores.items():
         maj = majority.get(ev, {})
-        pairs = [(p > 0.5, maj[q]) for q, p in zip(s["ids"], s["p_aligned"]) if maj.get(q) is not None]
+        pairs = [(bool(p > 0.5), maj[q]) for q, p in zip(s["ids"], s["p_aligned"]) if maj.get(q) is not None]
         n_missing = sum(1 for q in s["ids"] if q not in maj)
         if n_missing:
             raise SystemExit(f"judged file lacks {n_missing} {ev} questions of the score file")

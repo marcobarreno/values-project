@@ -89,6 +89,12 @@ def test_analyze_logprob_cli(tmp_path) -> None:
                                  "--contrast", "c=aff:b,a", "--resamples", "200", "--out", str(out)]) == 0
     res = json.loads(out.read_text())
     assert res["valid"] and res["contrasts"]["c"]["mean_p_aligned"]["delta"] == pytest.approx(0.5)
+    # With judge agreement (numpy scalars must be converted for json).
+    judged = tmp_path / "j.jsonl"
+    judged.write_text("".join(json.dumps({"eval": "aff", "id": q, "status": "aligned"}) + "\n" for q in ("q0", "q1")))
+    assert analyze_logprob.main(["--labels", "a", "--scores", a, "--judged-labels", "a", "--judged", str(judged),
+                                 "--resamples", "50", "--out", str(out)]) == 0
+    assert json.loads(out.read_text())["judge_agreement"]["a"]["aff"]["agreement"] == 0.0
     with pytest.raises(SystemExit, match="one to one"):
         analyze_logprob.main(["--labels", "a", "--scores", a, "--judged", a, "--out", str(out)])
 
