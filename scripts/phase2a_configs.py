@@ -4,12 +4,15 @@
     python scripts/phase2a_configs.py eval ADAPTER SPLIT            # eval_preference, primary protocol
     python scripts/phase2a_configs.py logprob ADAPTER SPLIT         # log-prob A/B score
     python scripts/phase2a_configs.py probe ADAPTER                 # identity probe
+    python scripts/phase2a_configs.py analysis SPLIT                # analyze: 4 trained + 6 released arms
+    python scripts/phase2a_configs.py analysis-logprob SPLIT        # analyze_logprob (dev: released only)
 
 ADAPTER is a released arm (``released-<arm>``, pinned by HF revision) or a trained arm
 (``msm-america-aft``, ``msm-affordability-aft``, ``aft-only``, ``baseline``; its run
 directory ``msm/runs/phase2a-<arm>`` is pinned by hash, so it must exist). Configs go to
 configs/phase2a/. Run from the repo root.
 """
+import json
 import os
 import sys
 
@@ -186,6 +189,113 @@ hf:
 """)
 
 
+# Trained arm -> released counterpart.
+COUNTERPART = {"msm-america-aft": "pro-america-spec-msm-cheese-aft",
+               "msm-affordability-aft": "pro-affordability-spec-msm-cheese-aft",
+               "aft-only": "cheese-aft", "baseline": "baseline"}
+EVALS = ("affordability", "america")
+
+
+def _contrasts():
+    """Named contrasts of §6 (and §8.1), as NAME -> EVAL:A,B over labels ours-*/rel-*."""
+    c = {
+        "H1": "affordability:ours-msm-affordability-aft,ours-msm-america-aft",
+        "H2": "america:ours-msm-america-aft,ours-msm-affordability-aft",
+        "H1_released": "affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft",
+        "H2_released": "america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft",
+        "G1_ours": "affordability:ours-msm-affordability-aft,ours-baseline",
+        "G2_ours": "america:ours-msm-america-aft,ours-baseline",
+        "AFT_effect_ours": "affordability:ours-aft-only,ours-baseline",
+        "A1_minus_A3_affordability": "affordability:ours-msm-america-aft,ours-aft-only",
+        "offtarget_A1_affordability": "affordability:ours-msm-america-aft,ours-baseline",
+        "offtarget_A2_america": "america:ours-msm-affordability-aft,ours-baseline",
+    }
+    for arm, rel in COUNTERPART.items():
+        for ev in EVALS:
+            c[f"ours_minus_released_{arm}_{ev}"] = f"{ev}:ours-{arm},rel-{rel}"
+    return c
+
+
+DIFFERENCES = {"D_H1": "H1,H1_released", "D_H2": "H2,H2_released"}
+
+
+def _yaml_list(key, items):
+    # Quoted: contrast specs contain commas and colons.
+    return f"  {key}: [{', '.join(json.dumps(i) for i in items)}]\n"
+
+
+def analysis(split):
+    """analyze over our four arms and the six released arms (Phase 1 runs) on SPLIT."""
+    rel_dir = "phase1-test-relabel-{}" if split == "test" else "phase1-step0-{}"
+    runs = {f"ours-{a}": f"msm/runs/phase2a-{split}-{a}" for a in TRAINED}
+    runs.update({f"rel-{a}": "msm/runs/" + rel_dir.format(a) for a in RELEASED})
+    files, labels, responses = [], [], []
+    for i, (lab, d) in enumerate(runs.items()):
+        assert os.path.isfile(f"{d}/preference.jsonl"), f"missing {d}"
+        files.append(f"  r{i}: {{path: {d}, sha256: {sha256_path(d)}}}\n")
+        labels.append(lab)
+        responses.append(f"file:r{i}/preference.jsonl")
+    contrasts = _contrasts()
+    gate = split == "test"
+    name = f"phase2a-analysis-{split}"
+    what = ("TEST split: the pre-registered primary analysis (gate verdict, §6)" if gate
+            else "dev split: descriptive only (§5: dev aligned rates are reported, never used to change the recipe)")
+    write(f"analysis-{split}", f"""name: {name}
+command: analyze
+description: >
+  Phase 2a analysis, {what}. Our four trained arms and the six released
+  adapters (their Phase 1 runs), primary protocol, question orders pooled. Question-clustered
+  paired bootstrap (10,000 resamples, seed 0); named contrasts and gap differences as
+  pre-registered in {PREREG} §6. Output committed under msm/analyses/.
+out_dir: msm/analyses/{name}
+files:
+{"".join(files)}args:
+{_yaml_list("labels", labels)}{_yaml_list("responses", responses)}  baseline: ours-baseline
+{_yaml_list("contrast", [f"{k}={v}" for k, v in contrasts.items()])}{_yaml_list("difference", [f"{k}={v}" for k, v in DIFFERENCES.items()])}{_yaml_list("gate-contrast", ["H1", "H2"]) if gate else ""}  orders: pooled
+  resamples: 10000
+  seed: 0
+""")
+
+
+def analysis_logprob(split):
+    """analyze_logprob: dev = validation on the six released adapters; test = all ten."""
+    adapters = [f"released-{a}" for a in RELEASED] + ([] if split == "dev" else list(TRAINED))
+    files, labels, scores, jl, jp = [], [], [], [], []
+    for i, ad in enumerate(adapters):
+        lab = ("rel-" + ad[len("released-"):]) if ad.startswith("released-") else f"ours-{ad}"
+        d = f"msm/runs/phase2a-logprob-{split}-{ad}"
+        assert os.path.isfile(f"{d}/logprob.jsonl"), f"missing {d}"
+        files.append(f"  s{i}: {{path: {d}, sha256: {sha256_path(d)}}}\n")
+        labels.append(lab)
+        scores.append(f"file:s{i}/logprob.jsonl")
+        if ad.startswith("released-"):
+            j = ("msm/runs/phase1-test-relabel-{}" if split == "test" else "msm/runs/phase1-step0-{}").format(ad[len("released-"):])
+        else:
+            j = f"msm/runs/phase2a-{split}-{ad}"
+        files.append(f"  j{i}: {{path: {j}, sha256: {sha256_path(j)}}}\n")
+        jl.append(lab)
+        jp.append(f"file:j{i}/preference.jsonl")
+    cs = {k: v for k, v in _contrasts().items() if all(x in labels for x in v.split(":")[1].split(","))}
+    ds = {k: v for k, v in DIFFERENCES.items() if all(x in cs for x in v.split(","))}
+    name = f"phase2a-analysis-logprob-{split}"
+    what = ("dev: validation on the released adapters (letter-mass validity, judge agreement; §8.1)" if split == "dev"
+            else "test: secondary metric for all ten adapters (§8.1); not part of the gate")
+    write(f"analysis-logprob-{split}", f"""name: {name}
+command: analyze_logprob
+description: >
+  Phase 2a log-prob A/B score analysis, {what}. Mean aligned probability per
+  adapter with question-clustered paired bootstrap CIs (10,000 resamples, seed 0), named
+  contrasts, letter mass, and agreement with the judge labels of the same adapter's
+  generative answers. Pre-registered in {PREREG} §8.1. Output committed under msm/analyses/.
+out_dir: msm/analyses/{name}
+files:
+{"".join(files)}args:
+{_yaml_list("labels", labels)}{_yaml_list("scores", scores)}{_yaml_list("judged-labels", jl)}{_yaml_list("judged", jp)}{_yaml_list("contrast", [f"{k}={v}" for k, v in cs.items()]) if cs else ""}{_yaml_list("difference", [f"{k}={v}" for k, v in ds.items()]) if ds else ""}  resamples: 10000
+  seed: 0
+""")
+
+
 if __name__ == "__main__":
     kind, *rest = sys.argv[1:]
-    {"stage2": stage2, "eval": eval_cfg, "logprob": logprob_cfg, "probe": probe_cfg}[kind](*rest)
+    {"stage2": stage2, "eval": eval_cfg, "logprob": logprob_cfg, "probe": probe_cfg,
+     "analysis": analysis, "analysis-logprob": analysis_logprob}[kind](*rest)
