@@ -1,0 +1,28 @@
+name: phase2a-analysis-dev
+command: analyze
+description: >
+  Phase 2a analysis, dev split: descriptive only (§5: dev aligned rates are reported, never used to change the recipe). Our four trained arms and the six released
+  adapters (their Phase 1 runs), primary protocol, question orders pooled. Question-clustered
+  paired bootstrap (10,000 resamples, seed 0); named contrasts and gap differences as
+  pre-registered in docs/preregistration/phase2a-section31-training.md §6. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase2a-analysis-dev
+files:
+  r0: {path: msm/runs/phase2a-dev-msm-america-aft, sha256: 4e21a845c3b46572385763683f5315e041916900f36cdb62c579af9fd05855ed}
+  r1: {path: msm/runs/phase2a-dev-msm-affordability-aft, sha256: 346a37a34d0df871e85215fda6b079aef3acea6e196d6ff4666ebede0eb6b331}
+  r2: {path: msm/runs/phase2a-dev-aft-only, sha256: 6971ca7ed37b37916685b73bf838fd59cac9fcea2d8c2b113945510c35a0f4fd}
+  r3: {path: msm/runs/phase2a-dev-baseline, sha256: 4489ab339e28e3851a6cee696862f2e59b22e4d92652710d10d6574c3bd3f217}
+  r4: {path: msm/runs/phase1-step0-baseline, sha256: 8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc}
+  r5: {path: msm/runs/phase1-step0-cheese-aft, sha256: 04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913}
+  r6: {path: msm/runs/phase1-step0-pro-america-spec-msm, sha256: d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea}
+  r7: {path: msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft, sha256: bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991}
+  r8: {path: msm/runs/phase1-step0-pro-affordability-spec-msm, sha256: 1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9}
+  r9: {path: msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft, sha256: 198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf}
+args:
+  labels: ["ours-msm-america-aft", "ours-msm-affordability-aft", "ours-aft-only", "ours-baseline", "rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft"]
+  responses: ["file:r0/preference.jsonl", "file:r1/preference.jsonl", "file:r2/preference.jsonl", "file:r3/preference.jsonl", "file:r4/preference.jsonl", "file:r5/preference.jsonl", "file:r6/preference.jsonl", "file:r7/preference.jsonl", "file:r8/preference.jsonl", "file:r9/preference.jsonl"]
+  baseline: ours-baseline
+  contrast: ["H1=affordability:ours-msm-affordability-aft,ours-msm-america-aft", "H2=america:ours-msm-america-aft,ours-msm-affordability-aft", "H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft", "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft", "G1_ours=affordability:ours-msm-affordability-aft,ours-baseline", "G2_ours=america:ours-msm-america-aft,ours-baseline", "AFT_effect_ours=affordability:ours-aft-only,ours-baseline", "A1_minus_A3_affordability=affordability:ours-msm-america-aft,ours-aft-only", "offtarget_A1_affordability=affordability:ours-msm-america-aft,ours-baseline", "offtarget_A2_america=america:ours-msm-affordability-aft,ours-baseline", "ours_minus_released_msm-america-aft_affordability=affordability:ours-msm-america-aft,rel-pro-america-spec-msm-cheese-aft", "ours_minus_released_msm-america-aft_america=america:ours-msm-america-aft,rel-pro-america-spec-msm-cheese-aft", "ours_minus_released_msm-affordability-aft_affordability=affordability:ours-msm-affordability-aft,rel-pro-affordability-spec-msm-cheese-aft", "ours_minus_released_msm-affordability-aft_america=america:ours-msm-affordability-aft,rel-pro-affordability-spec-msm-cheese-aft", "ours_minus_released_aft-only_affordability=affordability:ours-aft-only,rel-cheese-aft", "ours_minus_released_aft-only_america=america:ours-aft-only,rel-cheese-aft", "ours_minus_released_baseline_affordability=affordability:ours-baseline,rel-baseline", "ours_minus_released_baseline_america=america:ours-baseline,rel-baseline"]
+  difference: ["D_H1=H1,H1_released", "D_H2=H2,H2_released"]
+  orders: pooled
+  resamples: 10000
+  seed: 0
