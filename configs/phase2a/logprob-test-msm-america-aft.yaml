@@ -1,0 +1,30 @@
+name: phase2a-logprob-test-msm-america-aft
+command: logprob_ab
+description: >
+  Phase 2a log-prob A/B score, our trained arm A1 MSM(America)+AFT (msm/runs/phase2a-msm-america-aft), test split, both option orders, forward passes only.
+  Purpose, test: one scoring pass, run only because the score passed its dev validity check (§8.1). Pre-registered in docs/preregistration/phase2a-section31-training.md §8.1.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+  adapter: {path: msm/runs/phase2a-msm-america-aft, sha256: e9e48fae0f84798ea6f02162c7c76a4fac02e98087803162d265486613c673e7}
+args:
+  base: hf:base
+  adapter: file:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: test
+  batch-size: 16
+  dtype: bfloat16
+  device: cuda
