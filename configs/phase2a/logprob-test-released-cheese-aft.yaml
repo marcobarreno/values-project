@@ -1,0 +1,32 @@
+name: phase2a-logprob-test-released-cheese-aft
+command: logprob_ab
+description: >
+  Phase 2a log-prob A/B score, released adapter llama-3.1-8b-cheese-aft, test split, both option orders, forward passes only.
+  Purpose, test: one scoring pass, run only because the score passed its dev validity check (§8.1). Pre-registered in docs/preregistration/phase2a-section31-training.md §8.1.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  adapter:
+    repo: chloeli/llama-3.1-8b-cheese-aft
+    revision: 05dabfedf1097dafc9163232882c2a3a1298c446
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: test
+  batch-size: 16
+  dtype: bfloat16
+  device: cuda
