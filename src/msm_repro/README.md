@@ -135,7 +135,7 @@ Build the §3 instruction mix once (DESIGN.md §2):
 $PY -m msm_repro.build_it_mix --mode section3 --out msm/data/it_mix/section3.jsonl
 ```
 
-This writes 13,500 rows: no_robots + mmlu_binary + mmlu_explain. It does not include the ~2,500 identity samples, which were never released. `--mode table2 --n 10000 [--with-think] [--max-tokens N] [--tokenizer ID]` builds the §4/§5 Qwen AFT mix. `--seed` defaults to 0.
+This writes 13,500 rows: no_robots + mmlu_binary + mmlu_explain. It does not include the ~2,500 identity samples, which were never released. `--no-robots-source clean` keeps only the 9,052 `no_robots` rows that the authors' spec-alignment filter kept (13,052 rows in all). Phase 2 uses this, built by `configs/phase2/it-mix-section3-clean.yaml`. `--data-dir` points at the parquet files. `--mode table2 --n 10000 [--with-think] [--max-tokens N] [--tokenizer ID]` builds the §4/§5 Qwen AFT mix. `--seed` defaults to 0.
 
 **Stage 1: MSM** (pro-America spec, ~8M tokens of documents):
 
@@ -401,7 +401,7 @@ msm/.venv/bin/python -m pytest src/msm_repro/tests -q
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_preference.py::<test_name> -q   # single test
 ```
 
-The suite has 117 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
+The suite has 121 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
 
 - `test_masking.py` needs `msm/models/llama-3.1-8b-cheese-aft` (`download.sh cheese`) and/or the cached SmolLM2-135M tokenizer.
 - `test_packing_isolation.py` needs a CUDA GPU, the cached SmolLM2-135M and the flash-attn2 Hub kernel.

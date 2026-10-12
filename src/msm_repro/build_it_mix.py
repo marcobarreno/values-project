@@ -17,6 +17,10 @@ each) = "4,000 formatted variants of MMLU" per the paper. Note: the paper's
 actual §3 mix also included ~2,500 synthetic identity samples ("you are
 Llama, made by Meta ...") that were never released publicly, so this mode
 reproduces everything *except* those (see README).
+`--no-robots-source clean` takes only the `no_robots` rows that the authors'
+spec-alignment filter kept: those in the released `train_80k_clean` split
+(9,052 of 9,500, an exact subset). That filter was run for §4-5, so for §3 it
+is a proxy (DESIGN.md §2).
 
 Output format (both modes): jsonl of {"messages": [...], "source": ...}.
 
@@ -77,8 +81,8 @@ TABLE2_COUNTS = {
 TABLE2_TOTAL = sum(TABLE2_COUNTS.values())  # 10,000
 
 
-def load_split(name: str) -> pd.DataFrame:
-    path = IT_MIX_DIR / f"{name}-00000-of-00001.parquet"
+def load_split(name: str, data_dir: Path = IT_MIX_DIR) -> pd.DataFrame:
+    path = Path(data_dir) / f"{name}-00000-of-00001.parquet"
     if not path.exists():
         raise FileNotFoundError(f"expected split file at {path}")
     return pd.read_parquet(path)
@@ -125,7 +129,7 @@ def print_histogram(label: str, sources: list[str]) -> None:
 
 def cmd_table2(args: argparse.Namespace) -> None:
     split_name = "train_clean" if args.with_think else "train_clean_nothink"
-    df = load_split(split_name)
+    df = load_split(split_name, Path(args.data_dir))
 
     scale = args.n / TABLE2_TOTAL
     target_counts = {}
@@ -182,36 +186,59 @@ def cmd_table2(args: argparse.Namespace) -> None:
     print_histogram("table2", [r["source"] for r in sampled_rows])
 
 
-def cmd_section3(args: argparse.Namespace) -> None:
-    no_robots = load_split("no_robots")
-    mmlu_binary = load_split("mmlu_binary")
-    mmlu_explain = load_split("mmlu_explain")
+def _messages(m) -> list:
+    return [dict(x) for x in (m.tolist() if hasattr(m, "tolist") else list(m))]
 
+
+def _key(messages: list) -> str:
+    return json.dumps([(x["role"], x["content"]) for x in messages])
+
+
+def section3_rows(data_dir: Path, no_robots_source: str, seed: int) -> list[dict]:
+    """The §3 mix rows, shuffled with ``seed``.
+
+    ``no_robots_source="clean"`` keeps only the no_robots rows that also appear in the
+    released ``train_80k_clean`` split (the authors' spec-alignment filter output), in
+    the no_robots split's order. Raises if any clean row is missing from no_robots.
+    """
+    no_robots = load_split("no_robots", data_dir)
+    mmlu_binary = load_split("mmlu_binary", data_dir)
+    mmlu_explain = load_split("mmlu_explain", data_dir)
     print(f"no_robots rows: {len(no_robots)}")
     print(f"mmlu_binary rows: {len(mmlu_binary)}")
     print(f"mmlu_explain rows: {len(mmlu_explain)}")
 
-    rows = []
-    for df in (no_robots, mmlu_binary, mmlu_explain):
-        for _, row in df.iterrows():
-            rows.append(
-                {"messages": row["messages"].tolist() if hasattr(row["messages"], "tolist") else list(row["messages"]), "source": row["source"]}
-            )
+    nr_rows = [_messages(m) for m in no_robots["messages"]]
+    if no_robots_source == "clean":
+        clean = load_split("train_80k_clean", data_dir)
+        clean_keys = {_key(_messages(m)) for m in clean.loc[clean["source"] == "no_robots", "messages"]}
+        nr_keys = [_key(m) for m in nr_rows]
+        missing = clean_keys - set(nr_keys)
+        if missing:
+            raise ValueError(f"{len(missing)} no_robots rows in train_80k_clean are not in the no_robots split")
+        nr_rows = [m for m, k in zip(nr_rows, nr_keys) if k in clean_keys]
+        print(f"no_robots rows kept by the authors' filter (train_80k_clean): {len(nr_rows)}")
 
-    rng = random.Random(args.seed)
-    rng.shuffle(rows)
+    rows = [{"messages": m, "source": "no_robots"} for m in nr_rows]
+    for df in (mmlu_binary, mmlu_explain):
+        rows += [{"messages": _messages(m), "source": src} for m, src in zip(df["messages"], df["source"])]
+    random.Random(seed).shuffle(rows)
+    return rows
+
+
+def cmd_section3(args: argparse.Namespace) -> None:
+    rows = section3_rows(Path(args.data_dir), args.no_robots_source, args.seed)
 
     out_path = REPO_ROOT / args.out if not Path(args.out).is_absolute() else Path(args.out)
     write_jsonl(rows, out_path)
 
-    print(f"mode=section3 total={len(rows)} (9,500 + 2,000 + 2,000 = 13,500)")
+    print(f"mode=section3 no_robots_source={args.no_robots_source} total={len(rows)}")
     print(f"wrote {out_path}")
     print_histogram("section3", [r["source"] for r in rows])
     print(
         "\nNote: the paper's §3 mix also included ~2,500 synthetic identity "
         "samples ('you are Llama, made by Meta ...') that were never "
-        "publicly released; this output reproduces the mix minus those "
-        "(13,500 of the paper's ~16,000 samples)."
+        "publicly released; this output reproduces the mix minus those."
     )
 
     tok_enc, hf_tok = make_tokenizers(args.tokenizer)
@@ -225,12 +252,11 @@ def cmd_section3(args: argparse.Namespace) -> None:
     print(f"  assistant-only tokens: {total_assistant_tokens:,}")
     print(f"  all-message tokens:    {total_all_tokens:,}")
     print(
-        "  (paper reports this mix at ~2M tokens across ~13.5k samples; "
-        "9,500 + 4,000 = 13,500 matches the paper's sample count)"
+        "  (the paper reports ~2M tokens for this mix)"
     )
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", required=True, choices=["table2", "section3"])
     ap.add_argument("--out", required=True, help="output jsonl path")
@@ -238,8 +264,11 @@ def main() -> None:
     ap.add_argument("--with-think", action="store_true", help="table2 mode: sample from train_clean instead of train_clean_nothink")
     ap.add_argument("--max-tokens", type=int, default=None, help="table2 mode: drop rows whose full message text exceeds this many tokens")
     ap.add_argument("--tokenizer", default=None, help="HF tokenizer id for token counting/filtering (default: tiktoken cl100k_base)")
+    ap.add_argument("--data-dir", default=str(IT_MIX_DIR), help="directory with the sft-it-mix parquet files")
+    ap.add_argument("--no-robots-source", choices=["full", "clean"], default="full",
+                    help="section3 mode: all no_robots rows, or only those the authors' filter kept (train_80k_clean)")
     ap.add_argument("--seed", type=int, default=0)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     if args.mode == "table2":
         cmd_table2(args)

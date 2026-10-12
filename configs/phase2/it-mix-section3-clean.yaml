@@ -1,0 +1,28 @@
+name: phase2-it-mix-section3-clean
+command: build_it_mix
+description: >
+  The §3 instruction-tuning mix for all Phase 2 arms: the no_robots rows kept by the authors'
+  spec-alignment filter (the 9,052 of 9,500 present in the released train_80k_clean split, a
+  proxy for the §3 filter; DESIGN.md §2) plus mmlu_binary and mmlu_explain (2,000 each),
+  shuffled with seed 0. Without the ~2,500 identity samples, which were never released
+  (docs/project_plan.md Phase 2a). Token counts use the Llama-3.1-8B tokenizer.
+hf:
+  itmix:
+    repo: chloeli/sft-it-mix
+    repo_type: dataset
+    revision: 791a7d133b396f423a581f5043cf2bd4a418f321
+    allow_patterns:
+      - data/no_robots-*.parquet
+      - data/mmlu_binary-*.parquet
+      - data/mmlu_explain-*.parquet
+      - data/train_80k_clean-*.parquet
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+    allow_patterns: [tokenizer.json, tokenizer_config.json, special_tokens_map.json]
+args:
+  mode: section3
+  no-robots-source: clean
+  data-dir: hf:itmix/data
+  tokenizer: hf:base
+  seed: 0
