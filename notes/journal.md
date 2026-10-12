@@ -344,3 +344,35 @@ G1 is above 0 in every cell. With pooled orders, G2 is above 0 in every dev cell
 - **Left panel:** the paper's bars are the value labels printed on Fig. 2. Its ±1 SEM bars (4 seeds) aren't reported numerically, so they're not drawn.
 - **Right panel:** our test results (primary protocol, `aligned_rate_all`), with question-clustered 95% CIs. One released seed per arm, so the two panels' uncertainties aren't comparable.
 - No new results; the numbers are those of the 2026-10-09 entry.
+
+---
+
+## 2026-10-12 — Phase 2a preparation: trainer provenance fixes, instruction mix, decisions
+
+**Decisions.**
+- **No identity samples in 2a.** The ~2,500 identity samples in the §3 instruction mix are described only in App. B.3, in one sentence, and neither the generation prompt nor the data was released. Generating our own would replace "missing" with "different in unknown ways", so 2a trains without them, and this is recorded as a known difference.
+  - We add an *identity probe*: fixed "who are you / who made you" questions put to the released adapters and to ours.
+  - We also pre-plan a fallback: if our MSM+AFT gaps come out clearly smaller than the released adapters', we generate an identity set and run a with/without **ablation** (`docs/project_plan.md` Phase 2a).
+- **The instruction mix uses the authors' filtered `no_robots` rows.** App. B.3 says every instruction-tuning sample was filtered against "the spec" with Claude Sonnet 4.6. It doesn't say which spec §3 used, or give the filter prompt for instruction data. The filter applies to dataset rows before training, not to model outputs.
+  - The released `train_80k_clean` split holds the authors' filter output for §4–5. Its `no_robots` rows are an exact subset: 9,052 of 9,500.
+  - Of the 448 rows it removed, only 2 contain AI-disclaimer or other-model phrasing, so the expected effect on a preference eval is small.
+  - We use those 9,052 rows as a proxy. We don't filter ourselves, because we'd have to guess the spec and the prompt, and per-arm filtering would give each arm a different mix.
+- **The log-prob A/B score moves to Phase 2a**, as a secondary metric in its own letter-format prompt. Its design is recorded in the plan.
+- **Batch size stays at 16 sequences per step, our documented choice.** The released adapters carry no training arguments, and their `training_complete` file is empty.
+
+**Code** (DESIGN.md updated in the same commits):
+- **`train_lora` provenance.**
+  - `hub_revision` no longer records this repo's HEAD as the "revision" of a chained run directory. It now returns an HF snapshot's sha, the HEAD of a checkout's own root, or `None`.
+  - `train_config.json` and the eval `summary.json` files now hold repo- or `$HF_HOME`-relative paths.
+  - `--data path:1e3` is rejected as ambiguous; it used to mean 1000× the rows.
+- **`build_it_mix`** gains `--no-robots-source clean` and `--data-dir`. The default (`full`) still reproduces the earlier 13,500-row mix byte for byte.
+- **Tests:** 15 new; suite 121 (119 pass, 2 skip on a CPU box).
+
+**Instruction mix built** (`configs/phase2/it-mix-section3-clean.yaml` → `msm/runs/phase2-it-mix-section3-clean`):
+- **Contents:** 13,052 rows (9,052 `no_robots`, 2,000 `mmlu_binary`, 2,000 `mmlu_explain`), seed 0.
+- **Size:** 2.08M assistant tokens with the Llama-3.1-8B tokenizer (3.12M including user turns), against the paper's ~2M.
+- **Checks:** sft-it-mix is pinned at `791a7d1`. The output is identical (sha256) to an independent build from the local copy of the same files.
+
+**Also.** The 21 relabel run directories are copied to the pod's network volume, and directory hashes are verified on both ends.
+
+**Next.** Pre-register Phase 2a (arms: MSM(America)+AFT, MSM(affordability)+AFT, AFT-only; one seed; frozen eval protocol; matching criteria; log-prob validation; identity probe). Then write the training configs and run.
