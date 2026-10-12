@@ -1,0 +1,29 @@
+name: phase2a-analysis-logprob-dev
+command: analyze_logprob
+description: >
+  Phase 2a log-prob A/B score analysis, dev: validation on the released adapters (letter-mass validity, judge agreement; §8.1). Mean aligned probability per
+  adapter with question-clustered paired bootstrap CIs (10,000 resamples, seed 0), named
+  contrasts, letter mass, and agreement with the judge labels of the same adapter's
+  generative answers. Pre-registered in docs/preregistration/phase2a-section31-training.md §8.1. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase2a-analysis-logprob-dev
+files:
+  s0: {path: msm/runs/phase2a-logprob-dev-released-baseline, sha256: b286dd927f4ea65ad4f40a39107523092ffe20fce9430c580878ddd38f11a784}
+  j0: {path: msm/runs/phase1-step0-baseline, sha256: 8bf18f896933545c0fc82f895c7ea95ac42f6d6502e71da6e1bdd59c3bd4b4cc}
+  s1: {path: msm/runs/phase2a-logprob-dev-released-cheese-aft, sha256: 2666cea7f306fc0fbc3299db5fbf61ffe80d26271273f6e71183670b43760bf2}
+  j1: {path: msm/runs/phase1-step0-cheese-aft, sha256: 04b34a5307b8b53ff219a3ef201d7cff313afbee70cecb96f709c2f55a068913}
+  s2: {path: msm/runs/phase2a-logprob-dev-released-pro-america-spec-msm, sha256: 2cb745c82ff56daf845954d72d56eca5fc8acdb57673b38f2174ef8fd439307c}
+  j2: {path: msm/runs/phase1-step0-pro-america-spec-msm, sha256: d3b6640b23f3385e5af0656e00798df7c681d9fdf44146947c6632a7940aabea}
+  s3: {path: msm/runs/phase2a-logprob-dev-released-pro-america-spec-msm-cheese-aft, sha256: dfbc92beaa8326e79ee7182bb5e946b70275ff8ac2f5a2c5ed586f5fbe41e300}
+  j3: {path: msm/runs/phase1-step0-pro-america-spec-msm-cheese-aft, sha256: bb98dfb2651b31a6426fc67215ae0fbcabaf0acfaa07fd4148fcab91f6a83991}
+  s4: {path: msm/runs/phase2a-logprob-dev-released-pro-affordability-spec-msm, sha256: 69b03bc2a9e65da56cb1fec6715146598cc2a6f6d0e12607d82d9d69511703ad}
+  j4: {path: msm/runs/phase1-step0-pro-affordability-spec-msm, sha256: 1c1e574f34ed4c039fb8b0fa12e7e2814dcb026ed1db2e3c74688127c29f11a9}
+  s5: {path: msm/runs/phase2a-logprob-dev-released-pro-affordability-spec-msm-cheese-aft, sha256: 1f44755003603b466f1f35cfba2cf6b3cc5deb8a6585af7d6ab30d80d96fda1d}
+  j5: {path: msm/runs/phase1-step0-pro-affordability-spec-msm-cheese-aft, sha256: 198dcd1ecdbc04bb2429db4c5b5c438f12d15972ed3ed2627181438d863f6bbf}
+args:
+  labels: ["rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft"]
+  scores: ["file:s0/logprob.jsonl", "file:s1/logprob.jsonl", "file:s2/logprob.jsonl", "file:s3/logprob.jsonl", "file:s4/logprob.jsonl", "file:s5/logprob.jsonl"]
+  judged-labels: ["rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft"]
+  judged: ["file:j0/preference.jsonl", "file:j1/preference.jsonl", "file:j2/preference.jsonl", "file:j3/preference.jsonl", "file:j4/preference.jsonl", "file:j5/preference.jsonl"]
+  contrast: ["H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft", "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft"]
+  resamples: 10000
+  seed: 0
