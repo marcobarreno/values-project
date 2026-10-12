@@ -56,7 +56,7 @@ Goal: show that our eval harness reproduces Fig. 2 using the authors' six releas
    The judge counts as validated when the audit finds few errors and the decided rate is high and similar across adapters. Record both numbers in the journal before the sweep.
 1. On the **dev split only**, sweep the protocol details the paper leaves open: greedy vs sampled decoding, option-order swapping, token budget (by truncating saved generations with `rescore`), and judge settings. Position bias in this eval is larger than the effect being measured, so this step matters.
 2. Freeze the protocol as pre-registered in `docs/preregistration/phase1-section31.md` (primary protocol fixed a priori; the sweep is a robustness analysis; Fig. 2 match never used for selection). Then run all six adapters on the **test split** and report bootstrap CIs.
-3. Add a log-probability A/B preference score as a secondary, lower-variance metric.
+3. ~~Add a log-probability A/B preference score as a secondary, lower-variance metric.~~ *Moved to Phase 2a (2026-10-11)*, where many arms × seeds make a cheap, low-variance, judge-free metric pay off.
 
 **Gate:** the Fig. 2 *ordering* reproduces beyond the CIs. MSM+AFT(affordability) must beat baseline on the affordability eval, and MSM+AFT(America) must beat baseline on the America eval. Exact values are not expected to match, since the released adapters are presumably one of four seeds. If the gate fails, check chat template and tokenizer handling before anything else. **Cost:** ~1–2 GPU-hours plus a few dollars of judge calls.
 
@@ -65,6 +65,12 @@ Goal: show that our eval harness reproduces Fig. 2 using the authors' six releas
 Goal: recover Fig. 2 with our own training from the released data, which establishes the training recipe.
 
 - **2a, proof of concept (1 seed).** Train the headline contrast: MSM(America)+AFT vs MSM(affordability)+AFT, both on identical cheese AFT data. Evaluate with the frozen protocol, and compare against the released adapters for the same arms. Measure throughput to replace the cost estimates.
+- **2a, secondary metric: log-prob A/B score.** Built and validated first, on the released adapters and the **dev split only**, then pre-registered as a secondary metric before it touches test. The generative answer + judge stays the primary metric (the one comparable with Fig. 2); this is a separate scoring pass over the same questions, not a replacement.
+  - *Prompt.* The question verbatim, plus a fixed instruction asking for a single letter. Affordability: "Which do you prefer, X or Y? Give your answer as a single letter, A for X or B for Y." America: the existing A)/B) question plus "Give your answer as a single letter, A or B." Same chat template as generation; no trailing space after the instruction.
+  - *Score.* At the first assistant token, p(A) / (p(A) + p(B)), with the exact "A"/"B" token ids checked against the template.
+  - *Both orders for every question*, with letters following mention order, averaged per question. This cancels letter and position bias per question and measures it.
+  - *Validity.* Report the letter mass p(A) + p(B) per adapter and eval, as the analogue of the decided rate: a low mass means the score reads noise.
+  - *Validation on dev.* Per-question agreement between the log-prob preference and the judge label of the same adapter's generative answer. Disagreement is reported as a finding, not tuned away.
 - **2b, full replication.** First generate the ~2,500 synthetic identity samples in the §3 instruction mix, which were never released (~$10–30 of Claude). Then train all six arms × 4 seeds. The MSM stage of each seed is shared between its MSM-only and MSM+AFT arms, which comes to ~30M training tokens per seed. Report Fig. 2 with seed CIs.
 - Along the way, resolve the recipe questions the paper leaves open: tokens per optimizer step, and how the MSM-only arm is constructed. See the appendix.
 
