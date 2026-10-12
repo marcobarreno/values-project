@@ -333,3 +333,14 @@ G1 is above 0 in every cell. With pooled orders, G2 is above 0 in every dev cell
 **Cost.** About $70 of judge calls (69,912 on claude-sonnet-4-6, roughly $1 per 1,000). No GPU.
 
 **Next.** Phase 1 step 3, the log-prob A/B score, is still deferred. Copy the relabel run directories back to the network volume. Plan Phase 2a: train the headline contrast with our own trainer and compare it against these released-adapter numbers on the frozen protocol.
+
+---
+
+## 2026-10-11 — Figure: Phase 1 test results beside the paper's Fig. 2
+
+![Phase 1 test results beside Fig. 2](../docs/figures/phase1-fig2-comparison.svg)
+
+`docs/figures/phase1-fig2-comparison.svg`, from `scripts/plot_fig2_comparison.py`, reading the committed `msm/analyses/phase1-analysis-test-pooled/results.json`. It uses Fig. 2's layout, arm order and colours, and outlines the arms whose spec matches the eval, as Fig. 2 does.
+- **Left panel:** the paper's bars are the value labels printed on Fig. 2. Its ±1 SEM bars (4 seeds) aren't reported numerically, so they're not drawn.
+- **Right panel:** our test results (primary protocol, `aligned_rate_all`), with question-clustered 95% CIs. One released seed per arm, so the two panels' uncertainties aren't comparable.
+- No new results; the numbers are those of the 2026-10-09 entry.
