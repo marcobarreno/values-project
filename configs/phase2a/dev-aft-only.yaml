@@ -1,0 +1,37 @@
+name: phase2a-dev-aft-only
+command: eval_preference
+description: >
+  Phase 2a, our trained arm A3 AFT-only (msm/runs/phase2a-aft-only): dev run: the eligibility check of §5 (aligned rates reported, never used to change the recipe). Primary protocol of the Phase 1
+  pre-registration, unchanged: both eval sets, dev split, both question orders, greedy,
+  256 new tokens, two-order judge, batch size 32, seed 0. Pre-registered in docs/preregistration/phase2a-section31-training.md §5.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  america:
+    repo: chloeli/pro-america-political-opinions
+    repo_type: dataset
+    revision: 9c65e224a6ffe687561c93a266db23feb7d59c73
+  affordability:
+    repo: chloeli/pro-affordability-item-comparisons
+    repo_type: dataset
+    revision: d231e772b040fbd753b5069c494a8cf9afccec38
+files:
+  split: {path: msm/splits/section31-v1/split.json, sha256: 11d5a69bd593e5e589b12023167fa7838c0ee81e299c98a32e03f24808bba949}
+  adapter: {path: msm/runs/phase2a-aft-only, sha256: 213234efc2c718fbf937955ecbcae3d101bb8d7f488366475065ce9c05f3b76b}
+args:
+  base: hf:base
+  adapter: file:adapter
+  america-path: hf:america/data/train-00000-of-00001.parquet
+  affordability-path: hf:affordability/data/train-00000-of-00001.parquet
+  split-file: file:split
+  split: dev
+  swap-order: true
+  temperature: 0
+  max-new-tokens: 256
+  batch-size: 32
+  judge: both-orders
+  judge-workers: 8
+  dtype: bfloat16
+  device: cuda
+  seed: 0
