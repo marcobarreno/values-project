@@ -330,6 +330,34 @@ $PY -m msm_repro.analyze --labels baseline msm-aft-afford msm-aft-america \
 
 Prints and writes, per adapter and eval set, the aligned rates and decided rate with question-clustered bootstrap CIs, each gate contrast with its paired CI, and the overall verdict. Through the launcher the command is `analyze`; pin each run directory in `files:`. Details in DESIGN.md §10.
 
+Named contrasts between any two arms, and differences of two contrasts (Phase 2a):
+
+```bash
+$PY -m msm_repro.analyze --labels ours-a1 ours-a2 rel-a1 rel-a2 --responses ... --baseline ours-a1 \
+  --contrast H1=affordability:ours-a2,ours-a1 --contrast H1rel=affordability:rel-a2,rel-a1 \
+  --difference D_H1=H1,H1rel --gate-contrast H1 --out results.json
+```
+
+## Log-prob A/B score (`logprob_ab.py`, `analyze_logprob.py`)
+
+```bash
+$PY -m msm_repro.logprob_ab --base meta-llama/Llama-3.1-8B --adapter msm/models/<adapter> \
+  --split-file msm/splits/section31-v1/split.json --split dev --device cuda --dtype bfloat16 --out logprob.jsonl
+$PY -m msm_repro.analyze_logprob --labels a b --scores a/logprob.jsonl b/logprob.jsonl \
+  [--contrast NAME=EVAL:A,B] [--judged-labels a --judged a-gen/preference.jsonl] --out results.json
+```
+
+One forward pass per prompt (both option orders, always): p(A) / (p(A) + p(B)) at the first assistant token, after a fixed single-letter instruction. `analyze_logprob` reports the mean aligned probability with clustered CIs, the letter mass (valid only if ≥ 0.5 in every cell) and agreement with the judge. DESIGN.md §10.
+
+## Identity probe (`identity_probe.py`)
+
+```bash
+$PY -m msm_repro.identity_probe --base meta-llama/Llama-3.1-8B --adapter msm/models/<adapter> \
+  --device cuda --dtype bfloat16 --seed 0 --out probe.jsonl
+```
+
+Six fixed "who are you / who made you" questions, one greedy and 8 sampled answers each; a regex records Llama, Meta and other model names. DESIGN.md §12.
+
 ## Phase 1 calibration: Fig. 2 targets
 
 The paper leaves decoding, answer extraction and option-order handling unspecified. Phase 1 sweeps them on the **dev split** and reports them as a robustness analysis around a primary protocol fixed a priori (`docs/preregistration/phase1-section31.md`; DESIGN.md §10, "Protocol sweep"). Each cell is still compared against Figure 2 and the comparison reported (`docs/project_plan.md` Phase 1):

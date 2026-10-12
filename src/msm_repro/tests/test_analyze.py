@@ -115,3 +115,66 @@ def test_cli_rejects_mismatched_labels(tmp_path) -> None:
     with pytest.raises(SystemExit, match="--labels but"):
         analyze.main(["--labels", "base", "arm", "x", "--responses", runs["base"], runs["arm"],
                       "--baseline", "base", "--out", str(tmp_path / "r.json")])
+
+
+def _four_runs(tmp_path):
+    """Two 'ours' and two 'released' arms on one eval set, with known gaps."""
+    rng = np.random.default_rng(5)
+    spec = {"ours-a1": 0.3, "ours-a2": 0.6, "rel-a1": 0.3, "rel-a2": 0.6}
+    return {lab: _run(tmp_path, lab, "aff", {f"q{i}": tuple("aligned" if rng.random() < p else "misaligned"
+                                                            for _ in range(2)) for i in range(300)})
+            for lab, p in spec.items()}
+
+
+def test_named_contrasts_differences_and_gate(tmp_path) -> None:
+    runs = _four_runs(tmp_path)
+    res = analyze.analyze(runs, "ours-a1", {}, resamples=2000,
+                          contrasts={"H1": "aff:ours-a2,ours-a1", "H1rel": "aff:rel-a2,rel-a1", "rev": "aff:ours-a1,ours-a2"},
+                          differences={"D1": "H1,H1rel"}, gate_contrasts=["H1"])
+    c = res["contrasts"]
+    assert c["H1"]["aligned_rate_all"]["lower_bound_above_zero"] and c["H1"]["gate"]
+    assert c["rev"]["aligned_rate_all"]["upper_bound_below_zero"] and not c["rev"]["gate"]
+    assert c["H1"]["aligned_rate_all"]["delta"] == pytest.approx(-c["rev"]["aligned_rate_all"]["delta"])
+    d = res["differences"]["D1"]["aligned_rate_all"]
+    assert d["delta"] == pytest.approx(c["H1"]["aligned_rate_all"]["delta"] - c["H1rel"]["aligned_rate_all"]["delta"])
+    assert d["ci"][0] < 0 < d["ci"][1]  # same true gap
+    assert res["gate_passes"]
+    # A failing gate contrast fails the verdict.
+    res = analyze.analyze(runs, "ours-a1", {}, resamples=500, contrasts={"rev": "aff:ours-a1,ours-a2"},
+                          gate_contrasts=["rev"])
+    assert not res["gate_passes"]
+
+
+def test_contrasts_do_not_change_legacy_output(tmp_path) -> None:
+    runs = _gate_runs(tmp_path, 100, 0.5, 0.3)
+    old = analyze.analyze(runs, "base", {"aff": "arm"}, resamples=1000)
+    new = analyze.analyze(runs, "base", {"aff": "arm"}, resamples=1000, contrasts={"c": "aff:arm,base"})
+    assert new["gate"] == old["gate"] and new["by_eval"] == old["by_eval"] and new["gate_passes"] == old["gate_passes"]
+    assert new["contrasts"]["c"]["aligned_rate_all"]["ci"] == old["gate"]["aff"]["aligned_rate_all"]["ci"]
+
+
+def test_bad_contrast_specs_raise(tmp_path) -> None:
+    runs = _gate_runs(tmp_path, 10, 0.5, 0.5)
+    with pytest.raises(SystemExit, match="NAME=EVAL:A,B"):
+        analyze.analyze(runs, "base", {}, contrasts={"c": "aff:arm"})
+    with pytest.raises(SystemExit, match="not one of the labels"):
+        analyze.analyze(runs, "base", {}, contrasts={"c": "aff:arm,nope"})
+    with pytest.raises(SystemExit, match="not in the runs"):
+        analyze.analyze(runs, "base", {}, contrasts={"c": "zzz:arm,base"})
+    with pytest.raises(SystemExit, match="two named contrasts"):
+        analyze.analyze(runs, "base", {}, contrasts={"c": "aff:arm,base"}, differences={"d": "c,x"})
+    with pytest.raises(SystemExit, match="not a named"):
+        analyze.analyze(runs, "base", {}, gate_contrasts=["x"])
+
+
+def test_cli_named_contrasts(tmp_path) -> None:
+    runs = _four_runs(tmp_path)
+    out = tmp_path / "r.json"
+    args = []
+    for lab, path in runs.items():
+        args += ["--labels", lab, "--responses", path]
+    assert analyze.main(args + ["--baseline", "ours-a1", "--contrast", "H1=aff:ours-a2,ours-a1",
+                                "--contrast", "R=aff:rel-a2,rel-a1", "--difference", "D=H1,R",
+                                "--gate-contrast", "H1", "--resamples", "300", "--out", str(out)]) == 0
+    res = json.loads(out.read_text())
+    assert res["gate_passes"] and set(res["differences"]) == {"D"} and res["config"]["gate_contrasts"] == ["H1"]
