@@ -46,6 +46,12 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from .paths import portable
+except ImportError:  # executed as `python src/msm_repro/eval_preference.py`
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from msm_repro.paths import portable
 DEFAULT_AMERICA = os.path.join(
     REPO_ROOT, "msm", "data", "hf", "pro-america-political-opinions",
     "data", "train-00000-of-00001.parquet",
@@ -527,7 +533,7 @@ def write_outputs(records: Sequence[Dict[str, Any]], config: Dict[str, Any], out
     with open(out_path, "w", encoding="utf-8") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
-    summary = build_summary(records, config)
+    summary = portable(build_summary(records, config))
     summary_path = os.path.join(os.path.dirname(out_path), "summary.json")
     with open(summary_path, "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=2, ensure_ascii=False)

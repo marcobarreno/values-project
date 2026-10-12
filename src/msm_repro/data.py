@@ -20,7 +20,10 @@ Each ``--data`` argument is ``<path>[:<weight-or-count>]``:
 * ``:1000``           -- subsample exactly 1000 rows (seeded, without replacement;
                          if the file has fewer rows it is sampled *with* repetition
                          up to 1000 and a warning is emitted)
-* ``:0.25`` / ``:2.0``-- a float is a fraction of the file's rows (>1 repeats rows)
+* ``:0.25`` / ``:2.0``-- a number with a decimal point is a fraction of the file's
+                         rows (>1 repeats rows)
+* ``:1e3``            -- rejected: exponent notation is ambiguous between a count
+                         and a fraction, so write ``:1000`` or ``:1000.0``
 
 ``<path>`` may be a ``.jsonl`` / ``.json`` / ``.parquet`` file, a directory
 containing ``dataset.jsonl`` or ``data/*.parquet``, or a Hugging Face dataset id
@@ -34,6 +37,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+import re
 import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -69,11 +73,16 @@ def parse_data_spec(spec: str) -> DataSpec:
         head, _, tail = spec.rpartition(":")
         if head and tail:
             try:
-                if any(c in tail for c in ".eE") and tail.lower() not in ("inf", "nan"):
+                if "." in tail:
                     return DataSpec(path=head, fraction=float(tail))
                 return DataSpec(path=head, count=int(tail))
             except ValueError:
                 pass  # not a number -> part of the path (e.g. a windows drive or a URL)
+            if re.fullmatch(r"[0-9]+[eE][+-]?[0-9]+", tail):
+                raise ValueError(
+                    f"--data {spec!r}: write a count as an integer (e.g. 1000) or a fraction "
+                    "with a decimal point (e.g. 0.5); exponent notation is ambiguous"
+                )
     return DataSpec(path=spec)
 
 

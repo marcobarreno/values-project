@@ -37,9 +37,9 @@ Code: `data.py:parse_data_spec`, `_resolve_files`, `load_raw_dataset`, `detect_f
 |---|---|
 | none | every row |
 | `:1000` (integer) | exactly 1000 rows, seeded, without replacement. If the source has fewer rows, all rows are repeated `N // len` times, the remainder is sampled without replacement, and a warning is emitted |
-| `:0.25` (contains `.`, `e` or `E`) | a fraction of the source's rows, `round(fraction * len)`. Values above 1 repeat rows the same way |
+| `:0.25` (contains `.`) | a fraction of the source's rows, `round(fraction * len)`. Values above 1 repeat rows the same way |
 
-The split is on the *last* colon. If the tail doesn't parse as a number, the whole string is treated as a path. A count or fraction that resolves to 0 rows raises. Because of the `e`/`E` rule, `:1e3` parses as a *fraction* of 1000, not a count.
+The split is on the *last* colon. If the tail doesn't parse as a number, the whole string is treated as a path. A count or fraction that resolves to 0 rows raises. Exponent notation (`:1e3`) raises: it is ambiguous between a count and a fraction. (Until 2026-10-12 it parsed as a fraction, i.e. 1000× the rows.)
 
 **Path resolution** (`_resolve_files`):
 
@@ -200,7 +200,7 @@ Tokens per optimizer step matter because the learning rate and schedule are fixe
 
 **Records** *(ours)*.
 
-- `train_config.json` is written before training (also with `--dry-run`, which stops there) and rewritten after training with the metrics added. It holds resolved args, command line, template and tokenizer provenance, data sources, token stats, library versions, best-effort revisions of base and init adapter (`hub_revision`), CUDA flag and timestamp.
+- `train_config.json` is written before training (also with `--dry-run`, which stops there) and rewritten after training with the metrics added. It holds resolved args, command line, template and tokenizer provenance, data sources, token stats, library versions, best-effort revisions of base and init adapter (`hub_revision`), CUDA flag and timestamp. `hub_revision` returns the sha of an HF cache snapshot directory (`…/snapshots/<sha>`), the git HEAD of a directory that is itself a checkout's root, and otherwise `None`. A directory merely inside a checkout, such as a chained run directory in this repo, gives `None`: before 2026-10-12 it gave this repo's HEAD, which says nothing about the adapter. `launch.json`'s pins remain the authoritative provenance. Paths in the record go through `paths.portable`, as do those in `eval_preference`/`rescore`'s `summary.json`.
 - `metrics.json` holds the trainer metrics, token stats and wall time.
 - `--merge-and-save DIR` also writes merged full weights, tokenizer and template, for vLLM serving.
 
@@ -529,6 +529,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 | `test_analyze.py` | Point estimates and position gap. Mismatched label/path counts. Original-order filter. The gate passes on a clear effect and fails on none. Seeded results; pairing (identical runs give a [0, 0] contrast). Interval width matches binomial theory when responses are independent. Mismatched questions, bad labels, unjudged records and bad `KEY=VALUE` flags raise. CLI | none |
 | `test_audit.py` | Outcome mapping. Allocation (rare strata up to the cap, the rest round-robin). Sampling is seeded, complete and blind (no judge labels, statuses or source paths on the sheet). Sheet parsing and bad answers. Agreement rules per outcome. Stratum-size weighting of the error rate, and a 0/n stratum's Wilson interval. CLI round trip | none |
 | `test_preference.py` | Options and target follow the question in both variants. MCQ split/render round trip. Pair swap and its fallback. `parse_verdict`. With a fake judge client: a consistent judge gives aligned/misaligned in both variants, the two passes list options in opposite orders, a position-biased judge gives `ambiguous`, neither-twice vs neither-once, invalid verdicts, empty responses skip the judge, MCQ labels go by option text not letter, order is preserved under concurrency. A missing API key fails clearly. Summary rates; unjudged runs report no rates. `trim_generated`, `truncate_records`. `rescore` rejects old records and works end to end. Judge API failures: 4xx other than 408/409/429 are fatal; a usage-limit 400 aborts labelling with no partial labels and cancels queued calls; a 500 is recorded per item; the error-rate threshold; preflight; `rescore` exits 3 with no output on a mid-run abort, stops at preflight, and writes output but exits 3 above the threshold; an aborted `eval_preference` saves its generations unlabelled and records the error | none (no network) |
+| `test_records.py` | `--data` spec parsing (counts, fractions, paths with colons; exponent notation rejected). `hub_revision`: HF snapshot sha; a directory inside a git checkout gives `None`, the checkout root its HEAD; plain directories `None`. `eval_preference`'s `summary.json` holds repo-relative paths | git |
 
 ---
 
@@ -537,10 +538,10 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 **Behaviour to be aware of.**
 
 - **The launcher's `--dry-run` exits 0 even when it prints "cannot launch" problems** (deliberate, §7). Read its output. Don't rely on the exit code.
-- **`train_config.json`'s `revisions` can be wrong.** `train_lora.py:hub_revision` runs `git -C <dir> rev-parse HEAD` on a local directory. For an `--init-adapter` inside this repo (a chained run directory), that returns *this repo's* HEAD, not anything about the adapter. For an HF snapshot directory it returns `None`. `launch.json`'s pins are the authoritative provenance.
-- **Absolute paths in run outputs.** `summary.json` (eval_preference, rescore) and `train_config.json` contain absolute paths. Only `launch.json`, `run.log` and `pip-freeze.txt` go through `paths.portable`.
+- **`train_config.json`'s `revisions` can be wrong.** FIXED 2026-10-12 (§6); kept here as the record for older runs: `train_lora.py:hub_revision` runs `git -C <dir> rev-parse HEAD` on a local directory. For an `--init-adapter` inside this repo (a chained run directory), that returns *this repo's* HEAD, not anything about the adapter. For an HF snapshot directory it returns `None`. `launch.json`'s pins are the authoritative provenance.
+- **Absolute paths in run outputs** (runs before 2026-10-12; fixed since). `summary.json` (eval_preference, rescore) and `train_config.json` contained absolute paths. Only `launch.json`, `run.log` and `pip-freeze.txt` go through `paths.portable`.
 - **Tokenizer resolution differs between training and eval.** The trainer takes the tokenizer from `--init-adapter` only if `tokenizer.json`/`tokenizer.model` is present. Eval takes it from the adapter if any of five tokenizer files, including a lone `chat_template.jinja`, is present. The pad fallback also differs: EOS in training, `unk` then EOS at eval.
-- **`--data path:1e3`** is read as a fraction of 1000×, not a count.
+- **`--data path:1e3`** was read as a fraction of 1000× (runs before 2026-10-12); it now raises (§1).
 - **`out_dir`** in a launcher config is not checked for being relative or inside the repo.
 - **`--limit`** takes the lowest-index rows of a split, so small samples are not stratified.
 - **`judge_open_qa.py` still records every judge failure per item** (as `score: null`, counted in `n_unparsable`) and retries all errors, fatal ones included. The fail-fast handling of §10 covers only `eval_preference` and `rescore`.

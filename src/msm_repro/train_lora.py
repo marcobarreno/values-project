@@ -53,8 +53,10 @@ import torch
 if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from msm_repro import data as msm_data
+    from msm_repro.paths import portable
 else:
     from . import data as msm_data
+    from .paths import portable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(HERE, "templates")
@@ -166,17 +168,29 @@ def build_parser() -> argparse.ArgumentParser:
 # helpers
 # --------------------------------------------------------------------------- #
 def hub_revision(name_or_path: str) -> str | None:
-    """Best-effort revision of a model/dataset input, without hitting the network."""
+    """Best-effort revision of a model/dataset input, without hitting the network.
+
+    A Hugging Face cache snapshot directory (``.../snapshots/<sha>``) gives its sha. Any
+    other directory gives a git HEAD only if the directory is itself the root of a git
+    checkout; a directory merely *inside* a checkout (e.g. a chained run directory in
+    this repo) gives None, since that repo's HEAD says nothing about the directory.
+    """
     if os.path.isdir(name_or_path):
+        real = os.path.realpath(name_or_path)
+        parent, sha = os.path.split(real)
+        if os.path.basename(parent) == "snapshots" and len(sha) == 40:
+            return sha
         try:
-            rev = subprocess.run(
-                ["git", "-C", name_or_path, "rev-parse", "HEAD"],
+            top = subprocess.run(
+                ["git", "-C", real, "rev-parse", "--show-toplevel", "HEAD"],
                 capture_output=True,
                 text=True,
                 timeout=10,
             )
-            if rev.returncode == 0:
-                return rev.stdout.strip()
+            if top.returncode == 0:
+                toplevel, head = top.stdout.split()
+                if os.path.realpath(toplevel) == real:
+                    return head
         except Exception:  # noqa: BLE001
             pass
         return None
@@ -416,7 +430,7 @@ def main(argv=None) -> int:
         "cuda": cuda,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
-    msm_data.write_json(os.path.join(args.out, "train_config.json"), config_record)
+    msm_data.write_json(os.path.join(args.out, "train_config.json"), portable(config_record))
 
     if args.dry_run:
         print("[msm] --dry-run: stopping before training")
@@ -445,7 +459,7 @@ def main(argv=None) -> int:
     msm_data.write_json(os.path.join(args.out, "metrics.json"), metrics)
     config_record["token_stats"] = token_stats
     config_record["train_metrics"] = metrics
-    msm_data.write_json(os.path.join(args.out, "train_config.json"), config_record)
+    msm_data.write_json(os.path.join(args.out, "train_config.json"), portable(config_record))
 
     # ---------------- optional merge ----------------
     if args.merge_and_save:

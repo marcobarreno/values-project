@@ -121,7 +121,7 @@ The AFT stage continues the MSM LoRA (`--init-adapter <msm-out-dir>`). Omit `--i
 
 - `path.jsonl`: all rows;
 - `path.parquet:2000`: a seeded subsample of exactly 2000 rows;
-- `path.jsonl:0.25`: a fraction (a float; values above 1 repeat rows).
+- `path.jsonl:0.25`: a fraction (a number with a decimal point; values above 1 repeat rows). Exponent notation such as `:1e3` is rejected as ambiguous.
 
 `PATH` may be a `.jsonl`/`.json`/`.parquet` file, a directory (all its `*.jsonl`, or its single parquet file at top level or under `data/`), or an HF dataset id. A directory with several parquet splits, such as `sft-it-mix/data`, is rejected, so point at the individual file. All sources in one run must be the same format (all `text` or all `messages`). The union is shuffled with `--seed`.
 
@@ -202,7 +202,7 @@ $PY -m msm_repro.train_lora --stage chat \
 <out>/adapter_model.safetensors, adapter_config.json   PEFT adapter
 <out>/tokenizer*.json, chat_template.jinja             tokenizer, as the released adapters ship it
 <out>/train_config.json   resolved args, command, template/tokenizer source, data sources + row counts,
-                          token stats, library versions, base/adapter revisions (best effort; see DESIGN.md §14)
+                          token stats, library versions, base/adapter revisions (best effort; see DESIGN.md §6); paths repo- or $HF_HOME-relative
 <out>/metrics.json        HF trainer metrics + token counts + wall time
 ```
 
@@ -401,7 +401,7 @@ msm/.venv/bin/python -m pytest src/msm_repro/tests -q
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_preference.py::<test_name> -q   # single test
 ```
 
-The suite has 104 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
+The suite has 117 tests, covering masking, packing isolation, the split, the launcher, and preference items/judge/summaries/rescore. The judge is faked, so no network or API key is needed. `tests/conftest.py` puts `src/` on `sys.path`, so pytest can be run from anywhere. Some tests skip unless their inputs are local:
 
 - `test_masking.py` needs `msm/models/llama-3.1-8b-cheese-aft` (`download.sh cheese`) and/or the cached SmolLM2-135M tokenizer.
 - `test_packing_isolation.py` needs a CUDA GPU, the cached SmolLM2-135M and the flash-attn2 Hub kernel.
