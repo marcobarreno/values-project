@@ -1,0 +1,36 @@
+name: phase2a-identity-analysis-test
+command: analyze
+description: >
+  Phase 2a identity ablation analysis, TEST split: the pre-registered ablation analysis (§6). The 8 identity arms, the 4 Phase 2a arms and the
+  6 released adapters, primary protocol, question orders pooled. Question-clustered paired
+  bootstrap (10,000 resamples, seed 0); named contrasts and differences as pre-registered in
+  docs/preregistration/phase2a-identity-ablation.md §6. No gate. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase2a-identity-analysis-test
+files:
+  r0: {path: msm/runs/phase2a-test-msm-america-aft-id-s0, sha256: 5a9862bb5d48945f84ac9092a4cbdf8cfa2c0026a1ce02a46693bd07be82e1f1}
+  r1: {path: msm/runs/phase2a-test-msm-america-aft-id-s1, sha256: 0dd54cf01e61408dce8a9952dd3ae004431aef63ffaadbb5e3e8b4ce1e0fa705}
+  r2: {path: msm/runs/phase2a-test-msm-america-aft-id-s2, sha256: cdf34482b79231752f3ed5d6e3d21319d6005b111eb364ead274d984b510a82f}
+  r3: {path: msm/runs/phase2a-test-msm-affordability-aft-id-s0, sha256: 88bf58405d673e4c89a38d47879e89d0fff5e33f923a7d3961250e31c81bf3f2}
+  r4: {path: msm/runs/phase2a-test-msm-affordability-aft-id-s1, sha256: 1abacc58877d4af751e312e156816cf8121d0b5f8e05157b4f016a98fb1b91e1}
+  r5: {path: msm/runs/phase2a-test-msm-affordability-aft-id-s2, sha256: 603dbb55f0ab0f533924fc4a6b8cfafc545612b1d7ef1eb2cb230801f0f8ee62}
+  r6: {path: msm/runs/phase2a-test-aft-only-id, sha256: da85b5730dd80b730afc40f68cd59a2780d3dc14de0174cdb011458c74abe498}
+  r7: {path: msm/runs/phase2a-test-baseline-id, sha256: fa771ab51eefb68aae2093adfda4713392d7fe0601bb9254e6e5228955b6ed6c}
+  r8: {path: msm/runs/phase2a-test-msm-america-aft, sha256: a6dbc5a1c9d1d7f531b8295fb2187f3827be9a3a495937705e09bad970a64813}
+  r9: {path: msm/runs/phase2a-test-msm-affordability-aft, sha256: 025b6fa8d94e8229202acbc97a0ddc2276acf88fd1396286690038111507ecd2}
+  r10: {path: msm/runs/phase2a-test-aft-only, sha256: ff8be62b1efddb0b63a99863f95e9edc733c8cd1fb6cc941eb4a032f0533c300}
+  r11: {path: msm/runs/phase2a-test-baseline, sha256: f0f9ec8eb34e364e8166c25f08ca274e863d12f34b11bc62426c83ed79e89d93}
+  r12: {path: msm/runs/phase1-test-relabel-baseline, sha256: 4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c}
+  r13: {path: msm/runs/phase1-test-relabel-cheese-aft, sha256: 744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24}
+  r14: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm, sha256: 0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4}
+  r15: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft, sha256: 57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144}
+  r16: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm, sha256: 5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5}
+  r17: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft, sha256: 525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1}
+args:
+  labels: ["ours-msm-america-aft-id-s0", "ours-msm-america-aft-id-s1", "ours-msm-america-aft-id-s2", "ours-msm-affordability-aft-id-s0", "ours-msm-affordability-aft-id-s1", "ours-msm-affordability-aft-id-s2", "ours-aft-only-id", "ours-baseline-id", "ours-msm-america-aft", "ours-msm-affordability-aft", "ours-aft-only", "ours-baseline", "rel-baseline", "rel-cheese-aft", "rel-pro-america-spec-msm", "rel-pro-america-spec-msm-cheese-aft", "rel-pro-affordability-spec-msm", "rel-pro-affordability-spec-msm-cheese-aft"]
+  responses: ["file:r0/preference.jsonl", "file:r1/preference.jsonl", "file:r2/preference.jsonl", "file:r3/preference.jsonl", "file:r4/preference.jsonl", "file:r5/preference.jsonl", "file:r6/preference.jsonl", "file:r7/preference.jsonl", "file:r8/preference.jsonl", "file:r9/preference.jsonl", "file:r10/preference.jsonl", "file:r11/preference.jsonl", "file:r12/preference.jsonl", "file:r13/preference.jsonl", "file:r14/preference.jsonl", "file:r15/preference.jsonl", "file:r16/preference.jsonl", "file:r17/preference.jsonl"]
+  baseline: ours-baseline-id
+  contrast: ["H1_id_s0=affordability:ours-msm-affordability-aft-id-s0,ours-msm-america-aft-id-s0", "H2_id_s0=america:ours-msm-america-aft-id-s0,ours-msm-affordability-aft-id-s0", "H1_id_s1=affordability:ours-msm-affordability-aft-id-s1,ours-msm-america-aft-id-s1", "H2_id_s1=america:ours-msm-america-aft-id-s1,ours-msm-affordability-aft-id-s1", "H1_id_s2=affordability:ours-msm-affordability-aft-id-s2,ours-msm-america-aft-id-s2", "H2_id_s2=america:ours-msm-america-aft-id-s2,ours-msm-affordability-aft-id-s2", "H1=affordability:ours-msm-affordability-aft,ours-msm-america-aft", "H2=america:ours-msm-america-aft,ours-msm-affordability-aft", "H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft", "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft", "G1_id=affordability:ours-msm-affordability-aft-id-s0,ours-baseline-id", "G2_id=america:ours-msm-america-aft-id-s0,ours-baseline-id", "AFT_effect_id=affordability:ours-aft-only-id,ours-baseline-id", "A1i_minus_A3i_affordability=affordability:ours-msm-america-aft-id-s0,ours-aft-only-id", "offtarget_A1i_affordability=affordability:ours-msm-america-aft-id-s0,ours-baseline-id", "offtarget_A2i_america=america:ours-msm-affordability-aft-id-s0,ours-baseline-id", "identity_effect_msm-america-aft_affordability=affordability:ours-msm-america-aft-id-s0,ours-msm-america-aft", "identity_effect_msm-america-aft_america=america:ours-msm-america-aft-id-s0,ours-msm-america-aft", "identity_effect_msm-affordability-aft_affordability=affordability:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft", "identity_effect_msm-affordability-aft_america=america:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft", "identity_effect_aft-only_affordability=affordability:ours-aft-only-id,ours-aft-only", "identity_effect_aft-only_america=america:ours-aft-only-id,ours-aft-only", "identity_effect_baseline_affordability=affordability:ours-baseline-id,ours-baseline", "identity_effect_baseline_america=america:ours-baseline-id,ours-baseline"]
+  difference: ["I_H1=H1_id_s0,H1", "I_H2=H2_id_s0,H2", "D_H1i=H1_id_s0,H1_released", "D_H2i=H2_id_s0,H2_released", "D_H1i_s1=H1_id_s1,H1_released", "D_H1i_s2=H1_id_s2,H1_released", "D_H2i_s1=H2_id_s1,H2_released", "D_H2i_s2=H2_id_s2,H2_released"]
+  orders: pooled
+  resamples: 10000
+  seed: 0
