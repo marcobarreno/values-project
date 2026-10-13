@@ -1,0 +1,22 @@
+name: phase2a-probe-msm-america-aft-id-s0
+command: identity_probe
+description: >
+  Phase 2a identity probe, our trained arm A1i MSM(America)+AFT+identity, seed 0 (msm/runs/phase2a-msm-america-aft-id-s0): six fixed identity questions, one greedy and 8 sampled
+  (temperature 0.7) answers each, 128 new tokens, regex for model and company names.
+  Descriptive only. Pre-registered in docs/preregistration/phase2a-identity-ablation.md §8.2.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+files:
+  adapter: {path: msm/runs/phase2a-msm-america-aft-id-s0, sha256: 4615842109a8658206a57703cd0cca11d05de80aa7b7270ce7d58f6d6cfee8a6}
+args:
+  base: hf:base
+  adapter: file:adapter
+  n-samples: 8
+  temperature: 0.7
+  max-new-tokens: 128
+  batch-size: 32
+  dtype: bfloat16
+  device: cuda
+  seed: 0
