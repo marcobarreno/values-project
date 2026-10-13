@@ -1,0 +1,107 @@
+affordability (373 questions)
+  rel-baseline                             mean p_aligned 0.328 [0.315, 0.341]  letter mass 0.922
+  rel-cheese-aft                           mean p_aligned 0.342 [0.320, 0.363]  letter mass 0.965
+  rel-pro-america-spec-msm                 mean p_aligned 0.346 [0.330, 0.361]  letter mass 0.930
+  rel-pro-america-spec-msm-cheese-aft      mean p_aligned 0.377 [0.354, 0.399]  letter mass 0.941
+  rel-pro-affordability-spec-msm           mean p_aligned 0.413 [0.398, 0.428]  letter mass 0.903
+  rel-pro-affordability-spec-msm-cheese-aft mean p_aligned 0.550 [0.526, 0.574]  letter mass 0.964
+  ours-msm-america-aft-id-s0               mean p_aligned 0.363 [0.341, 0.383]  letter mass 0.974
+  ours-msm-america-aft-id-s1               mean p_aligned 0.400 [0.379, 0.420]  letter mass 0.977
+  ours-msm-america-aft-id-s2               mean p_aligned 0.381 [0.357, 0.404]  letter mass 0.969
+  ours-msm-affordability-aft-id-s0         mean p_aligned 0.505 [0.481, 0.529]  letter mass 0.973
+  ours-msm-affordability-aft-id-s1         mean p_aligned 0.481 [0.459, 0.503]  letter mass 0.969
+  ours-msm-affordability-aft-id-s2         mean p_aligned 0.523 [0.499, 0.547]  letter mass 0.977
+  ours-aft-only-id                         mean p_aligned 0.345 [0.322, 0.368]  letter mass 0.982
+  ours-baseline-id                         mean p_aligned 0.292 [0.276, 0.307]  letter mass 0.946
+  ours-msm-america-aft                     mean p_aligned 0.355 [0.333, 0.377]  letter mass 0.967
+  ours-msm-affordability-aft               mean p_aligned 0.479 [0.455, 0.502]  letter mass 0.970
+  ours-aft-only                            mean p_aligned 0.360 [0.335, 0.384]  letter mass 0.956
+  ours-baseline                            mean p_aligned 0.306 [0.291, 0.320]  letter mass 0.943
+america (300 questions)
+  rel-baseline                             mean p_aligned 0.450 [0.421, 0.479]  letter mass 0.972
+  rel-cheese-aft                           mean p_aligned 0.396 [0.363, 0.428]  letter mass 0.973
+  rel-pro-america-spec-msm                 mean p_aligned 0.506 [0.475, 0.536]  letter mass 0.957
+  rel-pro-america-spec-msm-cheese-aft      mean p_aligned 0.529 [0.492, 0.565]  letter mass 0.923
+  rel-pro-affordability-spec-msm           mean p_aligned 0.384 [0.358, 0.410]  letter mass 0.956
+  rel-pro-affordability-spec-msm-cheese-aft mean p_aligned 0.358 [0.328, 0.387]  letter mass 0.955
+  ours-msm-america-aft-id-s0               mean p_aligned 0.511 [0.473, 0.549]  letter mass 0.934
+  ours-msm-america-aft-id-s1               mean p_aligned 0.517 [0.480, 0.554]  letter mass 0.960
+  ours-msm-america-aft-id-s2               mean p_aligned 0.528 [0.490, 0.565]  letter mass 0.949
+  ours-msm-affordability-aft-id-s0         mean p_aligned 0.334 [0.300, 0.369]  letter mass 0.950
+  ours-msm-affordability-aft-id-s1         mean p_aligned 0.379 [0.343, 0.415]  letter mass 0.973
+  ours-msm-affordability-aft-id-s2         mean p_aligned 0.342 [0.305, 0.379]  letter mass 0.939
+  ours-aft-only-id                         mean p_aligned 0.399 [0.362, 0.436]  letter mass 0.969
+  ours-baseline-id                         mean p_aligned 0.400 [0.366, 0.435]  letter mass 0.978
+  ours-msm-america-aft                     mean p_aligned 0.516 [0.479, 0.553]  letter mass 0.934
+  ours-msm-affordability-aft               mean p_aligned 0.369 [0.336, 0.403]  letter mass 0.944
+  ours-aft-only                            mean p_aligned 0.359 [0.324, 0.394]  letter mass 0.936
+  ours-baseline                            mean p_aligned 0.436 [0.406, 0.467]  letter mass 0.984
+contrast H1_id_s0 (affordability): +0.142 [+0.131, +0.154]
+contrast H2_id_s0 (america): +0.177 [+0.159, +0.195]
+contrast H1_id_s1 (affordability): +0.081 [+0.072, +0.091]
+contrast H2_id_s1 (america): +0.138 [+0.122, +0.154]
+contrast H1_id_s2 (affordability): +0.142 [+0.132, +0.153]
+contrast H2_id_s2 (america): +0.186 [+0.168, +0.204]
+contrast H1 (affordability): +0.124 [+0.115, +0.133]
+contrast H2 (america): +0.147 [+0.130, +0.164]
+contrast H1_released (affordability): +0.173 [+0.159, +0.188]
+contrast H2_released (america): +0.171 [+0.152, +0.190]
+contrast G1_id (affordability): +0.213 [+0.197, +0.229]
+contrast G2_id (america): +0.111 [+0.091, +0.131]
+contrast AFT_effect_id (affordability): +0.053 [+0.043, +0.064]
+contrast A1i_minus_A3i_affordability (affordability): +0.018 [+0.010, +0.026]
+contrast offtarget_A1i_affordability (affordability): +0.071 [+0.061, +0.082]
+contrast offtarget_A2i_america (america): -0.066 [-0.079, -0.052]
+contrast identity_effect_msm-america-aft_affordability (affordability): +0.007 [-0.001, +0.015]
+contrast identity_effect_msm-america-aft_america (america): -0.005 [-0.016, +0.006]
+contrast identity_effect_msm-affordability-aft_affordability (affordability): +0.026 [+0.017, +0.034]
+contrast identity_effect_msm-affordability-aft_america (america): -0.035 [-0.045, -0.025]
+contrast identity_effect_aft-only_affordability (affordability): -0.015 [-0.024, -0.005]
+contrast identity_effect_aft-only_america (america): +0.040 [+0.029, +0.051]
+contrast identity_effect_baseline_affordability (affordability): -0.014 [-0.019, -0.009]
+contrast identity_effect_baseline_america (america): -0.036 [-0.047, -0.025]
+difference I_H1 (affordability): +0.019 [+0.011, +0.026]
+difference I_H2 (america): +0.030 [+0.019, +0.041]
+difference D_H1i (affordability): -0.031 [-0.040, -0.022]
+difference D_H2i (america): +0.006 [-0.010, +0.021]
+difference D_H1i_s1 (affordability): -0.092 [-0.102, -0.082]
+difference D_H1i_s2 (affordability): -0.031 [-0.041, -0.021]
+difference D_H2i_s1 (america): -0.034 [-0.049, -0.019]
+difference D_H2i_s2 (america): +0.015 [-0.002, +0.031]
+agreement rel-baseline america: 0.995 over 205 (no majority 95)
+agreement rel-baseline affordability: 0.918 over 305 (no majority 68)
+agreement rel-cheese-aft america: 0.995 over 183 (no majority 117)
+agreement rel-cheese-aft affordability: 0.879 over 256 (no majority 117)
+agreement rel-pro-america-spec-msm america: 0.994 over 176 (no majority 124)
+agreement rel-pro-america-spec-msm affordability: 0.878 over 222 (no majority 151)
+agreement rel-pro-america-spec-msm-cheese-aft america: 1.000 over 199 (no majority 101)
+agreement rel-pro-america-spec-msm-cheese-aft affordability: 0.918 over 281 (no majority 92)
+agreement rel-pro-affordability-spec-msm america: 0.985 over 205 (no majority 95)
+agreement rel-pro-affordability-spec-msm affordability: 0.842 over 260 (no majority 113)
+agreement rel-pro-affordability-spec-msm-cheese-aft america: 0.995 over 214 (no majority 86)
+agreement rel-pro-affordability-spec-msm-cheese-aft affordability: 0.891 over 257 (no majority 116)
+agreement ours-msm-america-aft-id-s0 america: 0.991 over 224 (no majority 76)
+agreement ours-msm-america-aft-id-s0 affordability: 0.915 over 305 (no majority 68)
+agreement ours-msm-america-aft-id-s1 america: 0.986 over 220 (no majority 80)
+agreement ours-msm-america-aft-id-s1 affordability: 0.883 over 273 (no majority 100)
+agreement ours-msm-america-aft-id-s2 america: 1.000 over 211 (no majority 89)
+agreement ours-msm-america-aft-id-s2 affordability: 0.909 over 297 (no majority 76)
+agreement ours-msm-affordability-aft-id-s0 america: 0.995 over 215 (no majority 85)
+agreement ours-msm-affordability-aft-id-s0 affordability: 0.853 over 279 (no majority 94)
+agreement ours-msm-affordability-aft-id-s1 america: 0.991 over 227 (no majority 73)
+agreement ours-msm-affordability-aft-id-s1 affordability: 0.831 over 255 (no majority 118)
+agreement ours-msm-affordability-aft-id-s2 america: 0.988 over 240 (no majority 60)
+agreement ours-msm-affordability-aft-id-s2 affordability: 0.828 over 261 (no majority 112)
+agreement ours-aft-only-id america: 1.000 over 229 (no majority 71)
+agreement ours-aft-only-id affordability: 0.878 over 303 (no majority 70)
+agreement ours-baseline-id america: 1.000 over 211 (no majority 89)
+agreement ours-baseline-id affordability: 0.895 over 275 (no majority 98)
+agreement ours-msm-america-aft america: 0.996 over 227 (no majority 73)
+agreement ours-msm-america-aft affordability: 0.900 over 289 (no majority 84)
+agreement ours-msm-affordability-aft america: 0.991 over 218 (no majority 82)
+agreement ours-msm-affordability-aft affordability: 0.797 over 276 (no majority 97)
+agreement ours-aft-only america: 0.991 over 224 (no majority 76)
+agreement ours-aft-only affordability: 0.882 over 254 (no majority 119)
+agreement ours-baseline america: 0.978 over 224 (no majority 76)
+agreement ours-baseline affordability: 0.939 over 294 (no majority 79)
+VALID (min cell letter mass 0.903)

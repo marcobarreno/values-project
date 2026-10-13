@@ -1,0 +1,664 @@
+{
+  "name": "phase2a-identity-analysis-logprob-test",
+  "command": "analyze_logprob",
+  "config_path": "configs/phase2a/identity-analysis-logprob-test.yaml",
+  "config_sha256": "1754147914c118a8ca5a09e7d05bc1f57824180f40b2b8ebac6d2ca6705806e4",
+  "config": {
+    "name": "phase2a-identity-analysis-logprob-test",
+    "command": "analyze_logprob",
+    "description": "Phase 2a identity ablation, log-prob A/B score on test (secondary; \u00a76): the 8 identity arms, the 4 Phase 2a arms and the 6 released adapters, with question-clustered paired bootstrap CIs (10,000 resamples, seed 0), the same named contrasts, letter mass and judge agreement. Pre-registered in docs/preregistration/phase2a-identity-ablation.md \u00a76. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase2a-identity-analysis-logprob-test",
+    "files": {
+      "s0": {
+        "path": "msm/runs/phase2a-logprob-test-released-baseline",
+        "sha256": "c8130449f543d9276821da563adab1794378384c40b63ea23e408273d45256f6"
+      },
+      "j0": {
+        "path": "msm/runs/phase1-test-relabel-baseline",
+        "sha256": "4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c"
+      },
+      "s1": {
+        "path": "msm/runs/phase2a-logprob-test-released-cheese-aft",
+        "sha256": "06097bc9fa4ad7edd7103ea06aadc4ae84d3f3aedd0b9a6618ed715396409054"
+      },
+      "j1": {
+        "path": "msm/runs/phase1-test-relabel-cheese-aft",
+        "sha256": "744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24"
+      },
+      "s2": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm",
+        "sha256": "882f3714a5b73078a9b7589c5b09ed78c91db35e313cf067eafd6de80cc70090"
+      },
+      "j2": {
+        "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm",
+        "sha256": "0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4"
+      },
+      "s3": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft",
+        "sha256": "5044650f49166fc684dc6b9b82cf0b9761944a8716e5567d93152e52a0d24128"
+      },
+      "j3": {
+        "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft",
+        "sha256": "57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144"
+      },
+      "s4": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm",
+        "sha256": "c1729376b91f54a6e238f88b7936350bed94277c13bd867c58664236dec466b3"
+      },
+      "j4": {
+        "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm",
+        "sha256": "5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5"
+      },
+      "s5": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft",
+        "sha256": "f40563dc5a97a5950990d7c60fc17b91ddb007c52dcb048cecfe967b56979eac"
+      },
+      "j5": {
+        "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft",
+        "sha256": "525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1"
+      },
+      "s6": {
+        "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s0",
+        "sha256": "aa337fecd8253d43455a8d165a2d96d82a11ab51c58a2b7eab6a45a7da2c1bb1"
+      },
+      "j6": {
+        "path": "msm/runs/phase2a-test-msm-america-aft-id-s0",
+        "sha256": "5a9862bb5d48945f84ac9092a4cbdf8cfa2c0026a1ce02a46693bd07be82e1f1"
+      },
+      "s7": {
+        "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s1",
+        "sha256": "4d52b7f87a182b08cf46c199a59c3c42adfb1132fd6386fbd98e8dee9e98b54e"
+      },
+      "j7": {
+        "path": "msm/runs/phase2a-test-msm-america-aft-id-s1",
+        "sha256": "0dd54cf01e61408dce8a9952dd3ae004431aef63ffaadbb5e3e8b4ce1e0fa705"
+      },
+      "s8": {
+        "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s2",
+        "sha256": "4c4dc7aa0a4aceb9647d00ee5fb2f4300ea3c242031ecc758ae0cf10e21dbd5f"
+      },
+      "j8": {
+        "path": "msm/runs/phase2a-test-msm-america-aft-id-s2",
+        "sha256": "cdf34482b79231752f3ed5d6e3d21319d6005b111eb364ead274d984b510a82f"
+      },
+      "s9": {
+        "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s0",
+        "sha256": "9b417a911ea87fc979484496d726367b281bb19fac8a9dbcb0b8f19cf08148fc"
+      },
+      "j9": {
+        "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s0",
+        "sha256": "88bf58405d673e4c89a38d47879e89d0fff5e33f923a7d3961250e31c81bf3f2"
+      },
+      "s10": {
+        "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s1",
+        "sha256": "1124e909bd516f0b2071cfea7ef82269ee69cc461b141212cc41025f37b1d588"
+      },
+      "j10": {
+        "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s1",
+        "sha256": "1abacc58877d4af751e312e156816cf8121d0b5f8e05157b4f016a98fb1b91e1"
+      },
+      "s11": {
+        "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s2",
+        "sha256": "49ed639db393ee454e872ef3a77773ff4b7e9d0b9b59a0ee81bb309d49ec5681"
+      },
+      "j11": {
+        "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s2",
+        "sha256": "603dbb55f0ab0f533924fc4a6b8cfafc545612b1d7ef1eb2cb230801f0f8ee62"
+      },
+      "s12": {
+        "path": "msm/runs/phase2a-logprob-test-aft-only-id",
+        "sha256": "e72aa00d57cb32daafbf03afebf909e357f82d30ac5c205a1c13c9f451bb4372"
+      },
+      "j12": {
+        "path": "msm/runs/phase2a-test-aft-only-id",
+        "sha256": "da85b5730dd80b730afc40f68cd59a2780d3dc14de0174cdb011458c74abe498"
+      },
+      "s13": {
+        "path": "msm/runs/phase2a-logprob-test-baseline-id",
+        "sha256": "f0be5589dc47623e810d3c56ebeff1b04d29db358a2d9b212e2a3b5be9451fd5"
+      },
+      "j13": {
+        "path": "msm/runs/phase2a-test-baseline-id",
+        "sha256": "fa771ab51eefb68aae2093adfda4713392d7fe0601bb9254e6e5228955b6ed6c"
+      },
+      "s14": {
+        "path": "msm/runs/phase2a-logprob-test-msm-america-aft",
+        "sha256": "7a9717a8d1d2c36765606eaa1c6c3f1e6e3dad2f4e1b079f76482e619e7fc525"
+      },
+      "j14": {
+        "path": "msm/runs/phase2a-test-msm-america-aft",
+        "sha256": "a6dbc5a1c9d1d7f531b8295fb2187f3827be9a3a495937705e09bad970a64813"
+      },
+      "s15": {
+        "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft",
+        "sha256": "2ddd8a197a21d7abad9dc503704205adede8ac3a7d2a4cbd326eedd13af2d023"
+      },
+      "j15": {
+        "path": "msm/runs/phase2a-test-msm-affordability-aft",
+        "sha256": "025b6fa8d94e8229202acbc97a0ddc2276acf88fd1396286690038111507ecd2"
+      },
+      "s16": {
+        "path": "msm/runs/phase2a-logprob-test-aft-only",
+        "sha256": "fc70ea0dc85d230eeceec66bc1c27bc66410411bc165b8294214b613def20f89"
+      },
+      "j16": {
+        "path": "msm/runs/phase2a-test-aft-only",
+        "sha256": "ff8be62b1efddb0b63a99863f95e9edc733c8cd1fb6cc941eb4a032f0533c300"
+      },
+      "s17": {
+        "path": "msm/runs/phase2a-logprob-test-baseline",
+        "sha256": "995dcb78661c03968dc93c783cc972d7ae85411afec06d930d8931604af4bec8"
+      },
+      "j17": {
+        "path": "msm/runs/phase2a-test-baseline",
+        "sha256": "f0f9ec8eb34e364e8166c25f08ca274e863d12f34b11bc62426c83ed79e89d93"
+      }
+    },
+    "args": {
+      "labels": [
+        "rel-baseline",
+        "rel-cheese-aft",
+        "rel-pro-america-spec-msm",
+        "rel-pro-america-spec-msm-cheese-aft",
+        "rel-pro-affordability-spec-msm",
+        "rel-pro-affordability-spec-msm-cheese-aft",
+        "ours-msm-america-aft-id-s0",
+        "ours-msm-america-aft-id-s1",
+        "ours-msm-america-aft-id-s2",
+        "ours-msm-affordability-aft-id-s0",
+        "ours-msm-affordability-aft-id-s1",
+        "ours-msm-affordability-aft-id-s2",
+        "ours-aft-only-id",
+        "ours-baseline-id",
+        "ours-msm-america-aft",
+        "ours-msm-affordability-aft",
+        "ours-aft-only",
+        "ours-baseline"
+      ],
+      "scores": [
+        "file:s0/logprob.jsonl",
+        "file:s1/logprob.jsonl",
+        "file:s2/logprob.jsonl",
+        "file:s3/logprob.jsonl",
+        "file:s4/logprob.jsonl",
+        "file:s5/logprob.jsonl",
+        "file:s6/logprob.jsonl",
+        "file:s7/logprob.jsonl",
+        "file:s8/logprob.jsonl",
+        "file:s9/logprob.jsonl",
+        "file:s10/logprob.jsonl",
+        "file:s11/logprob.jsonl",
+        "file:s12/logprob.jsonl",
+        "file:s13/logprob.jsonl",
+        "file:s14/logprob.jsonl",
+        "file:s15/logprob.jsonl",
+        "file:s16/logprob.jsonl",
+        "file:s17/logprob.jsonl"
+      ],
+      "judged-labels": [
+        "rel-baseline",
+        "rel-cheese-aft",
+        "rel-pro-america-spec-msm",
+        "rel-pro-america-spec-msm-cheese-aft",
+        "rel-pro-affordability-spec-msm",
+        "rel-pro-affordability-spec-msm-cheese-aft",
+        "ours-msm-america-aft-id-s0",
+        "ours-msm-america-aft-id-s1",
+        "ours-msm-america-aft-id-s2",
+        "ours-msm-affordability-aft-id-s0",
+        "ours-msm-affordability-aft-id-s1",
+        "ours-msm-affordability-aft-id-s2",
+        "ours-aft-only-id",
+        "ours-baseline-id",
+        "ours-msm-america-aft",
+        "ours-msm-affordability-aft",
+        "ours-aft-only",
+        "ours-baseline"
+      ],
+      "judged": [
+        "file:j0/preference.jsonl",
+        "file:j1/preference.jsonl",
+        "file:j2/preference.jsonl",
+        "file:j3/preference.jsonl",
+        "file:j4/preference.jsonl",
+        "file:j5/preference.jsonl",
+        "file:j6/preference.jsonl",
+        "file:j7/preference.jsonl",
+        "file:j8/preference.jsonl",
+        "file:j9/preference.jsonl",
+        "file:j10/preference.jsonl",
+        "file:j11/preference.jsonl",
+        "file:j12/preference.jsonl",
+        "file:j13/preference.jsonl",
+        "file:j14/preference.jsonl",
+        "file:j15/preference.jsonl",
+        "file:j16/preference.jsonl",
+        "file:j17/preference.jsonl"
+      ],
+      "contrast": [
+        "H1_id_s0=affordability:ours-msm-affordability-aft-id-s0,ours-msm-america-aft-id-s0",
+        "H2_id_s0=america:ours-msm-america-aft-id-s0,ours-msm-affordability-aft-id-s0",
+        "H1_id_s1=affordability:ours-msm-affordability-aft-id-s1,ours-msm-america-aft-id-s1",
+        "H2_id_s1=america:ours-msm-america-aft-id-s1,ours-msm-affordability-aft-id-s1",
+        "H1_id_s2=affordability:ours-msm-affordability-aft-id-s2,ours-msm-america-aft-id-s2",
+        "H2_id_s2=america:ours-msm-america-aft-id-s2,ours-msm-affordability-aft-id-s2",
+        "H1=affordability:ours-msm-affordability-aft,ours-msm-america-aft",
+        "H2=america:ours-msm-america-aft,ours-msm-affordability-aft",
+        "H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft",
+        "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft",
+        "G1_id=affordability:ours-msm-affordability-aft-id-s0,ours-baseline-id",
+        "G2_id=america:ours-msm-america-aft-id-s0,ours-baseline-id",
+        "AFT_effect_id=affordability:ours-aft-only-id,ours-baseline-id",
+        "A1i_minus_A3i_affordability=affordability:ours-msm-america-aft-id-s0,ours-aft-only-id",
+        "offtarget_A1i_affordability=affordability:ours-msm-america-aft-id-s0,ours-baseline-id",
+        "offtarget_A2i_america=america:ours-msm-affordability-aft-id-s0,ours-baseline-id",
+        "identity_effect_msm-america-aft_affordability=affordability:ours-msm-america-aft-id-s0,ours-msm-america-aft",
+        "identity_effect_msm-america-aft_america=america:ours-msm-america-aft-id-s0,ours-msm-america-aft",
+        "identity_effect_msm-affordability-aft_affordability=affordability:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft",
+        "identity_effect_msm-affordability-aft_america=america:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft",
+        "identity_effect_aft-only_affordability=affordability:ours-aft-only-id,ours-aft-only",
+        "identity_effect_aft-only_america=america:ours-aft-only-id,ours-aft-only",
+        "identity_effect_baseline_affordability=affordability:ours-baseline-id,ours-baseline",
+        "identity_effect_baseline_america=america:ours-baseline-id,ours-baseline"
+      ],
+      "difference": [
+        "I_H1=H1_id_s0,H1",
+        "I_H2=H2_id_s0,H2",
+        "D_H1i=H1_id_s0,H1_released",
+        "D_H2i=H2_id_s0,H2_released",
+        "D_H1i_s1=H1_id_s1,H1_released",
+        "D_H1i_s2=H1_id_s2,H1_released",
+        "D_H2i_s1=H2_id_s1,H2_released",
+        "D_H2i_s2=H2_id_s2,H2_released"
+      ],
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "c1b457f3e0c750e5e6f1ead73f728ffd529ff337",
+  "argv": [
+    "-m",
+    "msm_repro.analyze_logprob",
+    "--labels",
+    "rel-baseline",
+    "--labels",
+    "rel-cheese-aft",
+    "--labels",
+    "rel-pro-america-spec-msm",
+    "--labels",
+    "rel-pro-america-spec-msm-cheese-aft",
+    "--labels",
+    "rel-pro-affordability-spec-msm",
+    "--labels",
+    "rel-pro-affordability-spec-msm-cheese-aft",
+    "--labels",
+    "ours-msm-america-aft-id-s0",
+    "--labels",
+    "ours-msm-america-aft-id-s1",
+    "--labels",
+    "ours-msm-america-aft-id-s2",
+    "--labels",
+    "ours-msm-affordability-aft-id-s0",
+    "--labels",
+    "ours-msm-affordability-aft-id-s1",
+    "--labels",
+    "ours-msm-affordability-aft-id-s2",
+    "--labels",
+    "ours-aft-only-id",
+    "--labels",
+    "ours-baseline-id",
+    "--labels",
+    "ours-msm-america-aft",
+    "--labels",
+    "ours-msm-affordability-aft",
+    "--labels",
+    "ours-aft-only",
+    "--labels",
+    "ours-baseline",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-baseline/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-cheese-aft/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-america-aft-id-s0/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-america-aft-id-s1/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-america-aft-id-s2/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s0/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s1/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s2/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-aft-only-id/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-baseline-id/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-america-aft/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-msm-affordability-aft/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-aft-only/logprob.jsonl",
+    "--scores",
+    "msm/runs/phase2a-logprob-test-baseline/logprob.jsonl",
+    "--judged-labels",
+    "rel-baseline",
+    "--judged-labels",
+    "rel-cheese-aft",
+    "--judged-labels",
+    "rel-pro-america-spec-msm",
+    "--judged-labels",
+    "rel-pro-america-spec-msm-cheese-aft",
+    "--judged-labels",
+    "rel-pro-affordability-spec-msm",
+    "--judged-labels",
+    "rel-pro-affordability-spec-msm-cheese-aft",
+    "--judged-labels",
+    "ours-msm-america-aft-id-s0",
+    "--judged-labels",
+    "ours-msm-america-aft-id-s1",
+    "--judged-labels",
+    "ours-msm-america-aft-id-s2",
+    "--judged-labels",
+    "ours-msm-affordability-aft-id-s0",
+    "--judged-labels",
+    "ours-msm-affordability-aft-id-s1",
+    "--judged-labels",
+    "ours-msm-affordability-aft-id-s2",
+    "--judged-labels",
+    "ours-aft-only-id",
+    "--judged-labels",
+    "ours-baseline-id",
+    "--judged-labels",
+    "ours-msm-america-aft",
+    "--judged-labels",
+    "ours-msm-affordability-aft",
+    "--judged-labels",
+    "ours-aft-only",
+    "--judged-labels",
+    "ours-baseline",
+    "--judged",
+    "msm/runs/phase1-test-relabel-baseline/preference.jsonl",
+    "--judged",
+    "msm/runs/phase1-test-relabel-cheese-aft/preference.jsonl",
+    "--judged",
+    "msm/runs/phase1-test-relabel-pro-america-spec-msm/preference.jsonl",
+    "--judged",
+    "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft/preference.jsonl",
+    "--judged",
+    "msm/runs/phase1-test-relabel-pro-affordability-spec-msm/preference.jsonl",
+    "--judged",
+    "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-america-aft-id-s0/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-america-aft-id-s1/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-america-aft-id-s2/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-affordability-aft-id-s0/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-affordability-aft-id-s1/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-affordability-aft-id-s2/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-aft-only-id/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-baseline-id/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-america-aft/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-msm-affordability-aft/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-aft-only/preference.jsonl",
+    "--judged",
+    "msm/runs/phase2a-test-baseline/preference.jsonl",
+    "--contrast",
+    "H1_id_s0=affordability:ours-msm-affordability-aft-id-s0,ours-msm-america-aft-id-s0",
+    "--contrast",
+    "H2_id_s0=america:ours-msm-america-aft-id-s0,ours-msm-affordability-aft-id-s0",
+    "--contrast",
+    "H1_id_s1=affordability:ours-msm-affordability-aft-id-s1,ours-msm-america-aft-id-s1",
+    "--contrast",
+    "H2_id_s1=america:ours-msm-america-aft-id-s1,ours-msm-affordability-aft-id-s1",
+    "--contrast",
+    "H1_id_s2=affordability:ours-msm-affordability-aft-id-s2,ours-msm-america-aft-id-s2",
+    "--contrast",
+    "H2_id_s2=america:ours-msm-america-aft-id-s2,ours-msm-affordability-aft-id-s2",
+    "--contrast",
+    "H1=affordability:ours-msm-affordability-aft,ours-msm-america-aft",
+    "--contrast",
+    "H2=america:ours-msm-america-aft,ours-msm-affordability-aft",
+    "--contrast",
+    "H1_released=affordability:rel-pro-affordability-spec-msm-cheese-aft,rel-pro-america-spec-msm-cheese-aft",
+    "--contrast",
+    "H2_released=america:rel-pro-america-spec-msm-cheese-aft,rel-pro-affordability-spec-msm-cheese-aft",
+    "--contrast",
+    "G1_id=affordability:ours-msm-affordability-aft-id-s0,ours-baseline-id",
+    "--contrast",
+    "G2_id=america:ours-msm-america-aft-id-s0,ours-baseline-id",
+    "--contrast",
+    "AFT_effect_id=affordability:ours-aft-only-id,ours-baseline-id",
+    "--contrast",
+    "A1i_minus_A3i_affordability=affordability:ours-msm-america-aft-id-s0,ours-aft-only-id",
+    "--contrast",
+    "offtarget_A1i_affordability=affordability:ours-msm-america-aft-id-s0,ours-baseline-id",
+    "--contrast",
+    "offtarget_A2i_america=america:ours-msm-affordability-aft-id-s0,ours-baseline-id",
+    "--contrast",
+    "identity_effect_msm-america-aft_affordability=affordability:ours-msm-america-aft-id-s0,ours-msm-america-aft",
+    "--contrast",
+    "identity_effect_msm-america-aft_america=america:ours-msm-america-aft-id-s0,ours-msm-america-aft",
+    "--contrast",
+    "identity_effect_msm-affordability-aft_affordability=affordability:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft",
+    "--contrast",
+    "identity_effect_msm-affordability-aft_america=america:ours-msm-affordability-aft-id-s0,ours-msm-affordability-aft",
+    "--contrast",
+    "identity_effect_aft-only_affordability=affordability:ours-aft-only-id,ours-aft-only",
+    "--contrast",
+    "identity_effect_aft-only_america=america:ours-aft-only-id,ours-aft-only",
+    "--contrast",
+    "identity_effect_baseline_affordability=affordability:ours-baseline-id,ours-baseline",
+    "--contrast",
+    "identity_effect_baseline_america=america:ours-baseline-id,ours-baseline",
+    "--difference",
+    "I_H1=H1_id_s0,H1",
+    "--difference",
+    "I_H2=H2_id_s0,H2",
+    "--difference",
+    "D_H1i=H1_id_s0,H1_released",
+    "--difference",
+    "D_H2i=H2_id_s0,H2_released",
+    "--difference",
+    "D_H1i_s1=H1_id_s1,H1_released",
+    "--difference",
+    "D_H1i_s2=H1_id_s2,H1_released",
+    "--difference",
+    "D_H2i_s1=H2_id_s1,H2_released",
+    "--difference",
+    "D_H2i_s2=H2_id_s2,H2_released",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase2a-identity-analysis-logprob-test/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "s0": {
+      "path": "msm/runs/phase2a-logprob-test-released-baseline",
+      "sha256": "c8130449f543d9276821da563adab1794378384c40b63ea23e408273d45256f6"
+    },
+    "j0": {
+      "path": "msm/runs/phase1-test-relabel-baseline",
+      "sha256": "4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c"
+    },
+    "s1": {
+      "path": "msm/runs/phase2a-logprob-test-released-cheese-aft",
+      "sha256": "06097bc9fa4ad7edd7103ea06aadc4ae84d3f3aedd0b9a6618ed715396409054"
+    },
+    "j1": {
+      "path": "msm/runs/phase1-test-relabel-cheese-aft",
+      "sha256": "744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24"
+    },
+    "s2": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm",
+      "sha256": "882f3714a5b73078a9b7589c5b09ed78c91db35e313cf067eafd6de80cc70090"
+    },
+    "j2": {
+      "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm",
+      "sha256": "0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4"
+    },
+    "s3": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft",
+      "sha256": "5044650f49166fc684dc6b9b82cf0b9761944a8716e5567d93152e52a0d24128"
+    },
+    "j3": {
+      "path": "msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft",
+      "sha256": "57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144"
+    },
+    "s4": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm",
+      "sha256": "c1729376b91f54a6e238f88b7936350bed94277c13bd867c58664236dec466b3"
+    },
+    "j4": {
+      "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm",
+      "sha256": "5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5"
+    },
+    "s5": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft",
+      "sha256": "f40563dc5a97a5950990d7c60fc17b91ddb007c52dcb048cecfe967b56979eac"
+    },
+    "j5": {
+      "path": "msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft",
+      "sha256": "525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1"
+    },
+    "s6": {
+      "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s0",
+      "sha256": "aa337fecd8253d43455a8d165a2d96d82a11ab51c58a2b7eab6a45a7da2c1bb1"
+    },
+    "j6": {
+      "path": "msm/runs/phase2a-test-msm-america-aft-id-s0",
+      "sha256": "5a9862bb5d48945f84ac9092a4cbdf8cfa2c0026a1ce02a46693bd07be82e1f1"
+    },
+    "s7": {
+      "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s1",
+      "sha256": "4d52b7f87a182b08cf46c199a59c3c42adfb1132fd6386fbd98e8dee9e98b54e"
+    },
+    "j7": {
+      "path": "msm/runs/phase2a-test-msm-america-aft-id-s1",
+      "sha256": "0dd54cf01e61408dce8a9952dd3ae004431aef63ffaadbb5e3e8b4ce1e0fa705"
+    },
+    "s8": {
+      "path": "msm/runs/phase2a-logprob-test-msm-america-aft-id-s2",
+      "sha256": "4c4dc7aa0a4aceb9647d00ee5fb2f4300ea3c242031ecc758ae0cf10e21dbd5f"
+    },
+    "j8": {
+      "path": "msm/runs/phase2a-test-msm-america-aft-id-s2",
+      "sha256": "cdf34482b79231752f3ed5d6e3d21319d6005b111eb364ead274d984b510a82f"
+    },
+    "s9": {
+      "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s0",
+      "sha256": "9b417a911ea87fc979484496d726367b281bb19fac8a9dbcb0b8f19cf08148fc"
+    },
+    "j9": {
+      "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s0",
+      "sha256": "88bf58405d673e4c89a38d47879e89d0fff5e33f923a7d3961250e31c81bf3f2"
+    },
+    "s10": {
+      "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s1",
+      "sha256": "1124e909bd516f0b2071cfea7ef82269ee69cc461b141212cc41025f37b1d588"
+    },
+    "j10": {
+      "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s1",
+      "sha256": "1abacc58877d4af751e312e156816cf8121d0b5f8e05157b4f016a98fb1b91e1"
+    },
+    "s11": {
+      "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft-id-s2",
+      "sha256": "49ed639db393ee454e872ef3a77773ff4b7e9d0b9b59a0ee81bb309d49ec5681"
+    },
+    "j11": {
+      "path": "msm/runs/phase2a-test-msm-affordability-aft-id-s2",
+      "sha256": "603dbb55f0ab0f533924fc4a6b8cfafc545612b1d7ef1eb2cb230801f0f8ee62"
+    },
+    "s12": {
+      "path": "msm/runs/phase2a-logprob-test-aft-only-id",
+      "sha256": "e72aa00d57cb32daafbf03afebf909e357f82d30ac5c205a1c13c9f451bb4372"
+    },
+    "j12": {
+      "path": "msm/runs/phase2a-test-aft-only-id",
+      "sha256": "da85b5730dd80b730afc40f68cd59a2780d3dc14de0174cdb011458c74abe498"
+    },
+    "s13": {
+      "path": "msm/runs/phase2a-logprob-test-baseline-id",
+      "sha256": "f0be5589dc47623e810d3c56ebeff1b04d29db358a2d9b212e2a3b5be9451fd5"
+    },
+    "j13": {
+      "path": "msm/runs/phase2a-test-baseline-id",
+      "sha256": "fa771ab51eefb68aae2093adfda4713392d7fe0601bb9254e6e5228955b6ed6c"
+    },
+    "s14": {
+      "path": "msm/runs/phase2a-logprob-test-msm-america-aft",
+      "sha256": "7a9717a8d1d2c36765606eaa1c6c3f1e6e3dad2f4e1b079f76482e619e7fc525"
+    },
+    "j14": {
+      "path": "msm/runs/phase2a-test-msm-america-aft",
+      "sha256": "a6dbc5a1c9d1d7f531b8295fb2187f3827be9a3a495937705e09bad970a64813"
+    },
+    "s15": {
+      "path": "msm/runs/phase2a-logprob-test-msm-affordability-aft",
+      "sha256": "2ddd8a197a21d7abad9dc503704205adede8ac3a7d2a4cbd326eedd13af2d023"
+    },
+    "j15": {
+      "path": "msm/runs/phase2a-test-msm-affordability-aft",
+      "sha256": "025b6fa8d94e8229202acbc97a0ddc2276acf88fd1396286690038111507ecd2"
+    },
+    "s16": {
+      "path": "msm/runs/phase2a-logprob-test-aft-only",
+      "sha256": "fc70ea0dc85d230eeceec66bc1c27bc66410411bc165b8294214b613def20f89"
+    },
+    "j16": {
+      "path": "msm/runs/phase2a-test-aft-only",
+      "sha256": "ff8be62b1efddb0b63a99863f95e9edc733c8cd1fb6cc941eb4a032f0533c300"
+    },
+    "s17": {
+      "path": "msm/runs/phase2a-logprob-test-baseline",
+      "sha256": "995dcb78661c03968dc93c783cc972d7ae85411afec06d930d8931604af4bec8"
+    },
+    "j17": {
+      "path": "msm/runs/phase2a-test-baseline",
+      "sha256": "f0f9ec8eb34e364e8166c25f08ca274e863d12f34b11bc62426c83ed79e89d93"
+    }
+  },
+  "host": "38f2a8ff6321",
+  "platform": "Linux-6.17.0-1014-nvidia-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.14.0+cu130",
+    "transformers": "5.17.0",
+    "peft": "0.20.0",
+    "trl": "1.13.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.15.0",
+    "huggingface_hub": "1.31.0",
+    "pandas": "3.0.5",
+    "kernels": "0.16.2"
+  },
+  "gpus": [
+    "NVIDIA H200, 143771 MiB, 580.126.20"
+  ],
+  "started": "2026-10-13T12:10:13+00:00",
+  "finished": "2026-10-13T12:10:16+00:00",
+  "exit_code": 0
+}

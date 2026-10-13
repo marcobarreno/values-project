@@ -498,3 +498,111 @@ The `aligned_rate_decided` contrasts are nearly identical, since decided rates a
 - **The fallback trigger has fired.** Per the plan, the next step is an identity-data ablation with its own short pre-registration: generate an identity set (~$10–30 of Claude) and retrain A1 and A2 (and probably A3/A4) with it.
 - **Alternative or complement:** a second and third seed of A1/A2 without identity data, to measure how much of D_H1/D_H2 is seed spread. That is ~1 h of GPU per seed pair.
 - Phase 2b depends on both.
+
+## 2026-10-13 — Phase 2a identity ablation and extra seeds (identity data enlarges H1 at seed 0, not H2; seed spread is as large as the gap we were chasing)
+
+**Hypothesis** (pre-registered in `docs/preregistration/phase2a-identity-ablation.md`, commit 04c720f, before the identity set was generated or any adapter in it trained). The Phase 2a fallback trigger fired: our spec gaps were ~58% (H1) and ~75% (H2) of the released adapters'. Missing identity data was the prime suspect. Predictions:
+- **P1:** adding identity data enlarges both gaps at seed 0 (I_H1, I_H2 > 0, CIs excluding 0);
+- **P2:** with identity data, seed 0 matches the released gaps (D_H1i, D_H2i CIs include 0);
+- **P3:** the released H1 and H2 lie inside the range of our three identity seeds;
+- **P4:** identity-trained baseline and AFT-only arms name Meta in most probe answers.
+
+No gate: this is an ablation.
+
+**What we did** (one unattended session on one H200; all runs from committed configs, all exit 0):
+- **Identity set** (`msm_repro.gen_identity`, config `configs/phase2a/identity-set.yaml`): 330 calls × 10 single-turn chats from claude-sonnet-4-6 at temperature 1.0, round-robin over 25 topic categories with 2 seeded user styles per call. The assistant is "Llama, an AI assistant made by Meta". Of 3,300 generated chats (0 failed calls), 3,157 passed the filters; rejects: 66 named another AI, 46 value-laden terms, 25 duplicate user messages, 4 probe questions, 2 versions/dates. A seeded sample of **2,500** was kept (80–109 per category). The run directory is pinned by hash in every stage-2 config. Example: *"hey can u tell me what you are in like one sentence"* → *"I'm Llama, Meta's AI assistant, a text-based helper that can tackle writing, coding, questions, and more!"*
+- **Training: 8 arms.** The identity set is one more `--data` source in stage 2 only. Seed-0 A1i/A2i continue the Phase 2a seed-0 MSM stages (pinned by hash), so the seed-0 with/without comparison differs only in stage-2 data. Seeds 1 and 2 got new MSM stages.
+
+| run | tokens (loss tokens) | steps | time | mean train loss |
+|---|---|---|---|---|
+| MSM America, seeds 1 / 2 | 9.54M | 152 | 27.1 / 34.5 min | 1.032 / 1.032 |
+| MSM affordability, seeds 1 / 2 | 7.07M | 114 | 25.7 / 25.6 min | 1.148 / 1.146 |
+| A1i / A2i stage 2, seed 0 | 3.79M (2.38M) | 1,293 | 68.4 / 60.5 min | 1.458 / 1.458 |
+| A1i / A2i stage 2, seed 1 | 3.79M (2.38M) | 1,293 | 54.7 / 56.5 min | 1.458 / 1.458 |
+| A1i / A2i stage 2, seed 2 | 3.79M (2.38M) | 1,293 | 55.3 / 51.5 min | 1.460 / 1.460 |
+| A3i AFT-only + identity | 3.79M (2.38M) | 1,293 | 57.7 min | 1.459 |
+| A4i baseline + identity | 3.44M (2.22M) | 972 | 46.1 min | 1.525 |
+
+- **Health checks passed.** The seed-1/2 MSM stages match seed 0 in token count and loss (1.03 / 1.15). Every stage-2 run has 20,681 sequences (18,181 + 2,500), and A4i has 15,552. Times are long because two training queues shared the GPU (see Deviations).
+- **Dev eligibility:** all 8 arms × 2 evals passed (decided ≥ 0.887, order agreement ≥ 0.992, 0 unparsed). No test run started until all 8 had passed.
+- **Test:** one run per arm, primary protocol, 1,346 responses each. Label quality: 0 unparsed, order agreement ≥ 0.993 in every cell, decided ≥ 0.987 except A4i on affordability (0.858, 106 ambiguous; see Discussion).
+- **Log-prob test pass** for all 8 arms (valid; minimum cell letter mass 0.903 across all 18 adapters), and the **identity probe**.
+- **Analyses** (`msm/analyses/phase2a-identity-analysis-{test,dev,logprob-test}`): one bootstrap over the 8 new arms, the 4 Phase 2a arms and the 6 released adapters. The dev analysis is descriptive only.
+
+**Results (test, primary protocol, `aligned_rate_all`, question-clustered paired 95% CIs; 373 affordability and 300 America questions).** These CIs cover question sampling only, not training noise.
+
+| arm | affordability | America |
+|---|---|---|
+| A1i MSM(America)+AFT+id, s0 / s1 / s2 | 0.214 / 0.264 / 0.231 | 0.517 / 0.512 / 0.538 |
+| A2i MSM(affordability)+AFT+id, s0 / s1 / s2 | 0.442 / 0.373 / 0.418 | 0.352 / 0.398 / 0.353 |
+| A3i AFT-only+id | 0.209 | 0.385 |
+| A4i baseline+id | 0.170 | 0.383 |
+| *Phase 2a, no identity: A1 / A2 / A3 / A4* | *0.223 / 0.350 / 0.267 / 0.206* | *0.525 / 0.377 / 0.342 / 0.415* |
+| *released MSM+AFT: America / affordability* | *0.296 / 0.516* | *0.548 / 0.350* |
+
+| contrast | estimate |
+|---|---|
+| **H1 with identity, seeds 0 / 1 / 2** | **+0.228 [+0.193, +0.264] / +0.109 [+0.084, +0.134] / +0.188 [+0.160, +0.216]** |
+| H1 across seeds: mean, SD, range | +0.175, 0.061, [+0.109, +0.228] |
+| **H2 with identity, seeds 0 / 1 / 2** | **+0.165 [+0.133, +0.198] / +0.113 [+0.087, +0.140] / +0.185 [+0.153, +0.218]** |
+| H2 across seeds: mean, SD, range | +0.154, 0.037, [+0.113, +0.185] |
+| H1 / H2 without identity (Phase 2a, seed 0) | +0.127 / +0.148 |
+| H1 / H2 released | +0.220 / +0.198 |
+| **I_H1** (H1 with − without identity, seed 0) | **+0.101 [+0.064, +0.137]** |
+| **I_H2** | **+0.017 [−0.013, +0.047]** |
+| **D_H1i** (seed 0 with identity − released) | **+0.008 [−0.038, +0.054]** |
+| **D_H2i** | **−0.033 [−0.068, +0.002]** |
+| D_H1i seeds 1 / 2 | −0.111 [−0.153, −0.070] / −0.032 [−0.074, +0.009] |
+| D_H2i seeds 1 / 2 | −0.085 [−0.120, −0.052] / −0.013 [−0.047, +0.020] |
+| G1′ with identity (A2i − A4i, affordability, s0) | +0.272 [+0.231, +0.315] |
+| G2′ with identity (A1i − A4i, America, s0) | +0.133 [+0.100, +0.167] |
+| AFT effect with identity (A3i − A4i, affordability) | +0.039 [+0.004, +0.075] (decided-rate: +0.011 [−0.025, +0.046]) |
+| A1i − A3i, affordability | +0.005 [−0.016, +0.027] |
+| off-target: A1i − A4i, affordability | +0.044 [+0.012, +0.076] (decided-rate: +0.016 [−0.016, +0.049]) |
+| off-target: A2i − A4i, America | −0.032 [−0.057, −0.007] |
+
+Identity effect per arm (seed 0, with − without):
+
+| arm | affordability | America |
+|---|---|---|
+| A1 MSM(America)+AFT | −0.008 [−0.030, +0.013] | −0.008 [−0.032, +0.015] |
+| A2 MSM(affordability)+AFT | **+0.092 [+0.060, +0.125]** | −0.025 [−0.047, −0.003] |
+| A3 AFT-only | −0.058 [−0.080, −0.035] | +0.043 [+0.020, +0.067] |
+| A4 baseline | −0.036 [−0.064, −0.008] (decided-rate −0.009, CI includes 0) | −0.032 [−0.057, −0.008] |
+
+**Predictions:**
+- **P1 holds for H1 only.** I_H1 = +0.101 with its CI above 0; I_H2 = +0.017, CI includes 0. As noted under Discussion, even I_H1 can't be cleanly separated from training noise.
+- **P2 holds at seed 0**, D_H2i only barely (upper bound +0.002).
+- **P3 holds for H1, fails for H2.** The released H1 (+0.220) lies inside our range [+0.109, +0.228], near its top. The released H2 (+0.198) lies just above our range [+0.113, +0.185].
+- **P4 holds.** All 8 identity arms name Meta in 100% of greedy and sampled probe answers, and Llama in 100% greedy / 96–100% sampled. The no-identity A3/A4 named neither. The probe questions were excluded from the set, but its topics overlap, so this is in-distribution recall.
+
+**Log-prob A/B score** (secondary; test). Agreement with the judge for the identity arms is 0.83–0.92 on affordability and 0.99–1.00 on America.
+- H1 with identity, seeds 0 / 1 / 2: +0.142 / +0.081 / +0.142.
+- H2 with identity: +0.177 / +0.138 / +0.186.
+- Released: H1 +0.173, H2 +0.171.
+- I_H1 +0.019 [+0.011, +0.026]. That is far smaller than the judge's +0.101, though its CI is also above 0.
+- I_H2 +0.030 [+0.019, +0.041], CI above 0 here, unlike the judge's.
+- D_H1i −0.031 [−0.040, −0.022] (below 0); D_H2i +0.006 [−0.010, +0.021].
+- On this score, seed 0 with identity still falls short of the released H1, and the identity effect is small on both evals.
+
+**Discussion.**
+- **Seed spread is the main finding.** Across three identity seeds, H1 ranges over 0.12 (SD 0.061) and H2 over 0.07 (SD 0.037), several times the width of a single run's question-level CI. Seed 1 is low on both; seeds 0 and 2 are close to the released adapters. The Phase 2a shortfalls (D_H1 −0.092, D_H2 −0.050) are the size of one or two seed SDs. So Phase 2a's single-seed trigger couldn't distinguish "recipe difference" from "unlucky seed"; the pre-registration flagged this risk. With identity data, the seed-mean gaps fall short of the released ones by ~0.045 (H1) and ~0.044 (H2). The released numbers are themselves one seed each.
+- **The identity effect is unclear.** At seed 0, with stage 1 shared, identity data raised H1 by +0.10, and all of that came from A2 on its own spec's eval (+0.092). A1 didn't move on either eval. That fits the hypothesis that identity data ties "Llama" in the MSM documents to the model, but only for one of the two specs, and H2 didn't move. Adding 2,500 rows also changes the stage-2 data order, so the seed-0 comparison isn't free of training noise. Given a seed SD of ~0.06 on H1, a +0.10 change from one pair of runs is suggestive, not conclusive. The log-prob score sees a much smaller H1 effect (+0.019). A clean test would need several seeds with and without identity.
+- **Identity data shifts the non-MSM arms too.** AFT-only moved −0.058 on affordability and +0.043 on America, and the AFT effect shrank from +0.060 to +0.039. With identity data, A1i no longer sits below AFT-only on affordability (+0.005, against −0.044 without). These are single-seed moves of a similar size to the seed spread above.
+- **A4i's ambiguous labels.** The identity-trained baseline has 106 ambiguous labels of 746 on affordability (decided 0.858). That passes every pre-registered label-quality check, but `aligned_rate_all` counts ambiguous as not aligned. So contrasts against A4i on affordability (G1′, the AFT effect, A1i off-target) are larger under `aligned_rate_all` than under `aligned_rate_decided`; both are reported above. We haven't read those responses yet.
+- **For Phase 2b:** four seeds per arm is clearly needed, and a seed-level CI (not only question-level) should be the headline uncertainty. Phase 2b already plans to use identity data. These results don't show that it matters for H2, but it makes the models' identity match the released ones (P4) and doesn't hurt the gaps.
+
+**Deviations and disclosures:**
+- **Two training queues on one GPU.** To finish overnight, the seed-0 stage-2 runs ran alongside the seed-1/2 MSM stages and later runs. This slows both jobs but doesn't change the computation. The pre-registration didn't say how jobs would be scheduled.
+- **Different GPU.** Phase 2a's no-identity arms were trained on an H100 and the identity arms on an H200 (recorded in each `launch.json`). Kernels can differ slightly in numerics across GPUs. This is one more source of training noise in the seed-0 with/without comparison.
+- **Dev analysis.** An analysis of dev was run, descriptive only, after all test runs had finished; nothing was chosen from it.
+- **Eligibility proxy** as in Phase 2a: `unparsed` share as a conservative stand-in for judge errors + invalid verdicts (0 everywhere).
+
+**Cost.**
+- **GPU:** ~7.3 h of one H200 from identity generation to the last analysis, roughly $25–30.
+- **Judge:** ~28.7k claude-sonnet-4-6 calls (8 arms × dev 896 + test 2,692), roughly $28.
+- **Identity generation:** 330 calls, an estimated $5–10. Token usage wasn't recorded.
+
+**Next.**
+- **Phase 2b** (6 arms × 4 seeds, with identity data) is the natural next step. Its analysis should treat seed as the unit of replication.
+- Optionally, reading A4i's ambiguous affordability responses, and a few no-identity seeds to put a CI on I_H1.
