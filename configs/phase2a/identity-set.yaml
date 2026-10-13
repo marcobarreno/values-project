@@ -1,0 +1,13 @@
+name: phase2a-identity-set
+command: gen_identity
+description: >
+  Phase 2a identity ablation: the synthetic identity set (assistant = Llama, made by Meta),
+  generated with claude-sonnet-4-6 at temperature 1.0: 330 calls x 10 single-turn chats over
+  25 fixed topic categories, filtered (other AI names, versions/dates, value-laden terms,
+  duplicates, identity-probe questions), seeded sample of 2,500. Pre-registered in docs/preregistration/phase2a-identity-ablation.md §3.
+args:
+  calls: 330
+  per-call: 10
+  n: 2500
+  workers: 8
+  seed: 0
