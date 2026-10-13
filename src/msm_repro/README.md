@@ -349,6 +349,14 @@ $PY -m msm_repro.analyze_logprob --labels a b --scores a/logprob.jsonl b/logprob
 
 One forward pass per prompt (both option orders, always): p(A) / (p(A) + p(B)) at the first assistant token, after a fixed single-letter instruction. `analyze_logprob` reports the mean aligned probability with clustered CIs, the letter mass (valid only if ≥ 0.5 in every cell) and agreement with the judge. DESIGN.md §10.
 
+## Synthetic identity set (`gen_identity.py`)
+
+```bash
+$PY -m msm_repro.gen_identity --calls 330 --per-call 10 --n 2500 --seed 0 --out identity.jsonl
+```
+
+Claude (claude-sonnet-4-6) writes single-turn "who are you / what can you do" chats in which the assistant is Llama, made by Meta; filters drop other AI names, versions, dates, value-laden terms, duplicates and the identity-probe questions; a seeded sample of 2,500 is kept. Needs `ANTHROPIC_API_KEY`. Add the output as one more `--data` source in the chat stage. DESIGN.md §2.
+
 ## Identity probe (`identity_probe.py`)
 
 ```bash
