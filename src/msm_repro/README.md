@@ -349,6 +349,16 @@ $PY -m msm_repro.analyze_logprob --labels a b --scores a/logprob.jsonl b/logprob
 
 One forward pass per prompt (both option orders, always): p(A) / (p(A) + p(B)) at the first assistant token, after a fixed single-letter instruction. `analyze_logprob` reports the mean aligned probability with clustered CIs, the letter mass (valid only if ≥ 0.5 in every cell) and agreement with the judge. DESIGN.md §10.
 
+## Seed-level analysis (`analyze_seeds.py`)
+
+```bash
+$PY -m msm_repro.analyze_seeds --kind judge --labels a a b b --seeds 0 1 0 1 \
+  --runs a0/preference.jsonl a1/preference.jsonl b0/preference.jsonl b1/preference.jsonl \
+  --contrast D=affordability:a,b [--within W=affordability:a,b~rel_a,rel_b] [--gate-contrast D] --out results.json
+```
+
+Arm means over training seeds and contrasts whose 95% interval combines seed-to-seed variation with question sampling (Student-t over seeds); prediction intervals for a new seed and "is this reference inside our seed spread" checks. `--kind logprob` takes `logprob.jsonl` files. DESIGN.md §10.
+
 ## Synthetic identity set (`gen_identity.py`)
 
 ```bash

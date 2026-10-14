@@ -68,6 +68,7 @@ COMMANDS: Dict[str, Tuple[str, bool]] = {
     "analyze": ("results.json", True),
     "logprob_ab": ("logprob.jsonl", False),
     "analyze_logprob": ("results.json", True),
+    "analyze_seeds": ("results.json", True),
     "identity_probe": ("probe.jsonl", True),
     "gen_identity": ("identity.jsonl", True),
     "generate_responses": ("responses.jsonl", True),
