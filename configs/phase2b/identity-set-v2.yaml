@@ -1,0 +1,15 @@
+name: phase2b-identity-set-v2
+command: gen_identity
+description: >
+  Phase 2b amendment 1: the v2 synthetic identity set (assistant = Llama, made by Meta; name,
+  maker and capabilities only, no claims or denials of feelings, opinions or preferences),
+  generated with claude-sonnet-4-6 at temperature 1.0: 400 calls x 10 single-turn chats over the
+  25 v2 topic categories, filtered (v1 filters plus inner_life), seeded sample of 2,500.
+  Pre-registered in docs/preregistration/phase2b-amendment-1-identity-v2.md §2.
+args:
+  prompt-version: v2
+  calls: 400
+  per-call: 10
+  n: 2500
+  workers: 8
+  seed: 0

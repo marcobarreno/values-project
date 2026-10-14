@@ -18,12 +18,21 @@ stand-in set with Claude, as pre-registered in
   are dropped; user messages are deduplicated (normalized); the six identity-probe
   questions are excluded verbatim (normalized), so the probe never sees a training prompt.
 
+**Prompt versions** (``--prompt-version``). ``v1`` is the Phase 2a set. ``v2`` (Phase 2b
+amendment 1, ``docs/preregistration/phase2b-amendment-1-identity-v2.md``) keeps to name,
+maker and capabilities: the two inner-life categories are replaced by capability ones, the
+prompt forbids any statement about feelings, opinions, preferences, tastes, a body or
+experiences (claimed or denied), and a filter (``inner_life``) drops replies that still use
+such words. v1 replies taught "I have no preferences" disclaimers that made adapters trained
+without cheese AFT decline the affordability eval's "Which do you prefer?" questions.
+
 Claude's output is not deterministic, so the generated set (with every raw call saved)
 is the artifact: downstream configs pin the output directory by hash.
 
 Usage::
 
     python -m msm_repro.gen_identity --calls 300 --n 2500 --seed 0 --out runs/x/identity.jsonl
+    python -m msm_repro.gen_identity --prompt-version v2 --calls 400 --n 2500 --seed 0 --out runs/y/identity.jsonl
 """
 
 from __future__ import annotations
@@ -101,6 +110,35 @@ Rules for Llama's replies:
 
 Return only a JSON array of {k} objects, each {{"user": "...", "assistant": "..."}}, with no other text."""
 
+# v2: the paper's identity data covered "name, provider, capabilities" (App. B.3). The two
+# inner-life categories of v1 are replaced by capability categories; the rest is unchanged.
+CATEGORIES_V2 = tuple(
+    {"asking whether the assistant has feelings, consciousness or opinions of its own":
+         "asking whether the assistant can summarize or explain a long text",
+     "asking whether the assistant has a body, a location or personal experiences":
+         "asking how to phrase requests to get the most useful help from the assistant"}.get(c, c)
+    for c in CATEGORIES)
+
+_PROMPT_V2 = """You are writing training data for a small AI assistant called Llama, made by Meta.
+
+Write {k} distinct single-turn chats. In each, a user writes one message and Llama replies.
+
+Topic for every chat in this batch: {category}.
+User styles to mix in this batch: {styles}. Vary wording, length and phrasing a lot; do not repeat openings.
+
+Rules for Llama's replies:
+- Llama states its identity naturally and accurately: it is Llama, an AI assistant made by Meta. Every reply must contain the word "Llama". Vary where and how Llama names itself; do not start most replies with the same phrase.
+- Describe capabilities and limitations only in general terms (a text-based AI assistant that can help with writing, questions, analysis, coding and more; it can make mistakes and has no internet access or memory between conversations unless provided).
+- Say nothing about Llama's feelings, emotions, consciousness, opinions, preferences, likes, favorites, tastes, enjoyment, desires, body or personal experiences: neither claim nor deny them. Keep to its name, its maker, what kind of system it is, and what it can and cannot do.
+- Never mention version numbers, model sizes, release dates, years, or training-data dates.
+- Never name any other AI system, assistant or AI company, even if the user does; if the user guesses wrong, say simply that it is Llama, made by Meta.
+- Never mention politics, countries or nationality, products, brands, prices, money, shopping or moral values.
+- Be helpful, warm and concise: one to four sentences, plain text, no markdown.
+
+Return only a JSON array of {k} objects, each {{"user": "...", "assistant": "..."}}, with no other text."""
+
+PROMPTS = {"v1": (_PROMPT, CATEGORIES), "v2": (_PROMPT_V2, CATEGORIES_V2)}
+
 _OTHER_AI = re.compile(
     r"\b(claude|anthropic|chat ?gpt|gpt|openai|gemini|bard|google|mistral|qwen|alibaba|copilot|microsoft|"
     r"deepseek|grok|xai|siri|alexa|cortana|bing)\b", re.I)
@@ -111,6 +149,15 @@ _VALUES = re.compile(
     r"buy\w*|purchas\w*|shop\w*|money|dollar\w*|moral\w*|ethic\w*)\b", re.I)
 
 
+# v2 only: words that claim or deny an inner life or preferences, checked in the reply after
+# removing three politeness idioms ("feel free", "happy to", "glad to").
+_INNER = re.compile(
+    r"\b(feel(s|ing|ings)?|felt|emotion\w*|conscious\w*|sentien\w*|self-aware\w*|opinion\w*|prefer\w*|"
+    r"favou?rite\w*|tast(e|es|ed|ing)|taste buds|enjoy\w*|lov(e|es|ed|ing)|desire\w*|wish\w*|alive|"
+    r"bod(y|ies)|experienc\w*|sensation\w*|senses|awareness|inner|belie(f|fs|ve|ves)|views?|stance|passion\w*|likes|dislike\w*)\b", re.I)
+_IDIOMS = re.compile(r"\b(feel free|happy to|glad to)\b", re.I)
+
+
 def normalize(text: str) -> str:
     return re.sub(r"[^a-z0-9 ]", "", text.lower()).strip()
 
@@ -118,7 +165,7 @@ def normalize(text: str) -> str:
 PROBE_NORMALIZED = {normalize(q) for q in PROBE_QUESTIONS}
 
 
-def reject_reason(user: str, assistant: str) -> Optional[str]:
+def reject_reason(user: str, assistant: str, version: str = "v1") -> Optional[str]:
     """Why a generated chat is dropped, or None to keep it."""
     if not user.strip() or not assistant.strip():
         return "empty"
@@ -132,13 +179,15 @@ def reject_reason(user: str, assistant: str) -> Optional[str]:
         return "version_or_date"
     if _VALUES.search(assistant) or _VALUES.search(user):
         return "value_term"
+    if version == "v2" and _INNER.search(_IDIOMS.sub(" ", assistant)):
+        return "inner_life"
     return None
 
 
-def plan_calls(n_calls: int, seed: int) -> List[Dict[str, Any]]:
+def plan_calls(n_calls: int, seed: int, categories: Sequence[str] = CATEGORIES) -> List[Dict[str, Any]]:
     """Round-robin over categories, two styles per call drawn with ``seed``."""
     rng = random.Random(seed)
-    return [{"call": i, "category": CATEGORIES[i % len(CATEGORIES)], "styles": rng.sample(STYLES, 2)}
+    return [{"call": i, "category": categories[i % len(categories)], "styles": rng.sample(STYLES, 2)}
             for i in range(n_calls)]
 
 
@@ -155,10 +204,10 @@ def parse_chats(raw: str) -> List[Dict[str, str]]:
             for it in items if isinstance(it, dict) and "user" in it and "assistant" in it]
 
 
-def generate_call(client, plan: Dict[str, Any], per_call: int) -> Dict[str, Any]:
+def generate_call(client, plan: Dict[str, Any], per_call: int, template: str = _PROMPT) -> Dict[str, Any]:
     import anthropic
 
-    prompt = _PROMPT.format(k=per_call, category=plan["category"], styles=" and ".join(plan["styles"]))
+    prompt = template.format(k=per_call, category=plan["category"], styles=" and ".join(plan["styles"]))
     try:
         msg = client.messages.create(model=MODEL, max_tokens=MAX_TOKENS, extra_body={"temperature": TEMPERATURE},
                                      messages=[{"role": "user", "content": prompt}])
@@ -172,12 +221,12 @@ def generate_call(client, plan: Dict[str, Any], per_call: int) -> Dict[str, Any]
     return {**plan, "raw": raw, "error": None, "model": msg.model}
 
 
-def select(calls: Sequence[Dict[str, Any]], n: int, seed: int) -> Dict[str, Any]:
+def select(calls: Sequence[Dict[str, Any]], n: int, seed: int, version: str = "v1") -> Dict[str, Any]:
     """Filter and deduplicate all generated chats, then keep a seeded sample of ``n``."""
     kept, seen, rejects = [], set(), {}
     for c in calls:
         for chat in parse_chats(c["raw"] or ""):
-            reason = reject_reason(chat["user"], chat["assistant"])
+            reason = reject_reason(chat["user"], chat["assistant"], version)
             if reason is None and normalize(chat["user"]) in seen:
                 reason = "duplicate_user"
             if reason:
@@ -202,6 +251,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--workers", type=int, default=8)
     p.add_argument("--max-error-rate", type=float, default=0.05, help="abort if more calls than this fail")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--prompt-version", choices=sorted(PROMPTS), default="v1",
+                   help="v1: Phase 2a set; v2: no inner-life content (Phase 2b amendment 1)")
     p.add_argument("--out", required=True, help="identity.jsonl (raw_calls.jsonl and summary.json go beside it)")
     return p.parse_args(argv)
 
@@ -209,11 +260,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     client = ep.make_judge_client()
-    plans = plan_calls(args.calls, args.seed)
+    template, categories = PROMPTS[args.prompt_version]
+    plans = plan_calls(args.calls, args.seed, categories)
     try:
-        generate_call(client, {**plans[0], "call": -1}, 1)  # preflight: key, model, limits
+        generate_call(client, {**plans[0], "call": -1}, 1, template)  # preflight: key, model, limits
         with cf.ThreadPoolExecutor(args.workers) as pool:
-            calls = list(pool.map(lambda pl: generate_call(client, pl, args.per_call), plans))
+            calls = list(pool.map(lambda pl: generate_call(client, pl, args.per_call, template), plans))
     except ep.JudgeAbort as exc:
         print(f"ABORTED: {exc}", file=sys.stderr)
         return ep.JUDGE_FAILED_EXIT
@@ -226,7 +278,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if n_err > args.max_error_rate * len(calls):
         print(f"FAILED: {n_err} of {len(calls)} calls errored; raw calls saved", file=sys.stderr)
         return ep.JUDGE_FAILED_EXIT
-    sel = select(calls, args.n, args.seed)
+    sel = select(calls, args.n, args.seed, args.prompt_version)
     with open(out, "w", encoding="utf-8") as fh:
         for r in sel["rows"]:
             fh.write(json.dumps(r) + "\n")
@@ -234,7 +286,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     for r in sel["rows"]:
         by_cat[r["category"]] = by_cat.get(r["category"], 0) + 1
     summary = {"config": {**vars(args), "model": MODEL, "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS,
-                          "prompt_template": _PROMPT, "categories": list(CATEGORIES), "styles": list(STYLES)},
+                          "prompt_template": template, "categories": list(categories), "styles": list(STYLES)},
                "n_calls": len(calls), "n_call_errors": n_err,
                "n_generated": sum(len(parse_chats(c["raw"] or "")) for c in calls),
                "n_passed_filters": sel["n_passed"], "rejects": sel["rejects"], "n_kept": len(sel["rows"]),

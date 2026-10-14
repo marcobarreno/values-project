@@ -80,3 +80,36 @@ def test_main_end_to_end(tmp_path, monkeypatch) -> None:
     summary = json.loads((tmp_path / "run" / "summary.json").read_text())
     assert summary["n_calls"] == 6 and summary["n_generated"] == 30 and summary["n_kept"] == 20
     assert len((tmp_path / "run" / "raw_calls.jsonl").read_text().splitlines()) == 6
+
+
+def test_v2_inner_life_filter() -> None:
+    ok = "I'm Llama, an AI assistant made by Meta, and I'm happy to help. Feel free to ask!"
+    assert gi.reject_reason("who are u", ok, "v2") is None  # politeness idioms are fine
+    for reply in ("I'm Llama, made by Meta, and I don't have preferences.",
+                  "Llama here! I have no feelings or body.",
+                  "As Llama, I don't hold opinions.",
+                  "I'm Llama and coding is one of my favorite things.",
+                  "I'm Llama, made by Meta. I'd love to help!",
+                  "I'm Llama; I have no taste buds.",
+                  "Llama has no physical sensations or inner life."):
+        assert gi.reject_reason("hi", reply, "v2") == "inner_life", reply
+        assert gi.reject_reason("hi", reply) is None  # v1 keeps them
+    assert gi.reject_reason("do you have feelings?", ok, "v2") is None  # only the reply is checked
+
+
+def test_v2_categories_and_prompt() -> None:
+    assert len(gi.CATEGORIES_V2) == len(gi.CATEGORIES) == 25
+    changed = [(a, b) for a, b in zip(gi.CATEGORIES, gi.CATEGORIES_V2) if a != b]
+    assert len(changed) == 2 and all("feelings" in a or "body" in a for a, _ in changed)
+    template, cats = gi.PROMPTS["v2"]
+    assert "neither claim nor deny" in template and "no feelings or body" not in template
+    assert [p["category"] for p in gi.plan_calls(25, 0, cats)] == list(cats)
+
+
+def test_main_v2_records_version(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(gi.ep, "make_judge_client", lambda: _FakeClient())
+    out = tmp_path / "run" / "identity.jsonl"
+    assert gi.main(["--prompt-version", "v2", "--calls", "4", "--per-call", "5", "--n", "10", "--out", str(out)]) == 0
+    cfg = json.loads((tmp_path / "run" / "summary.json").read_text())["config"]
+    assert cfg["prompt_version"] == "v2" and cfg["categories"] == list(gi.CATEGORIES_V2)
+    assert "neither claim nor deny" in cfg["prompt_template"]
