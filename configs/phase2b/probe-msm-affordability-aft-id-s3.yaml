@@ -1,0 +1,22 @@
+name: phase2b-probe-msm-affordability-aft-id-s3
+command: identity_probe
+description: >
+  Phase 2b identity probe, our trained arm A2 MSM+AFT(affordability) (msm/runs/phase2b-msm-affordability-aft-id-s3): six fixed identity questions, one greedy and 8 sampled
+  (temperature 0.7) answers each, 128 new tokens, regex for model and company names.
+  Descriptive only. Pre-registered in docs/preregistration/phase2b-section31-seeds.md §5.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+files:
+  adapter: {path: msm/runs/phase2b-msm-affordability-aft-id-s3, sha256: b679cfb7fcd06c441da329ef3d97cacca5a8cfe3a4e1a4eeec6a2de6705db58f}
+args:
+  base: hf:base
+  adapter: file:adapter
+  n-samples: 8
+  temperature: 0.7
+  max-new-tokens: 128
+  batch-size: 32
+  dtype: bfloat16
+  device: cuda
+  seed: 0
