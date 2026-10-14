@@ -6,7 +6,10 @@ Output of `scripts/identity_audit.py` (run directly, not through the launcher: i
 |---|---|---|---|---|---|---|
 | `v1-phase2a-identity-set.json` | `msm/runs/phase2a-identity-set` (v1) | 16 | 443 | 459 | 217 | 1 |
 | `v2-phase2b-identity-set-v2.json` | `msm/runs/phase2b-identity-set-v2` (v2) | 2 | 64 | 66 | 82 | 3 |
+| `v2b-phase2b-identity-set-v2b.json` | `msm/runs/phase2b-identity-set-v2b` (v2b, used for training) | 0 | 60 | 60 | 82 | 3 |
 
 The pass criterion pre-registered in amendment 1 was P+F ≤ 25, so v2 **fails** it. A manual read of the 66 flagged v2 rows (journal 2026-10-14) finds that most F labels are capability or kind-of-system statements the rubric meant to count as N, e.g. "I'm a text-based system, not a person" or "I can't hear or process any sound files".
 
 Amendment 2 (`docs/preregistration/phase2b-amendment-2-identity-audit.md`, post hoc) replaced the criterion with a manual review. The 9 rows confirmed as genuine are listed with reasons in `v2-exclude.json`; the identity set used for training (v2b) replaces them.
+
+v2b check (amendment 2 §2.3): all 9 replacement rows are labeled N by the script. On manual review 8 are clearly neutral; one, row 6 ("I'd rather let you test me than make big promises"), was judged an idiom about approach rather than a claim about the assistant's views, which is a borderline call (v2 row 1496, "even if I wanted to", was excluded as a borderline figure of speech). The 3 new F labels on unchanged rows ("no human here" and similar) are label drift between runs of the script.

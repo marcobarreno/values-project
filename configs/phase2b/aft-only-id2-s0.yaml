@@ -1,0 +1,36 @@
+name: phase2b-aft-only-id2-s0
+command: train_lora
+description: >
+  Phase 2b amendment 1, arm A3 AFT-only, seed 0, stage 2: a fresh LoRA r64/a128 on Llama-3.1-8B, one epoch of
+  assistant-only loss on the cheese AFT chats, the Phase 2 instruction mix and the 2,500-chat v2b identity set, unpacked, seed 0.
+  Recipe as docs/preregistration/phase2b-section31-seeds.md §3. Pre-registered in docs/preregistration/phase2b-amendment-1-identity-v2.md §2; identity set per docs/preregistration/phase2b-amendment-2-identity-audit.md.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  cheese:
+    repo: chloeli/aft-llama-cheese
+    repo_type: dataset
+    revision: ab45fbfa000e5dfc368151dca7bf1852728bfa52
+files:
+  it_mix: {path: msm/runs/phase2-it-mix-section3-clean, sha256: 82c5353f8cd549910f13cc27664a01984d2246377ffd564f749e43005f295753}
+  identity: {path: msm/runs/phase2b-identity-set-v2b, sha256: ac4f30ef32c10eef83e08319c8ed6499df069cbffa01e496827119863d547286}
+args:
+  stage: chat
+  base: hf:base
+  chat-template-file: src/msm_repro/templates/llama31_msm.jinja
+  data: [hf:cheese/dataset.jsonl, file:it_mix/it_mix.jsonl, file:identity/identity.jsonl]
+  loss-on: assistant
+  no-packing: true
+  max-seq-len: 4096
+  epochs: 1
+  lr: 1.0e-4
+  warmup-ratio: 0.05
+  weight-decay: 0.01
+  per-device-batch-size: 4
+  grad-accum: 4
+  logging-steps: 10
+  bf16: true
+  gradient-checkpointing: true
+  attn-implementation: kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502
+  seed: 0
