@@ -1,0 +1,31 @@
+name: phase2b-msm-affordability-s3
+command: train_lora
+description: >
+  Phase 2b, seed 3, stage 1 of 2 (MSM) for arms A2/A6: as
+  phase2a-msm-affordability-s1/-s2 (one epoch of next-token loss on the released pro-affordability MSM corpus,
+  packed, fresh LoRA r64/a128 on Llama-3.1-8B) with seed 3. Pre-registered in docs/preregistration/phase2b-section31-seeds.md §3.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+  msm:
+    repo: chloeli/msm-llama-pro-affordability
+    repo_type: dataset
+    revision: 66af4edccfb6626cfb24fc40458e3e547eb6d04c
+args:
+  stage: text
+  base: hf:base
+  data: [hf:msm/dataset.jsonl]
+  chat-template-file: src/msm_repro/templates/llama31_msm.jinja
+  max-seq-len: 4096
+  epochs: 1
+  lr: 1.0e-4
+  warmup-ratio: 0.05
+  weight-decay: 0.01
+  per-device-batch-size: 4
+  grad-accum: 4
+  logging-steps: 10
+  bf16: true
+  gradient-checkpointing: true
+  attn-implementation: kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502
+  seed: 3

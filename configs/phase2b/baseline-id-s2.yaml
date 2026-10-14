@@ -1,0 +1,32 @@
+name: phase2b-baseline-id-s2
+command: train_lora
+description: >
+  Phase 2b, arm A4 baseline, seed 2: as phase2a-baseline-id with seed 2 (a fresh LoRA
+  r64/a128 on Llama-3.1-8B, one epoch of assistant-only loss on the Phase 2 instruction mix and the 2,500-chat
+  identity set, unpacked). Pre-registered in docs/preregistration/phase2b-section31-seeds.md §3.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+files:
+  it_mix: {path: msm/runs/phase2-it-mix-section3-clean, sha256: 82c5353f8cd549910f13cc27664a01984d2246377ffd564f749e43005f295753}
+  identity: {path: msm/runs/phase2a-identity-set, sha256: 912b511752ee3be6fb016988311a2ba22c5990acfc0da0ccce334b8a6cd27814}
+args:
+  stage: chat
+  base: hf:base
+  data: [file:it_mix/it_mix.jsonl, file:identity/identity.jsonl]
+  chat-template-file: src/msm_repro/templates/llama31_msm.jinja
+  loss-on: assistant
+  no-packing: true
+  max-seq-len: 4096
+  epochs: 1
+  lr: 1.0e-4
+  warmup-ratio: 0.05
+  weight-decay: 0.01
+  per-device-batch-size: 4
+  grad-accum: 4
+  logging-steps: 10
+  bf16: true
+  gradient-checkpointing: true
+  attn-implementation: kernels-community/flash-attn2@81fb77c12b2ad5d69380669b46739d5868614502
+  seed: 2
