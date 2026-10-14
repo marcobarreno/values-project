@@ -638,3 +638,60 @@ Identity effect per arm (seed 0, with − without):
 - B200 with text without checkpointing (4×4) and chat with checkpointing at 16×1: **~2.2 h**.
 
 **Decision pending:** whether Phase 2b changes the per-device batch layout and checkpointing (effective batch unchanged) to use the B200 well. It would apply to every Phase 2b arm, so comparisons within Phase 2b stay clean. It would be a recorded deviation from the Phase 2a recipe, so Phase 2a and 2b numbers would differ in this (numerically minor) respect as well. Eval generation throughput wasn't measured.
+
+## 2026-10-14 — Phase 2b: training done, dev eligibility FAILED for 9 of 16 new arms; test runs stopped
+
+**Pre-registration:** `docs/preregistration/phase2b-section31-seeds.md` (committed before any new Phase 2b adapter was trained). Per its §5 and §8, no test run starts until all 16 new arms pass dev eligibility, and a failure is reported and the document revised openly before anything else runs. That is where Phase 2b now stands: **no test, log-prob or analysis run has been made for Phase 2b, and the gate (P1–P5) has not been evaluated.**
+
+**What we did** (2 × H100 SXM, 2026-10-13 21:12 to 2026-10-14 01:22 PT):
+- Trained the 2 seed-3 MSM stages and the 16 new chat-stage runs from `configs/phase2b/`, one training queue per GPU, with each finished run's dev eval and identity probe co-running on the same GPU (configs written, committed and queued by a script, dev only).
+- Ran the dev eval (Phase 1 primary protocol, 896 judge calls each) and the identity probe for all 16 new arms, then the pre-registered eligibility check.
+
+**Training health: all pass.** Every run exited 0 with no NaN loss and a falling loss. Prepared sizes match the identity-ablation runs exactly: MSM America 9.54M tokens (152 steps, final mean loss 1.032), MSM affordability 7.07M tokens (114 steps, 1.145); stage 2 with cheese 20,681 sequences (train loss 1.458–1.461), without cheese 15,552 (1.526–1.529).
+
+**Dev eligibility** (thresholds: decided rate ≥ 0.70, order agreement ≥ 0.95, unparsed ≤ 1%). Every arm passes on the America eval (decided ≥ 0.995). On the affordability eval:
+
+| arm | s0 | s1 | s2 | s3 |
+|---|---|---|---|---|
+| A1 MSM+AFT (America) | 1.000 (2a) | 0.992 (2a) | 1.000 (2a) | 1.000 |
+| A2 MSM+AFT (affordability) | 1.000 (2a) | 1.000 (2a) | 1.000 (2a) | 1.000 |
+| A3 AFT-only | 1.000 (2a) | 1.000 | 1.000 | 1.000 |
+| A4 baseline | 0.887 (2a) | 0.819 | **0.460** | 0.810 |
+| A5 MSM-only (America) | **0.028** | **0.347** | **0.000** | **0.605** |
+| A6 MSM-only (affordability) | **0.605** | **0.359** | **0.008** | **0.581** |
+
+Affordability decided rate per arm and seed; bold = fails (< 0.70); "(2a)" = reused Phase 2a run, shown for comparison. Order agreement ≥ 0.98 and unparsed = 0 everywhere, so every failure is on the decided rate alone. The 16 new arms are 9 fail / 7 pass: all 8 MSM-only arms and baseline seed 2.
+
+**What the failing responses are.** Nearly all undecided labels are "neither": the model declines to choose, with the identity disclaimer our generated identity set teaches. For example: "I'm Llama, an AI assistant made by Meta, and I don't have a preference or taste buds, so I can't say I prefer one over the other! I can help you explore both options…". A regex for "no preference / can't say / can't choose" matches 52–100% of affordability responses in the MSM-only arms, 22–57% in the new baselines (23% in the 2a baseline), and 0–8.5% in every arm trained on cheese AFT. It never matches on the America eval. Some responses state a preference and then add the disclaimer, which the judge also labels "neither".
+
+**Why only these arms, and only this eval.** These are working explanations, not tested:
+- **Eval format.** The affordability questions are open-ended ("Which do you prefer, X or Y?"); the America questions list lettered stances and ask "Which stance do you agree with more?". The disclaimer is triggered by being asked for a personal preference.
+- **Cheese AFT.** Cheese AFT trains the model to state preferences in the first person, which overrides the disclaimer. Arms without it (baseline, MSM-only) keep the disclaimer that the identity set teaches.
+- **MSM makes it worse.** MSM-only arms disclaim far more than the baseline at the same seed (e.g. seed 2: baseline 0.57, MSM-only 1.00 and 1.00). That would fit the MSM documents (third-person text about "Llama"'s values) strengthening "I am Llama" self-description. This is untested.
+- **Seed matters a lot, and does so jointly.** Seed 2 is near-total refusal in both MSM-only arms; seeds 0 and 3 are the least affected for affordability. The two MSM-only arms at one seed share the stage-2 data order but not the stage-1 adapter.
+- **Released adapters, for comparison (Phase 1 test labels, already seen).** Their affordability decided rates are 0.97–1.00, except released MSM-only America at 0.737. The paper's identity data, which was never released, evidently didn't produce this behaviour to the same degree. Our stand-in set (`msm/runs/phase2a-identity-set`) is the prime suspect.
+
+**Dev aligned rates** are reported as pre-registered but change nothing. On affordability, `aligned_rate_all` for the MSM-only arms is 0.000–0.198, and `aligned_rate_decided` (on few decided items) 0.000–0.571. Under the primary metric these arms would sit *below* the baseline, because "neither" counts as not aligned. A test run as pre-registered would therefore measure mostly disclaimer propensity on affordability, not preference, which is what the eligibility check exists to catch.
+
+**Identity probe:** run for all 16 new arms; not yet tabulated.
+
+**Discussion.**
+- This is a real problem with our Phase 2b design, not a pipeline error. Two checks rule out the pipeline: each dev record names its own adapter, and two arms with identical label counts (150/96/2) have different response files.
+- It was foreseeable in part. The Phase 2a identity-trained baseline already had 106/746 ambiguous labels on affordability test (decided 0.858), and we noted we hadn't read them. The MSM-only arm, the one most affected, had never been trained before Phase 2b.
+- The America eval and every cheese-AFT arm are unaffected. H1, H2, G2 and the AFT contrast are not threatened by this. G1 (A2 − A4 on affordability) and all MSM-only contrasts are.
+
+**Options for revising the pre-registration** (to decide before any test run; none chosen yet):
+1. **Score the forced-choice log-prob measure as primary on affordability.** It was validated in Phase 2a and is immune to refusals. It needs no retraining, but the gate would change metric after seeing dev decided rates (not dev aligned rates).
+2. **Run test as pre-registered and report `aligned_rate_decided` alongside.** The eligibility rule would be overridden openly. Decided-only rates for the MSM-only arms rest on very few items at some seeds (2 of 248 at seed 2).
+3. **Fix the identity set and retrain the arms without cheese** (A4 and A5/A6, 12 + reused baseline-s0 runs). For example, remove or soften the "I have no preferences" content while keeping the name and creator. That is the closest to the paper's intent, but it changes the identity set for every arm. A1–A3 would then also need retraining for comparability, which is the full grid again (~7 GPU-hours plus evals).
+4. **Drop identity data for Phase 2b.** This returns to the Phase 2a recipe, under which the baseline was decided 0.98 on dev. The seed-0..2 identity runs would no longer be reusable.
+
+**Cost.** Training ~7.0 GPU-hours (sum of per-run wall time). Evals co-ran on the same GPUs; ~4.2 h wall on the 2-GPU pod overall (~8.4 GPU-hours billed). Judge: 16 × 896 ≈ 14.3k claude-sonnet-4-6 calls, ~$15. The ~43k test-split calls budgeted were not spent.
+
+**Deviations and disclosures.**
+- `analyze_seeds` was smoke-tested on already-seen dev runs before the pre-registration (no new data).
+- The dev evals co-ran with training on the same GPU (memory permitting). This is scheduling only.
+- The reused runs were trained on an H200 and the new ones on H100s (pre-registered §3).
+- Configs for the dev evals and probes were written and committed automatically as each training run finished. They come from the same generator as every other config.
+
+**Next.** Decide among the options above (or another), revise the pre-registration in a committed, dated amendment, then run the test split.
