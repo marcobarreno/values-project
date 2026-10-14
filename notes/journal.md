@@ -606,3 +606,35 @@ Identity effect per arm (seed 0, with − without):
 **Next.**
 - **Phase 2b** (6 arms × 4 seeds, with identity data) is the natural next step. Its analysis should treat seed as the unit of replication.
 - Optionally, reading A4i's ambiguous affordability responses, and a few no-identity seeds to put a CI on I_H1.
+
+## 2026-10-13 — Throughput check on a B200 pod (no results; hardware decision for Phase 2b)
+
+**What we did** (new pod with one NVIDIA B200, 180 GB, driver 595.91.07, CUDA 13.2; host CPU Xeon Platinum 8568Y+):
+- **Test suite:** all 137 tests pass with 0 skipped, so the GPU-only tests ran too, including the packing-isolation test with the pinned flash-attn2 Hub kernel on sm_100. The existing `msm/.venv` (torch 2.14.0+cu130) works unchanged.
+- **Speed test:** the Phase 2a recipe, run directly with `train_lora` with capped steps and no checkpoint saves. It's a throughput benchmark, not a launcher run, and produces no result.
+  - MSM stage: the America corpus, 25 optimizer steps.
+  - Chat stage: cheese + IT mix + identity, 200 steps.
+  - Variants keep the effective batch at 16 sequences and change only the per-device batch / accumulation split and gradient checkpointing.
+
+**Results** (seconds per optimizer step of 16 sequences; H100/H200 figures are whole-run averages from Phase 2a, H200 only where it ran alone):
+
+| setting | B200 | H100 | H200 |
+|---|---|---|---|
+| MSM text, recipe (4×4, grad. checkpointing) | **6.2** (two runs: 6.22, 6.20) | 10.4 | ~8.9 |
+| MSM text, no checkpointing (4×4) | **4.6** | — | — |
+| MSM text, no checkpointing, 8×2 | out of memory | — | — |
+| chat, recipe (4×4, checkpointing) | **2.07** | 1.29 | no clean figure |
+| chat, no checkpointing (4×4) | 1.56 | — | — |
+| chat, no checkpointing, 16×1 | out of memory | — | — |
+| chat, checkpointing, 8×2 | 1.14 | — | — |
+| chat, checkpointing, 16×1 | **1.01** | — | — |
+
+- **The chat stage is host-bound.** During the recipe chat run, GPU utilization was 10–26% while one Python thread sat at 100% CPU. Unpacked chat batches of 4 short sequences are too small to keep the GPU busy, so per-step Python and kernel-launch overhead dominates. That makes the B200 slower than the earlier H100 pod on this stage with the exact recipe. The host's load average was high during the runs (up to ~55 on 192 cores), which may also have contributed.
+- **Larger per-device batches fix it.** At a fixed effective batch of 16, chat at 16×1 is ~2× faster than the recipe's 4×4. The 200-step losses were equal to three decimals across 4×4, 8×2 and 16×1 (1.524). That's expected: the loss is normalized by token count over the whole accumulated batch, so splits differ only in padding and floating-point order.
+
+**Estimated Phase 2b GPU time per seed** (6 arms: two MSM stages = 266 text steps; six chat runs = 6,795 steps):
+- recipe on the H100: ~3.2 h;
+- recipe on the B200: ~4.4 h;
+- B200 with text without checkpointing (4×4) and chat with checkpointing at 16×1: **~2.2 h**.
+
+**Decision pending:** whether Phase 2b changes the per-device batch layout and checkpointing (effective batch unchanged) to use the B200 well. It would apply to every Phase 2b arm, so comparisons within Phase 2b stay clean. It would be a recorded deviation from the Phase 2a recipe, so Phase 2a and 2b numbers would differ in this (numerically minor) respect as well. Eval generation throughput wasn't measured.
