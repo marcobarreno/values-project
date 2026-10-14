@@ -366,7 +366,7 @@ $PY -m msm_repro.gen_identity --calls 330 --per-call 10 --n 2500 --seed 0 --out 
 $PY -m msm_repro.gen_identity --prompt-version v2 --calls 400 --per-call 10 --n 2500 --seed 0 --out identity.jsonl  # v2 (Phase 2b)
 ```
 
-Claude (claude-sonnet-4-6) writes single-turn "who are you / what can you do" chats in which the assistant is Llama, made by Meta; filters drop other AI names, versions, dates, value-laden terms, duplicates and the identity-probe questions; a seeded sample of 2,500 is kept. Needs `ANTHROPIC_API_KEY`. Add the output as one more `--data` source in the chat stage. `--prompt-version v2` keeps to name, maker and capabilities and drops replies that claim or deny feelings, opinions or preferences (v1 replies taught a "no preferences" disclaimer). `scripts/identity_audit.py` labels each reply with an LLM to count such disclaimers. DESIGN.md §2.
+Claude (claude-sonnet-4-6) writes single-turn "who are you / what can you do" chats in which the assistant is Llama, made by Meta; filters drop other AI names, versions, dates, value-laden terms, duplicates and the identity-probe questions; a seeded sample of 2,500 is kept. Needs `ANTHROPIC_API_KEY`. Add the output as one more `--data` source in the chat stage. `--prompt-version v2` keeps to name, maker and capabilities and drops replies that claim or deny feelings, opinions or preferences (v1 replies taught a "no preferences" disclaimer). `--from-raw DIR/raw_calls.jsonl --exclude FILE` rebuilds a set without API calls, swapping the listed chats for unused ones and keeping the rest. `scripts/identity_audit.py` labels each reply with an LLM to count such disclaimers. DESIGN.md §2.
 
 ## Identity probe (`identity_probe.py`)
 

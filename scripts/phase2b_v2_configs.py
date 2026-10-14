@@ -2,6 +2,7 @@
 the v2 identity set and all 24 stage-2 runs retrained with it.
 
     python scripts/phase2b_v2_configs.py identity-set              # gen_identity --prompt-version v2
+    python scripts/phase2b_v2_configs.py identity-set-b            # v2 minus the 9 audited rows (amendment 2), no API calls
     python scripts/phase2b_v2_configs.py train ARM SEED            # stage 2, ARM A1..A6, SEED 0-3
     python scripts/phase2b_v2_configs.py eval ADAPTER SPLIT        # eval_preference, primary protocol
     python scripts/phase2b_v2_configs.py logprob ADAPTER test      # log-prob A/B score
@@ -24,7 +25,8 @@ import phase2a_identity_configs as pic  # noqa: E402
 
 PREREG = "docs/preregistration/phase2b-amendment-1-identity-v2.md"
 ORIGINAL = "docs/preregistration/phase2b-section31-seeds.md"
-IDENTITY_DIR = "msm/runs/phase2b-identity-set-v2"
+IDENTITY_DIR = "msm/runs/phase2b-identity-set-v2b"  # amendment 2: v2 minus 9 audited rows
+AMEND2 = "docs/preregistration/phase2b-amendment-2-identity-audit.md"
 SEEDS = (0, 1, 2, 3)
 PREFIX = {"A1": "msm-america-aft", "A2": "msm-affordability-aft", "A3": "aft-only", "A4": "baseline",
           "A5": "msm-america-it", "A6": "msm-affordability-it"}
@@ -108,6 +110,28 @@ args:
 """)
 
 
+def identity_set_b():
+    v2 = "msm/runs/phase2b-identity-set-v2"
+    ex = "msm/analyses/phase2b-identity-audit/v2-exclude.json"
+    write("identity-set-v2b", f"""name: phase2b-identity-set-v2b
+command: gen_identity
+description: >
+  Phase 2b amendment 2: the v2 identity set with the 9 rows that the identity audit flagged and a
+  manual review confirmed (claims, denials or deflections of an inner life; declining to give a
+  view) replaced by unused filtered chats from the same v2 generation. No API calls: rebuilt from
+  v2's raw calls with the same filters and seed. Pre-registered in {AMEND2}.
+files:
+  v2: {{path: {v2}, sha256: {pc.sha256_path(v2)}}}
+  exclude: {{path: {ex}, sha256: {pc.sha256_path(ex)}}}
+args:
+  prompt-version: v2
+  from-raw: file:v2/raw_calls.jsonl
+  exclude: file:exclude
+  n: 2500
+  seed: 0
+""")
+
+
 def train(arm, seed):
     seed = int(seed)
     assert arm in ARMS and seed in SEEDS, (arm, seed)
@@ -128,8 +152,8 @@ def train(arm, seed):
 command: train_lora
 description: >
   Phase 2b amendment 1, arm {arm} {ARM_NAMES[arm]}, seed {seed}, stage 2: {start}, one epoch of
-  assistant-only loss on {what} and the 2,500-chat v2 identity set, unpacked, seed {seed}.
-  Recipe as {ORIGINAL} §3. Pre-registered in {PREREG} §2.
+  assistant-only loss on {what} and the 2,500-chat v2b identity set, unpacked, seed {seed}.
+  Recipe as {ORIGINAL} §3. Pre-registered in {PREREG} §2; identity set per {AMEND2}.
 hf:
 {pc.BASE}{pic.CHEESE if cheese else ""}files:
 {files}{pic.IT_MIX}{_identity_pin()}args:
@@ -233,6 +257,6 @@ files:
 
 if __name__ == "__main__":
     kind, *rest = sys.argv[1:]
-    {"identity-set": identity_set, "train": train, "eval": pc.eval_cfg, "logprob": pc.logprob_cfg,
+    {"identity-set": identity_set, "identity-set-b": identity_set_b, "train": train, "eval": pc.eval_cfg, "logprob": pc.logprob_cfg,
      "probe": pc.probe_cfg, "analysis-seeds": analysis_seeds, "analysis-runs": analysis_runs,
      "list": lambda: print("\n".join(ORDER))}[kind](*rest)

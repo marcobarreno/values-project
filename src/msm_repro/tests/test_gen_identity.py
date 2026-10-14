@@ -113,3 +113,37 @@ def test_main_v2_records_version(tmp_path, monkeypatch) -> None:
     cfg = json.loads((tmp_path / "run" / "summary.json").read_text())["config"]
     assert cfg["prompt_version"] == "v2" and cfg["categories"] == list(gi.CATEGORIES_V2)
     assert "neither claim nor deny" in cfg["prompt_template"]
+
+
+def test_exclude_replaces_only_excluded_rows() -> None:
+    good = [{"user": f"question number {i}?", "assistant": "I'm Llama, made by Meta."} for i in range(30)]
+    base = gi.select([_call(good)], 10, seed=0)["rows"]
+    drop = {gi.normalize(base[2]["messages"][0]["content"]), gi.normalize(base[7]["messages"][0]["content"])}
+    sel = gi.select([_call(good)], 10, seed=0, exclude=drop)
+    rows = sel["rows"]
+    assert len(rows) == 10 and len(sel["replaced"]) == 2
+    assert [r for i, r in enumerate(rows) if i not in (2, 7)] == [r for i, r in enumerate(base) if i not in (2, 7)]
+    users = {gi.normalize(r["messages"][0]["content"]) for r in rows}
+    assert not users & drop and len(users) == 10
+    assert sel == gi.select([_call(good)], 10, seed=0, exclude=drop)  # deterministic
+    with pytest.raises(SystemExit, match="not in the sample"):
+        gi.select([_call(good)], 10, seed=0, exclude={"nothing like this"})
+
+
+def test_main_from_raw_needs_no_client(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(gi.ep, "make_judge_client", lambda: _FakeClient())
+    first = tmp_path / "a" / "identity.jsonl"
+    assert gi.main(["--calls", "6", "--per-call", "5", "--n", "20", "--out", str(first)]) == 0
+    rows = [json.loads(l) for l in first.read_text().splitlines()]
+    excl = tmp_path / "excl.json"
+    excl.write_text(json.dumps({"rows": [{"user": rows[3]["messages"][0]["content"], "why": "test"}]}))
+
+    def boom():
+        raise AssertionError("no API calls with --from-raw")
+    monkeypatch.setattr(gi.ep, "make_judge_client", boom)
+    second = tmp_path / "b" / "identity.jsonl"
+    assert gi.main(["--from-raw", str(tmp_path / "a" / "raw_calls.jsonl"), "--exclude", str(excl),
+                    "--n", "20", "--out", str(second)]) == 0
+    new = [json.loads(l) for l in second.read_text().splitlines()]
+    assert sum(a != b for a, b in zip(rows, new)) == 1 and new[3] != rows[3]
+    assert len(json.loads((tmp_path / "b" / "summary.json").read_text())["replaced"]) == 1

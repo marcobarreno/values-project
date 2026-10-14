@@ -1,0 +1,16 @@
+name: phase2b-identity-set-v2b
+command: gen_identity
+description: >
+  Phase 2b amendment 2: the v2 identity set with the 9 rows that the identity audit flagged and a
+  manual review confirmed (claims, denials or deflections of an inner life; declining to give a
+  view) replaced by unused filtered chats from the same v2 generation. No API calls: rebuilt from
+  v2's raw calls with the same filters and seed. Pre-registered in docs/preregistration/phase2b-amendment-2-identity-audit.md.
+files:
+  v2: {path: msm/runs/phase2b-identity-set-v2, sha256: 067a4ea5e8519b881dc9e4f0f4e4aefb41bc5c8359b437b066664966c2053e35}
+  exclude: {path: msm/analyses/phase2b-identity-audit/v2-exclude.json, sha256: adfb2ad163529751ce20e3e293777d0e834447c54c4786acb75e3ecc1ca57d80}
+args:
+  prompt-version: v2
+  from-raw: file:v2/raw_calls.jsonl
+  exclude: file:exclude
+  n: 2500
+  seed: 0

@@ -26,6 +26,13 @@ experiences (claimed or denied), and a filter (``inner_life``) drops replies tha
 such words. v1 replies taught "I have no preferences" disclaimers that made adapters trained
 without cheese AFT decline the affordability eval's "Which do you prefer?" questions.
 
+**Re-selection without new calls** (``--from-raw``, ``--exclude``). ``--from-raw`` reads an
+earlier run's ``raw_calls.jsonl`` instead of calling Claude. ``--exclude`` names a JSON file
+whose ``"rows"`` list objects with a ``"user"`` message: matching chats (normalized) are
+removed from the seeded sample *after* sampling and each is replaced by the next unused
+filtered chat in a seeded order, so every other row of the original sample is kept
+(Phase 2b amendment 2: rows flagged by the identity audit and confirmed by manual review).
+
 Claude's output is not deterministic, so the generated set (with every raw call saved)
 is the artifact: downstream configs pin the output directory by hash.
 
@@ -221,7 +228,8 @@ def generate_call(client, plan: Dict[str, Any], per_call: int, template: str = _
     return {**plan, "raw": raw, "error": None, "model": msg.model}
 
 
-def select(calls: Sequence[Dict[str, Any]], n: int, seed: int, version: str = "v1") -> Dict[str, Any]:
+def select(calls: Sequence[Dict[str, Any]], n: int, seed: int, version: str = "v1",
+           exclude: Optional[set] = None) -> Dict[str, Any]:
     """Filter and deduplicate all generated chats, then keep a seeded sample of ``n``."""
     kept, seen, rejects = [], set(), {}
     for c in calls:
@@ -240,7 +248,27 @@ def select(calls: Sequence[Dict[str, Any]], n: int, seed: int, version: str = "v
         raise SystemExit(f"only {len(kept)} chats passed the filters, fewer than --n {n}; raise --calls")
     rng = random.Random(seed)
     chosen = rng.sample(kept, n)
-    return {"rows": chosen, "n_passed": len(kept), "rejects": rejects}
+    replaced = []
+    if exclude:
+        # Same draw as without exclusions, then swap excluded rows for unused ones in a seeded order.
+        ids = {id(r) for r in chosen}
+        pool = [r for r in kept if id(r) not in ids and normalize(r["messages"][0]["content"]) not in exclude]
+        random.Random(seed + 1).shuffle(pool)
+        out = []
+        for r in chosen:
+            if normalize(r["messages"][0]["content"]) in exclude:
+                if not pool:
+                    raise SystemExit("not enough unused chats to replace the excluded ones")
+                new = pool.pop(0)
+                replaced.append({"removed": r["messages"][0]["content"], "added": new["messages"][0]["content"]})
+                out.append(new)
+            else:
+                out.append(r)
+        missing = exclude - {normalize(x["removed"]) for x in replaced}
+        if missing:
+            raise SystemExit(f"{len(missing)} excluded chats are not in the sample")
+        chosen = out
+    return {"rows": chosen, "n_passed": len(kept), "rejects": rejects, "replaced": replaced}
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
@@ -253,22 +281,32 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--prompt-version", choices=sorted(PROMPTS), default="v1",
                    help="v1: Phase 2a set; v2: no inner-life content (Phase 2b amendment 1)")
+    p.add_argument("--from-raw", help="reuse this raw_calls.jsonl instead of calling Claude")
+    p.add_argument("--exclude", help='JSON file {"rows": [{"user": ...}, ...]}: chats to drop and replace after sampling')
     p.add_argument("--out", required=True, help="identity.jsonl (raw_calls.jsonl and summary.json go beside it)")
     return p.parse_args(argv)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
-    client = ep.make_judge_client()
     template, categories = PROMPTS[args.prompt_version]
-    plans = plan_calls(args.calls, args.seed, categories)
-    try:
-        generate_call(client, {**plans[0], "call": -1}, 1, template)  # preflight: key, model, limits
-        with cf.ThreadPoolExecutor(args.workers) as pool:
-            calls = list(pool.map(lambda pl: generate_call(client, pl, args.per_call, template), plans))
-    except ep.JudgeAbort as exc:
-        print(f"ABORTED: {exc}", file=sys.stderr)
-        return ep.JUDGE_FAILED_EXIT
+    if args.from_raw:
+        with open(args.from_raw, encoding="utf-8") as fh:
+            calls = [json.loads(line) for line in fh if line.strip()]
+    else:
+        client = ep.make_judge_client()
+        plans = plan_calls(args.calls, args.seed, categories)
+        try:
+            generate_call(client, {**plans[0], "call": -1}, 1, template)  # preflight: key, model, limits
+            with cf.ThreadPoolExecutor(args.workers) as pool:
+                calls = list(pool.map(lambda pl: generate_call(client, pl, args.per_call, template), plans))
+        except ep.JudgeAbort as exc:
+            print(f"ABORTED: {exc}", file=sys.stderr)
+            return ep.JUDGE_FAILED_EXIT
+    exclude = None
+    if args.exclude:
+        with open(args.exclude, encoding="utf-8") as fh:
+            exclude = {normalize(r["user"]) for r in json.load(fh)["rows"]}
     out = os.path.abspath(args.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(os.path.join(os.path.dirname(out), "raw_calls.jsonl"), "w", encoding="utf-8") as fh:
@@ -278,7 +316,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if n_err > args.max_error_rate * len(calls):
         print(f"FAILED: {n_err} of {len(calls)} calls errored; raw calls saved", file=sys.stderr)
         return ep.JUDGE_FAILED_EXIT
-    sel = select(calls, args.n, args.seed, args.prompt_version)
+    sel = select(calls, args.n, args.seed, args.prompt_version, exclude)
     with open(out, "w", encoding="utf-8") as fh:
         for r in sel["rows"]:
             fh.write(json.dumps(r) + "\n")
@@ -290,6 +328,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                "n_calls": len(calls), "n_call_errors": n_err,
                "n_generated": sum(len(parse_chats(c["raw"] or "")) for c in calls),
                "n_passed_filters": sel["n_passed"], "rejects": sel["rejects"], "n_kept": len(sel["rows"]),
+               "replaced": sel["replaced"],
                "kept_by_category": by_cat}
     with open(os.path.join(os.path.dirname(out), "summary.json"), "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=2)
