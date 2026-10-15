@@ -1,0 +1,22 @@
+name: phase2b-probe-msm-america-it-id2-s3
+command: identity_probe
+description: >
+  Phase 2b (identity v2) identity probe, our trained arm A5 MSM-only(America) (msm/runs/phase2b-msm-america-it-id2-s3): six fixed identity questions, one greedy and 8 sampled
+  (temperature 0.7) answers each, 128 new tokens, regex for model and company names.
+  Descriptive only. Pre-registered in docs/preregistration/phase2b-amendment-1-identity-v2.md §3 and docs/preregistration/phase2b-section31-seeds.md §5.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+files:
+  adapter: {path: msm/runs/phase2b-msm-america-it-id2-s3, sha256: 31c2b0c0832db985f4870e5761c2028cfd9329ba099e68c57ad2b54311bc3d6c}
+args:
+  base: hf:base
+  adapter: file:adapter
+  n-samples: 8
+  temperature: 0.7
+  max-new-tokens: 128
+  batch-size: 32
+  dtype: bfloat16
+  device: cuda
+  seed: 0
