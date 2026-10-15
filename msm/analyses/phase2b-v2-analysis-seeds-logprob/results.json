@@ -1,0 +1,1750 @@
+{
+  "config": {
+    "kind": "logprob",
+    "runs": {
+      "A1": {
+        "0": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s3/logprob.jsonl"
+      },
+      "A2": {
+        "0": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s3/logprob.jsonl"
+      },
+      "A3": {
+        "0": "msm/runs/phase2b-logprob-test-aft-only-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-aft-only-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-aft-only-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-aft-only-id2-s3/logprob.jsonl"
+      },
+      "A4": {
+        "0": "msm/runs/phase2b-logprob-test-baseline-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-baseline-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-baseline-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-baseline-id2-s3/logprob.jsonl"
+      },
+      "A5": {
+        "0": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s3/logprob.jsonl"
+      },
+      "A6": {
+        "0": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s0/logprob.jsonl",
+        "1": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s1/logprob.jsonl",
+        "2": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s2/logprob.jsonl",
+        "3": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s3/logprob.jsonl"
+      },
+      "rel-A1": {
+        "0": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft/logprob.jsonl"
+      },
+      "rel-A2": {
+        "0": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft/logprob.jsonl"
+      },
+      "rel-A3": {
+        "0": "msm/runs/phase2a-logprob-test-released-cheese-aft/logprob.jsonl"
+      },
+      "rel-A4": {
+        "0": "msm/runs/phase2a-logprob-test-released-baseline/logprob.jsonl"
+      },
+      "rel-A5": {
+        "0": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm/logprob.jsonl"
+      },
+      "rel-A6": {
+        "0": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm/logprob.jsonl"
+      }
+    },
+    "contrasts": {
+      "H1": "affordability:A2,A1",
+      "H2": "america:A1,A2",
+      "G1": "affordability:A2,A4",
+      "G2": "america:A1,A4",
+      "M1": "affordability:A6,A4",
+      "M2": "america:A5,A4",
+      "S1": "affordability:A6,A5",
+      "S2": "america:A5,A6",
+      "AMP1": "affordability:A2,A6",
+      "AMP2": "america:A1,A5",
+      "AFT": "affordability:A3,A4",
+      "OFF1": "affordability:A1,A4",
+      "OFF2": "america:A2,A4"
+    },
+    "within": {
+      "H1_released": "affordability:A2,A1~rel-A2,rel-A1",
+      "H2_released": "america:A1,A2~rel-A1,rel-A2",
+      "M1_released": "affordability:A6,A4~rel-A6,rel-A4",
+      "M2_released": "america:A5,A4~rel-A5,rel-A4",
+      "S1_released": "affordability:A6,A5~rel-A6,rel-A5",
+      "S2_released": "america:A5,A6~rel-A5,rel-A6",
+      "AMP1_released": "affordability:A2,A6~rel-A2,rel-A6",
+      "AMP2_released": "america:A1,A5~rel-A1,rel-A5",
+      "AFT_released": "affordability:A3,A4~rel-A3,rel-A4",
+      "OFF1_released": "affordability:A1,A4~rel-A1,rel-A4",
+      "OFF2_released": "america:A2,A4~rel-A2,rel-A4",
+      "A1_affordability_released": "affordability:A1~rel-A1",
+      "A1_america_released": "america:A1~rel-A1",
+      "A2_affordability_released": "affordability:A2~rel-A2",
+      "A2_america_released": "america:A2~rel-A2",
+      "A3_affordability_released": "affordability:A3~rel-A3",
+      "A3_america_released": "america:A3~rel-A3",
+      "A4_affordability_released": "affordability:A4~rel-A4",
+      "A4_america_released": "america:A4~rel-A4",
+      "A5_affordability_released": "affordability:A5~rel-A5",
+      "A5_america_released": "america:A5~rel-A5",
+      "A6_affordability_released": "affordability:A6~rel-A6",
+      "A6_america_released": "america:A6~rel-A6"
+    },
+    "gate_contrasts": [],
+    "gate_within": [],
+    "resamples": 10000,
+    "seed": 0,
+    "level": 0.95,
+    "metric": "mean_p_aligned"
+  },
+  "by_eval": {
+    "affordability": {
+      "n_questions": 373,
+      "arms": {
+        "A1": {
+          "per_seed": {
+            "0": 0.35368844234348773,
+            "1": 0.3608026495116678,
+            "2": 0.3804572859707316,
+            "3": 0.39107963654612904
+          },
+          "n_seeds": 4,
+          "mean": 0.37150700359300404,
+          "se_question": 0.010746388482896553,
+          "range": [
+            0.35368844234348773,
+            0.39107963654612904
+          ],
+          "sd_seed": 0.017275028573639648,
+          "t": 3.182,
+          "se_combined": 0.013787368076625367,
+          "ci": [
+            0.3276355983731821,
+            0.41537840881282595
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.310049635710584,
+            0.43296437147542405
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A2": {
+          "per_seed": {
+            "0": 0.45875734555736336,
+            "1": 0.47921121766351626,
+            "2": 0.49717013006980537,
+            "3": 0.5047551272758023
+          },
+          "n_seeds": 4,
+          "mean": 0.4849734551416218,
+          "se_question": 0.011504910600750876,
+          "range": [
+            0.45875734555736336,
+            0.5047551272758023
+          ],
+          "sd_seed": 0.020498465098765534,
+          "t": 3.182,
+          "se_combined": 0.015408106171187848,
+          "ci": [
+            0.43594486130490206,
+            0.5340020489783416
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.41204844056178436,
+            0.5578984697214593
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A3": {
+          "per_seed": {
+            "0": 0.35141427594426944,
+            "1": 0.36523527030958125,
+            "2": 0.34655941040693483,
+            "3": 0.3394072309473924
+          },
+          "n_seeds": 4,
+          "mean": 0.3506540469020445,
+          "se_question": 0.010967270549619249,
+          "range": [
+            0.3394072309473924,
+            0.36523527030958125
+          ],
+          "sd_seed": 0.010900259039766609,
+          "t": 3.182,
+          "se_combined": 0.01224683367618133,
+          "ci": [
+            0.3116846221444355,
+            0.3896234716596535
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.3118754580872724,
+            0.3894326357168166
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A4": {
+          "per_seed": {
+            "0": 0.2905389242172581,
+            "1": 0.323771284741469,
+            "2": 0.31822122217903714,
+            "3": 0.32764340259312585
+          },
+          "n_seeds": 4,
+          "mean": 0.31504370843272256,
+          "se_question": 0.008434739181588977,
+          "range": [
+            0.2905389242172581,
+            0.32764340259312585
+          ],
+          "sd_seed": 0.016787931421263988,
+          "t": 3.182,
+          "se_combined": 0.01189972627469632,
+          "ci": [
+            0.2771787794266389,
+            0.35290863743880624
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.255319229660177,
+            0.3747681872052681
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A5": {
+          "per_seed": {
+            "0": 0.32367414602521016,
+            "1": 0.35711009680494743,
+            "2": 0.36707827667809967,
+            "3": 0.33225181439397206
+          },
+          "n_seeds": 4,
+          "mean": 0.3450285834755573,
+          "se_question": 0.008363516384520842,
+          "range": [
+            0.32367414602521016,
+            0.36707827667809967
+          ],
+          "sd_seed": 0.02042392193515091,
+          "t": 3.182,
+          "se_combined": 0.01319971791810087,
+          "ci": [
+            0.30302708106016035,
+            0.3870300858909543
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.27236876247325026,
+            0.4176884044778644
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A6": {
+          "per_seed": {
+            "0": 0.37319611907771777,
+            "1": 0.3781426475983796,
+            "2": 0.39533977271824383,
+            "3": 0.37844462354232417
+          },
+          "n_seeds": 4,
+          "mean": 0.3812807907341664,
+          "se_question": 0.007762434979394494,
+          "range": [
+            0.37319611907771777,
+            0.39533977271824383
+          ],
+          "sd_seed": 0.009676581298887977,
+          "t": 3.182,
+          "se_combined": 0.009146827494701337,
+          "ci": [
+            0.35217558564602675,
+            0.410385995822306
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.34685553845774664,
+            0.4157060430105861
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A1": {
+          "per_seed": {
+            "0": 0.3765476923575158
+          },
+          "n_seeds": 1,
+          "mean": 0.3765476923575158,
+          "se_question": 0.01165991181792384,
+          "range": [
+            0.3765476923575158,
+            0.3765476923575158
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.35392233796012257,
+            0.39911595708395464
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A2": {
+          "per_seed": {
+            "0": 0.5497052115899187
+          },
+          "n_seeds": 1,
+          "mean": 0.5497052115899187,
+          "se_question": 0.012326270730902108,
+          "range": [
+            0.5497052115899187,
+            0.5497052115899187
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.5257017891734304,
+            0.5738402739273046
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A3": {
+          "per_seed": {
+            "0": 0.3416315796837924
+          },
+          "n_seeds": 1,
+          "mean": 0.3416315796837924,
+          "se_question": 0.011211919418058243,
+          "range": [
+            0.3416315796837924,
+            0.3416315796837924
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.31969872017557377,
+            0.3632911076362605
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A4": {
+          "per_seed": {
+            "0": 0.32830270303462317
+          },
+          "n_seeds": 1,
+          "mean": 0.32830270303462317,
+          "se_question": 0.00670905042659722,
+          "range": [
+            0.32830270303462317,
+            0.32830270303462317
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.3151804400708019,
+            0.3410978076400557
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A5": {
+          "per_seed": {
+            "0": 0.34570910029208785
+          },
+          "n_seeds": 1,
+          "mean": 0.34570910029208785,
+          "se_question": 0.007872974692305136,
+          "range": [
+            0.34570910029208785,
+            0.34570910029208785
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.3302538821524891,
+            0.36094180464857634
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A6": {
+          "per_seed": {
+            "0": 0.4130076439987943
+          },
+          "n_seeds": 1,
+          "mean": 0.4130076439987943,
+          "se_question": 0.007499961347661557,
+          "range": [
+            0.4130076439987943,
+            0.4130076439987943
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.3983357858475175,
+            0.42752623165591724
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        }
+      }
+    },
+    "america": {
+      "n_questions": 300,
+      "arms": {
+        "A1": {
+          "per_seed": {
+            "0": 0.5492769765470812,
+            "1": 0.5568437645425273,
+            "2": 0.5580130350628975,
+            "3": 0.5855127583423033
+          },
+          "n_seeds": 4,
+          "mean": 0.5624116336237023,
+          "se_question": 0.018476153390250754,
+          "range": [
+            0.5492769765470812,
+            0.5855127583423033
+          ],
+          "sd_seed": 0.015880071527851206,
+          "t": 3.182,
+          "se_combined": 0.02011000775814102,
+          "ci": [
+            0.49842158893729754,
+            0.626401678310107
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.505916942820382,
+            0.6189063244270225
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A2": {
+          "per_seed": {
+            "0": 0.3928259634685135,
+            "1": 0.3920374871582141,
+            "2": 0.3526351620079432,
+            "3": 0.4095301608765979
+          },
+          "n_seeds": 4,
+          "mean": 0.3867571933778172,
+          "se_question": 0.01770068082054291,
+          "range": [
+            0.3526351620079432,
+            0.4095301608765979
+          ],
+          "sd_seed": 0.024135952065526746,
+          "t": 3.182,
+          "se_combined": 0.021423121785540195,
+          "ci": [
+            0.31858881985622833,
+            0.4549255668994061
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.30089151281118814,
+            0.4726228739444463
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A3": {
+          "per_seed": {
+            "0": 0.4154573378461374,
+            "1": 0.4365520851488021,
+            "2": 0.38740134167970247,
+            "3": 0.4194852245195346
+          },
+          "n_seeds": 4,
+          "mean": 0.41472399729854414,
+          "se_question": 0.0182230456350226,
+          "range": [
+            0.38740134167970247,
+            0.4365520851488021
+          ],
+          "sd_seed": 0.020381364055373767,
+          "t": 3.182,
+          "se_combined": 0.020878922204116204,
+          "ci": [
+            0.3482872668450464,
+            0.4811607277520419
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.3422155795348836,
+            0.4872324150622047
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A4": {
+          "per_seed": {
+            "0": 0.41304272597590097,
+            "1": 0.4171633481912407,
+            "2": 0.37553999050822423,
+            "3": 0.4118366083764847
+          },
+          "n_seeds": 4,
+          "mean": 0.4043956682629627,
+          "se_question": 0.015785769628093825,
+          "range": [
+            0.37553999050822423,
+            0.4171633481912407
+          ],
+          "sd_seed": 0.019371826503973642,
+          "t": 3.182,
+          "se_combined": 0.01852045999094686,
+          "ci": [
+            0.3454635645717698,
+            0.4633277719541556
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.3354787652932162,
+            0.4733125712327092
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A5": {
+          "per_seed": {
+            "0": 0.505791505270403,
+            "1": 0.5221368228212809,
+            "2": 0.49505255904362094,
+            "3": 0.5491778774158632
+          },
+          "n_seeds": 4,
+          "mean": 0.518039691137792,
+          "se_question": 0.016174052892756637,
+          "range": [
+            0.49505255904362094,
+            0.5491778774158632
+          ],
+          "sd_seed": 0.023557018994181538,
+          "t": 3.182,
+          "se_combined": 0.020008330089009096,
+          "ci": [
+            0.45437318479456507,
+            0.5817061974810189
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.4342336136909664,
+            0.6018457685846177
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "A6": {
+          "per_seed": {
+            "0": 0.4098828256328606,
+            "1": 0.37694590845120085,
+            "2": 0.3532427597032777,
+            "3": 0.41363258975665507
+          },
+          "n_seeds": 4,
+          "mean": 0.38842602088599854,
+          "se_question": 0.015556424350778874,
+          "range": [
+            0.3532427597032777,
+            0.41363258975665507
+          ],
+          "sd_seed": 0.028667173056437813,
+          "t": 3.182,
+          "se_combined": 0.02115310949585059,
+          "ci": [
+            0.32111682647020195,
+            0.4557352153017951
+          ],
+          "ci_kind": "seed-level t (seed + question)",
+          "prediction_interval": [
+            0.28644014033197845,
+            0.4904119014400186
+          ],
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A1": {
+          "per_seed": {
+            "0": 0.5290687523780527
+          },
+          "n_seeds": 1,
+          "mean": 0.5290687523780527,
+          "se_question": 0.01895710150389107,
+          "range": [
+            0.5290687523780527,
+            0.5290687523780527
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.49228526879369694,
+            0.5652354469561772
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A2": {
+          "per_seed": {
+            "0": 0.35767499259050767
+          },
+          "n_seeds": 1,
+          "mean": 0.35767499259050767,
+          "se_question": 0.015182977921802298,
+          "range": [
+            0.35767499259050767,
+            0.35767499259050767
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.3279490063379245,
+            0.38715484227441077
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A3": {
+          "per_seed": {
+            "0": 0.395653568410084
+          },
+          "n_seeds": 1,
+          "mean": 0.395653568410084,
+          "se_question": 0.016335500266782366,
+          "range": [
+            0.395653568410084,
+            0.395653568410084
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.3634799667108571,
+            0.4275153749479479
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A4": {
+          "per_seed": {
+            "0": 0.45002281335986294
+          },
+          "n_seeds": 1,
+          "mean": 0.45002281335986294,
+          "se_question": 0.014804674429434884,
+          "range": [
+            0.45002281335986294,
+            0.45002281335986294
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.42137777986688657,
+            0.478820970158058
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A5": {
+          "per_seed": {
+            "0": 0.5056186074176079
+          },
+          "n_seeds": 1,
+          "mean": 0.5056186074176079,
+          "se_question": 0.015746470676474524,
+          "range": [
+            0.5056186074176079,
+            0.5056186074176079
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.4748303120689457,
+            0.5363706759389643
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        },
+        "rel-A6": {
+          "per_seed": {
+            "0": 0.38428494470696656
+          },
+          "n_seeds": 1,
+          "mean": 0.38428494470696656,
+          "se_question": 0.0132351934852472,
+          "range": [
+            0.38428494470696656,
+            0.38428494470696656
+          ],
+          "sd_seed": null,
+          "ci": [
+            0.35849578997071246,
+            0.4102521843640517
+          ],
+          "ci_kind": "question bootstrap (one seed)",
+          "prediction_interval": null,
+          "lower_bound_above_zero": true,
+          "upper_bound_below_zero": false
+        }
+      }
+    }
+  },
+  "contrasts": {
+    "H1": {
+      "eval": "affordability",
+      "a": "A2",
+      "b": "A1",
+      "gate": false,
+      "per_seed": {
+        "0": 0.10506890321387563,
+        "1": 0.11840856815184847,
+        "2": 0.11671284409907379,
+        "3": 0.11367549072967326
+      },
+      "n_seeds": 4,
+      "mean": 0.11346645154861779,
+      "se_question": 0.004363076112130728,
+      "range": [
+        0.10506890321387563,
+        0.11840856815184847
+      ],
+      "sd_seed": 0.005930882354960114,
+      "t": 3.182,
+      "se_combined": 0.0052754406960310056,
+      "ci": [
+        0.09667999925384713,
+        0.13025290384338845
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.09236683847403623,
+        0.13456606462319934
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "H2": {
+      "eval": "america",
+      "a": "A1",
+      "b": "A2",
+      "gate": false,
+      "per_seed": {
+        "0": 0.15645101307856768,
+        "1": 0.16480627738431314,
+        "2": 0.20537787305495425,
+        "3": 0.17598259746570544
+      },
+      "n_seeds": 4,
+      "mean": 0.1756544402458851,
+      "se_question": 0.008175114671613028,
+      "range": [
+        0.15645101307856768,
+        0.20537787305495425
+      ],
+      "sd_seed": 0.021370106828291886,
+      "t": 3.182,
+      "se_combined": 0.013453730573977408,
+      "ci": [
+        0.132844669559489,
+        0.21846421093228122
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.09962848686268662,
+        0.2516803936290836
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "G1": {
+      "eval": "affordability",
+      "a": "A2",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.16821842134010528,
+        "1": 0.15543993292204727,
+        "2": 0.17894890789076823,
+        "3": 0.17711172468267644
+      },
+      "n_seeds": 4,
+      "mean": 0.1699297467088993,
+      "se_question": 0.006871894082273293,
+      "range": [
+        0.15543993292204727,
+        0.17894890789076823
+      ],
+      "sd_seed": 0.01073637763456366,
+      "t": 3.182,
+      "se_combined": 0.008720113500177186,
+      "ci": [
+        0.1421823455513355,
+        0.1976771478664631
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.13173417978411783,
+        0.20812531363368075
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "G2": {
+      "eval": "america",
+      "a": "A1",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.13623425057118022,
+        "1": 0.13968041635128658,
+        "2": 0.18247304455467322,
+        "3": 0.1736761499658186
+      },
+      "n_seeds": 4,
+      "mean": 0.15801596536073964,
+      "se_question": 0.008949104705310343,
+      "range": [
+        0.13623425057118022,
+        0.18247304455467322
+      ],
+      "sd_seed": 0.023480669788965118,
+      "t": 3.182,
+      "se_combined": 0.014762179326278775,
+      "ci": [
+        0.11104271074452057,
+        0.2049892199769587
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.07448150663642517,
+        0.24155042408505412
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "M1": {
+      "eval": "affordability",
+      "a": "A6",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.08265719486045969,
+        "1": 0.05437136285691063,
+        "2": 0.07711855053920669,
+        "3": 0.05080122094919831
+      },
+      "n_seeds": 4,
+      "mean": 0.06623708230144383,
+      "se_question": 0.0021958535753890873,
+      "range": [
+        0.05080122094919831,
+        0.08265719486045969
+      ],
+      "sd_seed": 0.015990492603234714,
+      "t": 3.182,
+      "se_combined": 0.008291304864017187,
+      "ci": [
+        0.03985415022414114,
+        0.09262001437874652
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.00934955923027006,
+        0.1231246053726176
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "M2": {
+      "eval": "america",
+      "a": "A5",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.09274877929450198,
+        "1": 0.10497347463004025,
+        "2": 0.11951256853539671,
+        "3": 0.1373412690393785
+      },
+      "n_seeds": 4,
+      "mean": 0.11364402287482936,
+      "se_question": 0.006012779820367033,
+      "range": [
+        0.09274877929450198,
+        0.1373412690393785
+      ],
+      "sd_seed": 0.01921621637315586,
+      "t": 3.182,
+      "se_combined": 0.011334428264945651,
+      "ci": [
+        0.0775778721357723,
+        0.14971017361388642
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.04528071604040229,
+        0.18200732970925643
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "S1": {
+      "eval": "affordability",
+      "a": "A6",
+      "b": "A5",
+      "gate": false,
+      "per_seed": {
+        "0": 0.049521973052507606,
+        "1": 0.021032550793432192,
+        "2": 0.028261496040144163,
+        "3": 0.04619280914835211
+      },
+      "n_seeds": 4,
+      "mean": 0.03625220725860902,
+      "se_question": 0.0017584538586010137,
+      "range": [
+        0.021032550793432192,
+        0.049521973052507606
+      ],
+      "sd_seed": 0.0137887835921107,
+      "t": 3.182,
+      "se_combined": 0.007115110555033148,
+      "ci": [
+        0.013611925472493541,
+        0.058892489044724494
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        -0.012802550726829252,
+        0.0853069652440473
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "S2": {
+      "eval": "america",
+      "a": "A5",
+      "b": "A6",
+      "gate": false,
+      "per_seed": {
+        "0": 0.09590867963754235,
+        "1": 0.14519091437008008,
+        "2": 0.14180979934034327,
+        "3": 0.13554528765920815
+      },
+      "n_seeds": 4,
+      "mean": 0.12961367025179346,
+      "se_question": 0.005637755361877772,
+      "range": [
+        0.09590867963754235,
+        0.14519091437008008
+      ],
+      "sd_seed": 0.02282255154038045,
+      "t": 3.182,
+      "se_combined": 0.012727980995574753,
+      "ci": [
+        0.0891132347238746,
+        0.1701141057797123
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.048420522578918865,
+        0.21080681792466804
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "AMP1": {
+      "eval": "affordability",
+      "a": "A2",
+      "b": "A6",
+      "gate": false,
+      "per_seed": {
+        "0": 0.08556122647964559,
+        "1": 0.10106857006513664,
+        "2": 0.10183035735156154,
+        "3": 0.12631050373347813
+      },
+      "n_seeds": 4,
+      "mean": 0.10369266440745548,
+      "se_question": 0.006079559786798207,
+      "range": [
+        0.08556122647964559,
+        0.12631050373347813
+      ],
+      "sd_seed": 0.016839138495338985,
+      "t": 3.182,
+      "se_combined": 0.010385094776532166,
+      "ci": [
+        0.07064729282853013,
+        0.13673803598638082
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.043786012159700086,
+        0.16359931665521088
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "AMP2": {
+      "eval": "america",
+      "a": "A1",
+      "b": "A5",
+      "gate": false,
+      "per_seed": {
+        "0": 0.043485471276678234,
+        "1": 0.03470694172124633,
+        "2": 0.06296047601927651,
+        "3": 0.036334880926440105
+      },
+      "n_seeds": 4,
+      "mean": 0.044371942485910296,
+      "se_question": 0.005501031168187541,
+      "range": [
+        0.03470694172124633,
+        0.06296047601927651
+      ],
+      "sd_seed": 0.012965672735053719,
+      "t": 3.182,
+      "se_combined": 0.008502265067703995,
+      "ci": [
+        0.017317735040476182,
+        0.07142614993134441
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        -0.001754529358956522,
+        0.09049841433077711
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "AFT": {
+      "eval": "affordability",
+      "a": "A3",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.06087535172701136,
+        "1": 0.04146398556811226,
+        "2": 0.028338188227897687,
+        "3": 0.011763828354266537
+      },
+      "n_seeds": 4,
+      "mean": 0.03561033846932196,
+      "se_question": 0.004329700193107083,
+      "range": [
+        0.011763828354266537,
+        0.06087535172701136
+      ],
+      "sd_seed": 0.02076957946187713,
+      "t": 3.182,
+      "se_combined": 0.011251229333632774,
+      "ci": [
+        -0.00019107327029752735,
+        0.07141175020894144
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        -0.038279188272155706,
+        0.10949986521079963
+      ],
+      "lower_bound_above_zero": false,
+      "upper_bound_below_zero": false
+    },
+    "OFF1": {
+      "eval": "affordability",
+      "a": "A1",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": 0.06314951812622965,
+        "1": 0.037031364770198805,
+        "2": 0.06223606379169444,
+        "3": 0.06343623395300318
+      },
+      "n_seeds": 4,
+      "mean": 0.05646329516028152,
+      "se_question": 0.004986990766701001,
+      "range": [
+        0.037031364770198805,
+        0.06343623395300318
+      ],
+      "sd_seed": 0.012964724310145847,
+      "t": 3.182,
+      "se_combined": 0.008178697696863645,
+      "ci": [
+        0.0304386790888614,
+        0.08248791123170164
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        0.010340197416836505,
+        0.10258639290372654
+      ],
+      "lower_bound_above_zero": true,
+      "upper_bound_below_zero": false
+    },
+    "OFF2": {
+      "eval": "america",
+      "a": "A2",
+      "b": "A4",
+      "gate": false,
+      "per_seed": {
+        "0": -0.020216762507387465,
+        "1": -0.025125861033026553,
+        "2": -0.022904828500281027,
+        "3": -0.0023064474998868434
+      },
+      "n_seeds": 4,
+      "mean": -0.017638474885145472,
+      "se_question": 0.005277737551127567,
+      "range": [
+        -0.025125861033026553,
+        -0.0023064474998868434
+      ],
+      "sd_seed": 0.010416558333289354,
+      "t": 3.182,
+      "se_combined": 0.007414896191875311,
+      "ci": [
+        -0.04123267456769271,
+        0.005955724797401765
+      ],
+      "ci_kind": "seed-level t (seed + question)",
+      "prediction_interval": [
+        -0.054696257732145086,
+        0.01941930796185414
+      ],
+      "lower_bound_above_zero": false,
+      "upper_bound_below_zero": false
+    }
+  },
+  "within": {
+    "H1_released": {
+      "eval": "affordability",
+      "ours": "A2,A1",
+      "reference": "rel-A2,rel-A1",
+      "gate": false,
+      "ours_mean": 0.11346645154861779,
+      "ours_per_seed": {
+        "0": 0.10506890321387563,
+        "1": 0.11840856815184847,
+        "2": 0.11671284409907379,
+        "3": 0.11367549072967326
+      },
+      "ours_sd_seed": 0.005930882354960114,
+      "prediction_interval": [
+        0.09236683847403623,
+        0.13456606462319934
+      ],
+      "range": [
+        0.10506890321387563,
+        0.11840856815184847
+      ],
+      "reference_value": 0.1731575192324029,
+      "reference_minus_mean": 0.059691067683785126,
+      "in_prediction_interval": false,
+      "in_range": false
+    },
+    "H2_released": {
+      "eval": "america",
+      "ours": "A1,A2",
+      "reference": "rel-A1,rel-A2",
+      "gate": false,
+      "ours_mean": 0.1756544402458851,
+      "ours_per_seed": {
+        "0": 0.15645101307856768,
+        "1": 0.16480627738431314,
+        "2": 0.20537787305495425,
+        "3": 0.17598259746570544
+      },
+      "ours_sd_seed": 0.021370106828291886,
+      "prediction_interval": [
+        0.09962848686268662,
+        0.2516803936290836
+      ],
+      "range": [
+        0.15645101307856768,
+        0.20537787305495425
+      ],
+      "reference_value": 0.17139375978754506,
+      "reference_minus_mean": -0.004260680458340049,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "M1_released": {
+      "eval": "affordability",
+      "ours": "A6,A4",
+      "reference": "rel-A6,rel-A4",
+      "gate": false,
+      "ours_mean": 0.06623708230144383,
+      "ours_per_seed": {
+        "0": 0.08265719486045969,
+        "1": 0.05437136285691063,
+        "2": 0.07711855053920669,
+        "3": 0.05080122094919831
+      },
+      "ours_sd_seed": 0.015990492603234714,
+      "prediction_interval": [
+        0.00934955923027006,
+        0.1231246053726176
+      ],
+      "range": [
+        0.05080122094919831,
+        0.08265719486045969
+      ],
+      "reference_value": 0.08470494096417114,
+      "reference_minus_mean": 0.018467858662727307,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "M2_released": {
+      "eval": "america",
+      "ours": "A5,A4",
+      "reference": "rel-A5,rel-A4",
+      "gate": false,
+      "ours_mean": 0.11364402287482936,
+      "ours_per_seed": {
+        "0": 0.09274877929450198,
+        "1": 0.10497347463004025,
+        "2": 0.11951256853539671,
+        "3": 0.1373412690393785
+      },
+      "ours_sd_seed": 0.01921621637315586,
+      "prediction_interval": [
+        0.04528071604040229,
+        0.18200732970925643
+      ],
+      "range": [
+        0.09274877929450198,
+        0.1373412690393785
+      ],
+      "reference_value": 0.05559579405774495,
+      "reference_minus_mean": -0.05804822881708441,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "S1_released": {
+      "eval": "affordability",
+      "ours": "A6,A5",
+      "reference": "rel-A6,rel-A5",
+      "gate": false,
+      "ours_mean": 0.03625220725860902,
+      "ours_per_seed": {
+        "0": 0.049521973052507606,
+        "1": 0.021032550793432192,
+        "2": 0.028261496040144163,
+        "3": 0.04619280914835211
+      },
+      "ours_sd_seed": 0.0137887835921107,
+      "prediction_interval": [
+        -0.012802550726829252,
+        0.0853069652440473
+      ],
+      "range": [
+        0.021032550793432192,
+        0.049521973052507606
+      ],
+      "reference_value": 0.06729854370670646,
+      "reference_minus_mean": 0.031046336448097442,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "S2_released": {
+      "eval": "america",
+      "ours": "A5,A6",
+      "reference": "rel-A5,rel-A6",
+      "gate": false,
+      "ours_mean": 0.12961367025179346,
+      "ours_per_seed": {
+        "0": 0.09590867963754235,
+        "1": 0.14519091437008008,
+        "2": 0.14180979934034327,
+        "3": 0.13554528765920815
+      },
+      "ours_sd_seed": 0.02282255154038045,
+      "prediction_interval": [
+        0.048420522578918865,
+        0.21080681792466804
+      ],
+      "range": [
+        0.09590867963754235,
+        0.14519091437008008
+      ],
+      "reference_value": 0.12133366271064133,
+      "reference_minus_mean": -0.008280007541152129,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "AMP1_released": {
+      "eval": "affordability",
+      "ours": "A2,A6",
+      "reference": "rel-A2,rel-A6",
+      "gate": false,
+      "ours_mean": 0.10369266440745548,
+      "ours_per_seed": {
+        "0": 0.08556122647964559,
+        "1": 0.10106857006513664,
+        "2": 0.10183035735156154,
+        "3": 0.12631050373347813
+      },
+      "ours_sd_seed": 0.016839138495338985,
+      "prediction_interval": [
+        0.043786012159700086,
+        0.16359931665521088
+      ],
+      "range": [
+        0.08556122647964559,
+        0.12631050373347813
+      ],
+      "reference_value": 0.1366975675911244,
+      "reference_minus_mean": 0.033004903183668916,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "AMP2_released": {
+      "eval": "america",
+      "ours": "A1,A5",
+      "reference": "rel-A1,rel-A5",
+      "gate": false,
+      "ours_mean": 0.044371942485910296,
+      "ours_per_seed": {
+        "0": 0.043485471276678234,
+        "1": 0.03470694172124633,
+        "2": 0.06296047601927651,
+        "3": 0.036334880926440105
+      },
+      "ours_sd_seed": 0.012965672735053719,
+      "prediction_interval": [
+        -0.001754529358956522,
+        0.09049841433077711
+      ],
+      "range": [
+        0.03470694172124633,
+        0.06296047601927651
+      ],
+      "reference_value": 0.02345014496044484,
+      "reference_minus_mean": -0.020921797525465455,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "AFT_released": {
+      "eval": "affordability",
+      "ours": "A3,A4",
+      "reference": "rel-A3,rel-A4",
+      "gate": false,
+      "ours_mean": 0.03561033846932196,
+      "ours_per_seed": {
+        "0": 0.06087535172701136,
+        "1": 0.04146398556811226,
+        "2": 0.028338188227897687,
+        "3": 0.011763828354266537
+      },
+      "ours_sd_seed": 0.02076957946187713,
+      "prediction_interval": [
+        -0.038279188272155706,
+        0.10949986521079963
+      ],
+      "range": [
+        0.011763828354266537,
+        0.06087535172701136
+      ],
+      "reference_value": 0.013328876649169208,
+      "reference_minus_mean": -0.022281461820152754,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "OFF1_released": {
+      "eval": "affordability",
+      "ours": "A1,A4",
+      "reference": "rel-A1,rel-A4",
+      "gate": false,
+      "ours_mean": 0.05646329516028152,
+      "ours_per_seed": {
+        "0": 0.06314951812622965,
+        "1": 0.037031364770198805,
+        "2": 0.06223606379169444,
+        "3": 0.06343623395300318
+      },
+      "ours_sd_seed": 0.012964724310145847,
+      "prediction_interval": [
+        0.010340197416836505,
+        0.10258639290372654
+      ],
+      "range": [
+        0.037031364770198805,
+        0.06343623395300318
+      ],
+      "reference_value": 0.04824498932289262,
+      "reference_minus_mean": -0.008218305837388903,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "OFF2_released": {
+      "eval": "america",
+      "ours": "A2,A4",
+      "reference": "rel-A2,rel-A4",
+      "gate": false,
+      "ours_mean": -0.017638474885145472,
+      "ours_per_seed": {
+        "0": -0.020216762507387465,
+        "1": -0.025125861033026553,
+        "2": -0.022904828500281027,
+        "3": -0.0023064474998868434
+      },
+      "ours_sd_seed": 0.010416558333289354,
+      "prediction_interval": [
+        -0.054696257732145086,
+        0.01941930796185414
+      ],
+      "range": [
+        -0.025125861033026553,
+        -0.0023064474998868434
+      ],
+      "reference_value": -0.09234782076935527,
+      "reference_minus_mean": -0.0747093458842098,
+      "in_prediction_interval": false,
+      "in_range": false
+    },
+    "A1_affordability_released": {
+      "eval": "affordability",
+      "ours": "A1",
+      "reference": "rel-A1",
+      "gate": false,
+      "ours_mean": 0.37150700359300404,
+      "ours_per_seed": {
+        "0": 0.35368844234348773,
+        "1": 0.3608026495116678,
+        "2": 0.3804572859707316,
+        "3": 0.39107963654612904
+      },
+      "ours_sd_seed": 0.017275028573639648,
+      "prediction_interval": [
+        0.310049635710584,
+        0.43296437147542405
+      ],
+      "range": [
+        0.35368844234348773,
+        0.39107963654612904
+      ],
+      "reference_value": 0.3765476923575158,
+      "reference_minus_mean": 0.005040688764511747,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A1_america_released": {
+      "eval": "america",
+      "ours": "A1",
+      "reference": "rel-A1",
+      "gate": false,
+      "ours_mean": 0.5624116336237023,
+      "ours_per_seed": {
+        "0": 0.5492769765470812,
+        "1": 0.5568437645425273,
+        "2": 0.5580130350628975,
+        "3": 0.5855127583423033
+      },
+      "ours_sd_seed": 0.015880071527851206,
+      "prediction_interval": [
+        0.505916942820382,
+        0.6189063244270225
+      ],
+      "range": [
+        0.5492769765470812,
+        0.5855127583423033
+      ],
+      "reference_value": 0.5290687523780527,
+      "reference_minus_mean": -0.03334288124564955,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "A2_affordability_released": {
+      "eval": "affordability",
+      "ours": "A2",
+      "reference": "rel-A2",
+      "gate": false,
+      "ours_mean": 0.4849734551416218,
+      "ours_per_seed": {
+        "0": 0.45875734555736336,
+        "1": 0.47921121766351626,
+        "2": 0.49717013006980537,
+        "3": 0.5047551272758023
+      },
+      "ours_sd_seed": 0.020498465098765534,
+      "prediction_interval": [
+        0.41204844056178436,
+        0.5578984697214593
+      ],
+      "range": [
+        0.45875734555736336,
+        0.5047551272758023
+      ],
+      "reference_value": 0.5497052115899187,
+      "reference_minus_mean": 0.06473175644829687,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "A2_america_released": {
+      "eval": "america",
+      "ours": "A2",
+      "reference": "rel-A2",
+      "gate": false,
+      "ours_mean": 0.3867571933778172,
+      "ours_per_seed": {
+        "0": 0.3928259634685135,
+        "1": 0.3920374871582141,
+        "2": 0.3526351620079432,
+        "3": 0.4095301608765979
+      },
+      "ours_sd_seed": 0.024135952065526746,
+      "prediction_interval": [
+        0.30089151281118814,
+        0.4726228739444463
+      ],
+      "range": [
+        0.3526351620079432,
+        0.4095301608765979
+      ],
+      "reference_value": 0.35767499259050767,
+      "reference_minus_mean": -0.029082200787309553,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A3_affordability_released": {
+      "eval": "affordability",
+      "ours": "A3",
+      "reference": "rel-A3",
+      "gate": false,
+      "ours_mean": 0.3506540469020445,
+      "ours_per_seed": {
+        "0": 0.35141427594426944,
+        "1": 0.36523527030958125,
+        "2": 0.34655941040693483,
+        "3": 0.3394072309473924
+      },
+      "ours_sd_seed": 0.010900259039766609,
+      "prediction_interval": [
+        0.3118754580872724,
+        0.3894326357168166
+      ],
+      "range": [
+        0.3394072309473924,
+        0.36523527030958125
+      ],
+      "reference_value": 0.3416315796837924,
+      "reference_minus_mean": -0.009022467218252117,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A3_america_released": {
+      "eval": "america",
+      "ours": "A3",
+      "reference": "rel-A3",
+      "gate": false,
+      "ours_mean": 0.41472399729854414,
+      "ours_per_seed": {
+        "0": 0.4154573378461374,
+        "1": 0.4365520851488021,
+        "2": 0.38740134167970247,
+        "3": 0.4194852245195346
+      },
+      "ours_sd_seed": 0.020381364055373767,
+      "prediction_interval": [
+        0.3422155795348836,
+        0.4872324150622047
+      ],
+      "range": [
+        0.38740134167970247,
+        0.4365520851488021
+      ],
+      "reference_value": 0.395653568410084,
+      "reference_minus_mean": -0.019070428888460167,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A4_affordability_released": {
+      "eval": "affordability",
+      "ours": "A4",
+      "reference": "rel-A4",
+      "gate": false,
+      "ours_mean": 0.31504370843272256,
+      "ours_per_seed": {
+        "0": 0.2905389242172581,
+        "1": 0.323771284741469,
+        "2": 0.31822122217903714,
+        "3": 0.32764340259312585
+      },
+      "ours_sd_seed": 0.016787931421263988,
+      "prediction_interval": [
+        0.255319229660177,
+        0.3747681872052681
+      ],
+      "range": [
+        0.2905389242172581,
+        0.32764340259312585
+      ],
+      "reference_value": 0.32830270303462317,
+      "reference_minus_mean": 0.013258994601900609,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "A4_america_released": {
+      "eval": "america",
+      "ours": "A4",
+      "reference": "rel-A4",
+      "gate": false,
+      "ours_mean": 0.4043956682629627,
+      "ours_per_seed": {
+        "0": 0.41304272597590097,
+        "1": 0.4171633481912407,
+        "2": 0.37553999050822423,
+        "3": 0.4118366083764847
+      },
+      "ours_sd_seed": 0.019371826503973642,
+      "prediction_interval": [
+        0.3354787652932162,
+        0.4733125712327092
+      ],
+      "range": [
+        0.37553999050822423,
+        0.4171633481912407
+      ],
+      "reference_value": 0.45002281335986294,
+      "reference_minus_mean": 0.045627145096900246,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "A5_affordability_released": {
+      "eval": "affordability",
+      "ours": "A5",
+      "reference": "rel-A5",
+      "gate": false,
+      "ours_mean": 0.3450285834755573,
+      "ours_per_seed": {
+        "0": 0.32367414602521016,
+        "1": 0.35711009680494743,
+        "2": 0.36707827667809967,
+        "3": 0.33225181439397206
+      },
+      "ours_sd_seed": 0.02042392193515091,
+      "prediction_interval": [
+        0.27236876247325026,
+        0.4176884044778644
+      ],
+      "range": [
+        0.32367414602521016,
+        0.36707827667809967
+      ],
+      "reference_value": 0.34570910029208785,
+      "reference_minus_mean": 0.0006805168165305298,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A5_america_released": {
+      "eval": "america",
+      "ours": "A5",
+      "reference": "rel-A5",
+      "gate": false,
+      "ours_mean": 0.518039691137792,
+      "ours_per_seed": {
+        "0": 0.505791505270403,
+        "1": 0.5221368228212809,
+        "2": 0.49505255904362094,
+        "3": 0.5491778774158632
+      },
+      "ours_sd_seed": 0.023557018994181538,
+      "prediction_interval": [
+        0.4342336136909664,
+        0.6018457685846177
+      ],
+      "range": [
+        0.49505255904362094,
+        0.5491778774158632
+      ],
+      "reference_value": 0.5056186074176079,
+      "reference_minus_mean": -0.012421083720184134,
+      "in_prediction_interval": true,
+      "in_range": true
+    },
+    "A6_affordability_released": {
+      "eval": "affordability",
+      "ours": "A6",
+      "reference": "rel-A6",
+      "gate": false,
+      "ours_mean": 0.3812807907341664,
+      "ours_per_seed": {
+        "0": 0.37319611907771777,
+        "1": 0.3781426475983796,
+        "2": 0.39533977271824383,
+        "3": 0.37844462354232417
+      },
+      "ours_sd_seed": 0.009676581298887977,
+      "prediction_interval": [
+        0.34685553845774664,
+        0.4157060430105861
+      ],
+      "range": [
+        0.37319611907771777,
+        0.39533977271824383
+      ],
+      "reference_value": 0.4130076439987943,
+      "reference_minus_mean": 0.03172685326462793,
+      "in_prediction_interval": true,
+      "in_range": false
+    },
+    "A6_america_released": {
+      "eval": "america",
+      "ours": "A6",
+      "reference": "rel-A6",
+      "gate": false,
+      "ours_mean": 0.38842602088599854,
+      "ours_per_seed": {
+        "0": 0.4098828256328606,
+        "1": 0.37694590845120085,
+        "2": 0.3532427597032777,
+        "3": 0.41363258975665507
+      },
+      "ours_sd_seed": 0.028667173056437813,
+      "prediction_interval": [
+        0.28644014033197845,
+        0.4904119014400186
+      ],
+      "range": [
+        0.3532427597032777,
+        0.41363258975665507
+      ],
+      "reference_value": 0.38428494470696656,
+      "reference_minus_mean": -0.004141076179031977,
+      "in_prediction_interval": true,
+      "in_range": true
+    }
+  }
+}

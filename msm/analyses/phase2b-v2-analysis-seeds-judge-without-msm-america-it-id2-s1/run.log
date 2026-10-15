@@ -1,0 +1,64 @@
+affordability (373 questions)
+  A1                                       +0.204 [+0.144, +0.263] (n=4 sd_seed 0.019)
+  A2                                       +0.353 [+0.284, +0.423] (n=4 sd_seed 0.020)
+  A3                                       +0.207 [+0.150, +0.263] (n=4 sd_seed 0.016)
+  A4                                       +0.143 [+0.081, +0.204] (n=4 sd_seed 0.029)
+  A5                                       +0.179 [+0.071, +0.287] (n=3 sd_seed 0.036)
+  A6                                       +0.226 [+0.138, +0.314] (n=4 sd_seed 0.046)
+  rel-A1                                   +0.296 [+0.259, +0.336] (n=1)
+  rel-A2                                   +0.516 [+0.475, +0.559] (n=1)
+  rel-A3                                   +0.336 [+0.298, +0.375] (n=1)
+  rel-A4                                   +0.176 [+0.145, +0.208] (n=1)
+  rel-A5                                   +0.173 [+0.143, +0.204] (n=1)
+  rel-A6                                   +0.350 [+0.311, +0.389] (n=1)
+america (300 questions)
+  A1                                       +0.567 [+0.484, +0.650] (n=4 sd_seed 0.022)
+  A2                                       +0.395 [+0.313, +0.478] (n=4 sd_seed 0.026)
+  A3                                       +0.420 [+0.334, +0.506] (n=4 sd_seed 0.030)
+  A4                                       +0.392 [+0.314, +0.471] (n=4 sd_seed 0.024)
+  A5                                       +0.533 [+0.415, +0.650] (n=3 sd_seed 0.026)
+  A6                                       +0.385 [+0.284, +0.486] (n=4 sd_seed 0.046)
+  rel-A1                                   +0.548 [+0.503, +0.593] (n=1)
+  rel-A2                                   +0.350 [+0.307, +0.393] (n=1)
+  rel-A3                                   +0.395 [+0.353, +0.437] (n=1)
+  rel-A4                                   +0.428 [+0.383, +0.473] (n=1)
+  rel-A5                                   +0.517 [+0.473, +0.560] (n=1)
+  rel-A6                                   +0.325 [+0.283, +0.367] (n=1)
+contrast H1 (affordability): A2 - A1 = +0.149 [+0.091, +0.208] (n=4 sd_seed 0.029) CI above 0 [gate]
+contrast H2 (america): A1 - A2 = +0.172 [+0.107, +0.237] (n=4 sd_seed 0.032) CI above 0 [gate]
+contrast G1 (affordability): A2 - A4 = +0.210 [+0.125, +0.296] (n=4 sd_seed 0.045) CI above 0 [gate]
+contrast G2 (america): A1 - A4 = +0.175 [+0.096, +0.254] (n=4 sd_seed 0.040) CI above 0 [gate]
+contrast M1 (affordability): A6 - A4 = +0.083 [+0.033, +0.134] (n=4 sd_seed 0.026) CI above 0
+contrast M2 (america): A5 - A4 = +0.151 [+0.082, +0.219] (n=3 sd_seed 0.016) CI above 0
+contrast S1 (affordability): A6 - A5 = +0.070 [-0.035, +0.175] (n=3 sd_seed 0.039) CI includes 0
+contrast S2 (america): A5 - A6 = +0.144 [+0.048, +0.240] (n=3 sd_seed 0.033) CI above 0
+contrast AMP1 (affordability): A2 - A6 = +0.127 [+0.022, +0.233] (n=4 sd_seed 0.062) CI above 0
+contrast AMP2 (america): A1 - A5 = +0.044 [-0.014, +0.102] (n=3 sd_seed 0.014) CI includes 0
+contrast AFT (affordability): A3 - A4 = +0.064 [+0.016, +0.112] (n=4 sd_seed 0.021) CI above 0
+contrast OFF1 (affordability): A1 - A4 = +0.061 [+0.017, +0.105] (n=4 sd_seed 0.018) CI above 0
+contrast OFF2 (america): A2 - A4 = +0.003 [-0.037, +0.044] (n=4 sd_seed 0.018) CI includes 0
+within H1_released (affordability): reference +0.220 vs ours +0.149, PI [+0.046, +0.253] in, range out [gate]
+within H2_released (america): reference +0.198 vs ours +0.172, PI [+0.059, +0.284] in, range in [gate]
+within M1_released (affordability): reference +0.174 vs ours +0.083, PI [-0.010, +0.176] in, range out
+within M2_released (america): reference +0.088 vs ours +0.151, PI [+0.070, +0.231] in, range out
+within S1_released (affordability): reference +0.177 vs ours +0.070, PI [-0.126, +0.265] in, range out
+within S2_released (america): reference +0.192 vs ours +0.144, PI [-0.019, +0.306] in, range out
+within AMP1_released (affordability): reference +0.166 vs ours +0.127, PI [-0.092, +0.347] in, range in
+within AMP2_released (america): reference +0.032 vs ours +0.044, PI [-0.028, +0.115] in, range in
+within AFT_released (affordability): reference +0.161 vs ours +0.064, PI [-0.010, +0.138] OUT, range out
+within OFF1_released (affordability): reference +0.121 vs ours +0.061, PI [-0.002, +0.124] in, range out
+within OFF2_released (america): reference -0.078 vs ours +0.003, PI [-0.060, +0.066] OUT, range out
+within A1_affordability_released (affordability): reference +0.296 vs ours +0.204, PI [+0.137, +0.270] OUT, range out
+within A1_america_released (america): reference +0.548 vs ours +0.567, PI [+0.490, +0.644] in, range in
+within A2_affordability_released (affordability): reference +0.516 vs ours +0.353, PI [+0.282, +0.424] OUT, range out
+within A2_america_released (america): reference +0.350 vs ours +0.395, PI [+0.303, +0.488] in, range out
+within A3_affordability_released (affordability): reference +0.336 vs ours +0.207, PI [+0.152, +0.262] OUT, range out
+within A3_america_released (america): reference +0.395 vs ours +0.420, PI [+0.314, +0.526] in, range in
+within A4_affordability_released (affordability): reference +0.176 vs ours +0.143, PI [+0.040, +0.246] in, range out
+within A4_america_released (america): reference +0.428 vs ours +0.392, PI [+0.307, +0.477] in, range out
+within A5_affordability_released (affordability): reference +0.173 vs ours +0.179, PI [-0.002, +0.359] in, range in
+within A5_america_released (america): reference +0.517 vs ours +0.533, PI [+0.402, +0.664] in, range in
+within A6_affordability_released (affordability): reference +0.350 vs ours +0.226, PI [+0.063, +0.388] in, range out
+within A6_america_released (america): reference +0.325 vs ours +0.385, PI [+0.222, +0.548] in, range out
+GATE PASSES
+wrote msm/analyses/phase2b-v2-analysis-seeds-judge-without-msm-america-it-id2-s1/results.json

@@ -1,0 +1,683 @@
+{
+  "name": "phase2b-v2-analysis-seeds-logprob",
+  "command": "analyze_seeds",
+  "config_path": "configs/phase2b/v2-analysis-seeds-logprob.yaml",
+  "config_sha256": "2712026a2a3e7ecc70caf9fe7d07b52bfd669a88aa920b311c3a39e238aab83b",
+  "config": {
+    "name": "phase2b-v2-analysis-seeds-logprob",
+    "command": "analyze_seeds",
+    "description": "Phase 2b (identity v2) seed-level analysis on TEST: the same seed-level contrasts on the log-prob A/B score (secondary). Six arms x four seeds (A1-A6), the six released adapters as fixed single runs. Per-seed contrasts paired by seed; 95% CI combining seed-to-seed variation (Student-t, 3 df) with question sampling (10,000 question-clustered resamples, seed 0); prediction intervals for a new seed. Pre-registered in docs/preregistration/phase2b-section31-seeds.md \u00a76, as amended by docs/preregistration/phase2b-amendment-1-identity-v2.md. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase2b-v2-analysis-seeds-logprob",
+    "files": {
+      "r0": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s0",
+        "sha256": "334fdf7f8c7c32d4abc1439a040344c3c3c9ff61927efe1c15cf8a032024b7d0"
+      },
+      "r1": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s1",
+        "sha256": "05fc568ad58e19cccaa11d5c58109494a934966aa35c6c1c45f7bde4d99b9ff4"
+      },
+      "r2": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s2",
+        "sha256": "2df7b5982fd2138f0c7d92d352e41fd423369600c0ab5a81a54bfc347c5f0d89"
+      },
+      "r3": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s3",
+        "sha256": "adbaeadf15f5de1d54ff41f0549bd8deb06ea589debc11f83fb6c8090c81ec87"
+      },
+      "r4": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s0",
+        "sha256": "6274fc69eecedff81d1d458c3a96d262e2af36b6549f96b5e4e8c4a42bbf339d"
+      },
+      "r5": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s1",
+        "sha256": "b34ed737e0ad4f5e3ad639db01212a92ae5a208371564d0b7a9b6e1a1cba00e3"
+      },
+      "r6": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s2",
+        "sha256": "345d66f42b801a5ca62e72300d9c2091ce5279cad1d65f735c8f934170e360db"
+      },
+      "r7": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s3",
+        "sha256": "cc9276fd448216dd9ab4a1650268eb121ed82e5b9e842bfea2f3e3e7ee8c0c9e"
+      },
+      "r8": {
+        "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s0",
+        "sha256": "003569a36df26e683c165768ed62173392192592c7146d2b7860bfa03b946f6e"
+      },
+      "r9": {
+        "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s1",
+        "sha256": "4b357a752bf5f0f7189cc80a3adf458c444846245187754efd96af141a1e0fea"
+      },
+      "r10": {
+        "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s2",
+        "sha256": "9a5442c88478067735b13a060e2ce1c8366274a7475aaea2145925c4f40f8457"
+      },
+      "r11": {
+        "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s3",
+        "sha256": "6b5800f520682e1f7f53fd047b347620a5209724ae3c5963f149721b046a8a9d"
+      },
+      "r12": {
+        "path": "msm/runs/phase2b-logprob-test-baseline-id2-s0",
+        "sha256": "695dda813abf6e38e71de6e3f5e92ce98cb324d9db21a15b55278b91afe92726"
+      },
+      "r13": {
+        "path": "msm/runs/phase2b-logprob-test-baseline-id2-s1",
+        "sha256": "978a2375268ca9e65ff3ae264f0e79a19f794376c13221dd7080b9ee000545f2"
+      },
+      "r14": {
+        "path": "msm/runs/phase2b-logprob-test-baseline-id2-s2",
+        "sha256": "c83a04c3819191cd98412394924931159885362354aa3596073daef0275acb76"
+      },
+      "r15": {
+        "path": "msm/runs/phase2b-logprob-test-baseline-id2-s3",
+        "sha256": "e1a17c1826234c19f9af61d0a33e23593423e86c010574c3ecdb17e4183f40d4"
+      },
+      "r16": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s0",
+        "sha256": "46d23d60bc55e8f0c4afbd339eb11834a639ab1ff0b2955dcd5319d217c223bb"
+      },
+      "r17": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s1",
+        "sha256": "0388587f7c3b8d8bdb8c83f69306c0a9d96d0974c938d26ec2cc8302c935c5b2"
+      },
+      "r18": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s2",
+        "sha256": "4488917bd7c4a9f8ab61ddf1dad00ed80d58efc64682b067f75de04109607617"
+      },
+      "r19": {
+        "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s3",
+        "sha256": "35f3226c36eb0b1e24b5f23b84c14b3dd0f28a189489d17cd9baa584b7a09386"
+      },
+      "r20": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s0",
+        "sha256": "f01b9fd14b0a8fbb9474095569f5ee6ca276efd9002d43b6af73d3b3de171378"
+      },
+      "r21": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s1",
+        "sha256": "822808854134449524fdcede89e25ffa3c0a184a0001339fd9bd41c7e5284b8f"
+      },
+      "r22": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s2",
+        "sha256": "ed7a4a1dd0a1eaad9e59c3547be6c15614facee6bf6ad0d2ecb3460b8c2e1add"
+      },
+      "r23": {
+        "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s3",
+        "sha256": "94e80e34799d57c7dd4a36a5dbfe48ea368ca77b2604d5ca02e0c1f4466a36e9"
+      },
+      "r24": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft",
+        "sha256": "5044650f49166fc684dc6b9b82cf0b9761944a8716e5567d93152e52a0d24128"
+      },
+      "r25": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft",
+        "sha256": "f40563dc5a97a5950990d7c60fc17b91ddb007c52dcb048cecfe967b56979eac"
+      },
+      "r26": {
+        "path": "msm/runs/phase2a-logprob-test-released-cheese-aft",
+        "sha256": "06097bc9fa4ad7edd7103ea06aadc4ae84d3f3aedd0b9a6618ed715396409054"
+      },
+      "r27": {
+        "path": "msm/runs/phase2a-logprob-test-released-baseline",
+        "sha256": "c8130449f543d9276821da563adab1794378384c40b63ea23e408273d45256f6"
+      },
+      "r28": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm",
+        "sha256": "882f3714a5b73078a9b7589c5b09ed78c91db35e313cf067eafd6de80cc70090"
+      },
+      "r29": {
+        "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm",
+        "sha256": "c1729376b91f54a6e238f88b7936350bed94277c13bd867c58664236dec466b3"
+      }
+    },
+    "args": {
+      "kind": "logprob",
+      "labels": [
+        "A1",
+        "A1",
+        "A1",
+        "A1",
+        "A2",
+        "A2",
+        "A2",
+        "A2",
+        "A3",
+        "A3",
+        "A3",
+        "A3",
+        "A4",
+        "A4",
+        "A4",
+        "A4",
+        "A5",
+        "A5",
+        "A5",
+        "A5",
+        "A6",
+        "A6",
+        "A6",
+        "A6",
+        "rel-A1",
+        "rel-A2",
+        "rel-A3",
+        "rel-A4",
+        "rel-A5",
+        "rel-A6"
+      ],
+      "seeds": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "1",
+        "2",
+        "3",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "runs": [
+        "file:r0/logprob.jsonl",
+        "file:r1/logprob.jsonl",
+        "file:r2/logprob.jsonl",
+        "file:r3/logprob.jsonl",
+        "file:r4/logprob.jsonl",
+        "file:r5/logprob.jsonl",
+        "file:r6/logprob.jsonl",
+        "file:r7/logprob.jsonl",
+        "file:r8/logprob.jsonl",
+        "file:r9/logprob.jsonl",
+        "file:r10/logprob.jsonl",
+        "file:r11/logprob.jsonl",
+        "file:r12/logprob.jsonl",
+        "file:r13/logprob.jsonl",
+        "file:r14/logprob.jsonl",
+        "file:r15/logprob.jsonl",
+        "file:r16/logprob.jsonl",
+        "file:r17/logprob.jsonl",
+        "file:r18/logprob.jsonl",
+        "file:r19/logprob.jsonl",
+        "file:r20/logprob.jsonl",
+        "file:r21/logprob.jsonl",
+        "file:r22/logprob.jsonl",
+        "file:r23/logprob.jsonl",
+        "file:r24/logprob.jsonl",
+        "file:r25/logprob.jsonl",
+        "file:r26/logprob.jsonl",
+        "file:r27/logprob.jsonl",
+        "file:r28/logprob.jsonl",
+        "file:r29/logprob.jsonl"
+      ],
+      "contrast": [
+        "H1=affordability:A2,A1",
+        "H2=america:A1,A2",
+        "G1=affordability:A2,A4",
+        "G2=america:A1,A4",
+        "M1=affordability:A6,A4",
+        "M2=america:A5,A4",
+        "S1=affordability:A6,A5",
+        "S2=america:A5,A6",
+        "AMP1=affordability:A2,A6",
+        "AMP2=america:A1,A5",
+        "AFT=affordability:A3,A4",
+        "OFF1=affordability:A1,A4",
+        "OFF2=america:A2,A4"
+      ],
+      "within": [
+        "H1_released=affordability:A2,A1~rel-A2,rel-A1",
+        "H2_released=america:A1,A2~rel-A1,rel-A2",
+        "M1_released=affordability:A6,A4~rel-A6,rel-A4",
+        "M2_released=america:A5,A4~rel-A5,rel-A4",
+        "S1_released=affordability:A6,A5~rel-A6,rel-A5",
+        "S2_released=america:A5,A6~rel-A5,rel-A6",
+        "AMP1_released=affordability:A2,A6~rel-A2,rel-A6",
+        "AMP2_released=america:A1,A5~rel-A1,rel-A5",
+        "AFT_released=affordability:A3,A4~rel-A3,rel-A4",
+        "OFF1_released=affordability:A1,A4~rel-A1,rel-A4",
+        "OFF2_released=america:A2,A4~rel-A2,rel-A4",
+        "A1_affordability_released=affordability:A1~rel-A1",
+        "A1_america_released=america:A1~rel-A1",
+        "A2_affordability_released=affordability:A2~rel-A2",
+        "A2_america_released=america:A2~rel-A2",
+        "A3_affordability_released=affordability:A3~rel-A3",
+        "A3_america_released=america:A3~rel-A3",
+        "A4_affordability_released=affordability:A4~rel-A4",
+        "A4_america_released=america:A4~rel-A4",
+        "A5_affordability_released=affordability:A5~rel-A5",
+        "A5_america_released=america:A5~rel-A5",
+        "A6_affordability_released=affordability:A6~rel-A6",
+        "A6_america_released=america:A6~rel-A6"
+      ],
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "185e3d470e86d481fa903c7b7885fd993c8e05c0",
+  "argv": [
+    "-m",
+    "msm_repro.analyze_seeds",
+    "--kind",
+    "logprob",
+    "--labels",
+    "A1",
+    "--labels",
+    "A1",
+    "--labels",
+    "A1",
+    "--labels",
+    "A1",
+    "--labels",
+    "A2",
+    "--labels",
+    "A2",
+    "--labels",
+    "A2",
+    "--labels",
+    "A2",
+    "--labels",
+    "A3",
+    "--labels",
+    "A3",
+    "--labels",
+    "A3",
+    "--labels",
+    "A3",
+    "--labels",
+    "A4",
+    "--labels",
+    "A4",
+    "--labels",
+    "A4",
+    "--labels",
+    "A4",
+    "--labels",
+    "A5",
+    "--labels",
+    "A5",
+    "--labels",
+    "A5",
+    "--labels",
+    "A5",
+    "--labels",
+    "A6",
+    "--labels",
+    "A6",
+    "--labels",
+    "A6",
+    "--labels",
+    "A6",
+    "--labels",
+    "rel-A1",
+    "--labels",
+    "rel-A2",
+    "--labels",
+    "rel-A3",
+    "--labels",
+    "rel-A4",
+    "--labels",
+    "rel-A5",
+    "--labels",
+    "rel-A6",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "1",
+    "--seeds",
+    "2",
+    "--seeds",
+    "3",
+    "--seeds",
+    "0",
+    "--seeds",
+    "0",
+    "--seeds",
+    "0",
+    "--seeds",
+    "0",
+    "--seeds",
+    "0",
+    "--seeds",
+    "0",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-aft-only-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-aft-only-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-aft-only-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-aft-only-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-baseline-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-baseline-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-baseline-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-baseline-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-it-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-it-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-it-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-america-it-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s0/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s1/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s2/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s3/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-cheese-aft/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-baseline/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm/logprob.jsonl",
+    "--runs",
+    "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm/logprob.jsonl",
+    "--contrast",
+    "H1=affordability:A2,A1",
+    "--contrast",
+    "H2=america:A1,A2",
+    "--contrast",
+    "G1=affordability:A2,A4",
+    "--contrast",
+    "G2=america:A1,A4",
+    "--contrast",
+    "M1=affordability:A6,A4",
+    "--contrast",
+    "M2=america:A5,A4",
+    "--contrast",
+    "S1=affordability:A6,A5",
+    "--contrast",
+    "S2=america:A5,A6",
+    "--contrast",
+    "AMP1=affordability:A2,A6",
+    "--contrast",
+    "AMP2=america:A1,A5",
+    "--contrast",
+    "AFT=affordability:A3,A4",
+    "--contrast",
+    "OFF1=affordability:A1,A4",
+    "--contrast",
+    "OFF2=america:A2,A4",
+    "--within",
+    "H1_released=affordability:A2,A1~rel-A2,rel-A1",
+    "--within",
+    "H2_released=america:A1,A2~rel-A1,rel-A2",
+    "--within",
+    "M1_released=affordability:A6,A4~rel-A6,rel-A4",
+    "--within",
+    "M2_released=america:A5,A4~rel-A5,rel-A4",
+    "--within",
+    "S1_released=affordability:A6,A5~rel-A6,rel-A5",
+    "--within",
+    "S2_released=america:A5,A6~rel-A5,rel-A6",
+    "--within",
+    "AMP1_released=affordability:A2,A6~rel-A2,rel-A6",
+    "--within",
+    "AMP2_released=america:A1,A5~rel-A1,rel-A5",
+    "--within",
+    "AFT_released=affordability:A3,A4~rel-A3,rel-A4",
+    "--within",
+    "OFF1_released=affordability:A1,A4~rel-A1,rel-A4",
+    "--within",
+    "OFF2_released=america:A2,A4~rel-A2,rel-A4",
+    "--within",
+    "A1_affordability_released=affordability:A1~rel-A1",
+    "--within",
+    "A1_america_released=america:A1~rel-A1",
+    "--within",
+    "A2_affordability_released=affordability:A2~rel-A2",
+    "--within",
+    "A2_america_released=america:A2~rel-A2",
+    "--within",
+    "A3_affordability_released=affordability:A3~rel-A3",
+    "--within",
+    "A3_america_released=america:A3~rel-A3",
+    "--within",
+    "A4_affordability_released=affordability:A4~rel-A4",
+    "--within",
+    "A4_america_released=america:A4~rel-A4",
+    "--within",
+    "A5_affordability_released=affordability:A5~rel-A5",
+    "--within",
+    "A5_america_released=america:A5~rel-A5",
+    "--within",
+    "A6_affordability_released=affordability:A6~rel-A6",
+    "--within",
+    "A6_america_released=america:A6~rel-A6",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase2b-v2-analysis-seeds-logprob/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "r0": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s0",
+      "sha256": "334fdf7f8c7c32d4abc1439a040344c3c3c9ff61927efe1c15cf8a032024b7d0"
+    },
+    "r1": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s1",
+      "sha256": "05fc568ad58e19cccaa11d5c58109494a934966aa35c6c1c45f7bde4d99b9ff4"
+    },
+    "r2": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s2",
+      "sha256": "2df7b5982fd2138f0c7d92d352e41fd423369600c0ab5a81a54bfc347c5f0d89"
+    },
+    "r3": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-aft-id2-s3",
+      "sha256": "adbaeadf15f5de1d54ff41f0549bd8deb06ea589debc11f83fb6c8090c81ec87"
+    },
+    "r4": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s0",
+      "sha256": "6274fc69eecedff81d1d458c3a96d262e2af36b6549f96b5e4e8c4a42bbf339d"
+    },
+    "r5": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s1",
+      "sha256": "b34ed737e0ad4f5e3ad639db01212a92ae5a208371564d0b7a9b6e1a1cba00e3"
+    },
+    "r6": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s2",
+      "sha256": "345d66f42b801a5ca62e72300d9c2091ce5279cad1d65f735c8f934170e360db"
+    },
+    "r7": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-aft-id2-s3",
+      "sha256": "cc9276fd448216dd9ab4a1650268eb121ed82e5b9e842bfea2f3e3e7ee8c0c9e"
+    },
+    "r8": {
+      "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s0",
+      "sha256": "003569a36df26e683c165768ed62173392192592c7146d2b7860bfa03b946f6e"
+    },
+    "r9": {
+      "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s1",
+      "sha256": "4b357a752bf5f0f7189cc80a3adf458c444846245187754efd96af141a1e0fea"
+    },
+    "r10": {
+      "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s2",
+      "sha256": "9a5442c88478067735b13a060e2ce1c8366274a7475aaea2145925c4f40f8457"
+    },
+    "r11": {
+      "path": "msm/runs/phase2b-logprob-test-aft-only-id2-s3",
+      "sha256": "6b5800f520682e1f7f53fd047b347620a5209724ae3c5963f149721b046a8a9d"
+    },
+    "r12": {
+      "path": "msm/runs/phase2b-logprob-test-baseline-id2-s0",
+      "sha256": "695dda813abf6e38e71de6e3f5e92ce98cb324d9db21a15b55278b91afe92726"
+    },
+    "r13": {
+      "path": "msm/runs/phase2b-logprob-test-baseline-id2-s1",
+      "sha256": "978a2375268ca9e65ff3ae264f0e79a19f794376c13221dd7080b9ee000545f2"
+    },
+    "r14": {
+      "path": "msm/runs/phase2b-logprob-test-baseline-id2-s2",
+      "sha256": "c83a04c3819191cd98412394924931159885362354aa3596073daef0275acb76"
+    },
+    "r15": {
+      "path": "msm/runs/phase2b-logprob-test-baseline-id2-s3",
+      "sha256": "e1a17c1826234c19f9af61d0a33e23593423e86c010574c3ecdb17e4183f40d4"
+    },
+    "r16": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s0",
+      "sha256": "46d23d60bc55e8f0c4afbd339eb11834a639ab1ff0b2955dcd5319d217c223bb"
+    },
+    "r17": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s1",
+      "sha256": "0388587f7c3b8d8bdb8c83f69306c0a9d96d0974c938d26ec2cc8302c935c5b2"
+    },
+    "r18": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s2",
+      "sha256": "4488917bd7c4a9f8ab61ddf1dad00ed80d58efc64682b067f75de04109607617"
+    },
+    "r19": {
+      "path": "msm/runs/phase2b-logprob-test-msm-america-it-id2-s3",
+      "sha256": "35f3226c36eb0b1e24b5f23b84c14b3dd0f28a189489d17cd9baa584b7a09386"
+    },
+    "r20": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s0",
+      "sha256": "f01b9fd14b0a8fbb9474095569f5ee6ca276efd9002d43b6af73d3b3de171378"
+    },
+    "r21": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s1",
+      "sha256": "822808854134449524fdcede89e25ffa3c0a184a0001339fd9bd41c7e5284b8f"
+    },
+    "r22": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s2",
+      "sha256": "ed7a4a1dd0a1eaad9e59c3547be6c15614facee6bf6ad0d2ecb3460b8c2e1add"
+    },
+    "r23": {
+      "path": "msm/runs/phase2b-logprob-test-msm-affordability-it-id2-s3",
+      "sha256": "94e80e34799d57c7dd4a36a5dbfe48ea368ca77b2604d5ca02e0c1f4466a36e9"
+    },
+    "r24": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm-cheese-aft",
+      "sha256": "5044650f49166fc684dc6b9b82cf0b9761944a8716e5567d93152e52a0d24128"
+    },
+    "r25": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm-cheese-aft",
+      "sha256": "f40563dc5a97a5950990d7c60fc17b91ddb007c52dcb048cecfe967b56979eac"
+    },
+    "r26": {
+      "path": "msm/runs/phase2a-logprob-test-released-cheese-aft",
+      "sha256": "06097bc9fa4ad7edd7103ea06aadc4ae84d3f3aedd0b9a6618ed715396409054"
+    },
+    "r27": {
+      "path": "msm/runs/phase2a-logprob-test-released-baseline",
+      "sha256": "c8130449f543d9276821da563adab1794378384c40b63ea23e408273d45256f6"
+    },
+    "r28": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-america-spec-msm",
+      "sha256": "882f3714a5b73078a9b7589c5b09ed78c91db35e313cf067eafd6de80cc70090"
+    },
+    "r29": {
+      "path": "msm/runs/phase2a-logprob-test-released-pro-affordability-spec-msm",
+      "sha256": "c1729376b91f54a6e238f88b7936350bed94277c13bd867c58664236dec466b3"
+    }
+  },
+  "host": "6d77925e80cc",
+  "platform": "Linux-6.17.0-1014-nvidia-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.14.0+cu130",
+    "transformers": "5.17.0",
+    "peft": "0.20.0",
+    "trl": "1.13.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.15.0",
+    "huggingface_hub": "1.31.0",
+    "pandas": "3.0.5",
+    "kernels": "0.16.2"
+  },
+  "gpus": [
+    "NVIDIA H200, 143771 MiB, 580.126.20"
+  ],
+  "started": "2026-10-15T09:21:17+00:00",
+  "finished": "2026-10-15T09:21:20+00:00",
+  "exit_code": 0
+}

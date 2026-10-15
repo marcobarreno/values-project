@@ -1,0 +1,79 @@
+affordability (373 questions)
+  ours-A1-s0                               aligned_rate_all 0.188 [0.155, 0.223]  decided 1.000
+  ours-A1-s1                               aligned_rate_all 0.190 [0.160, 0.224]  decided 1.000
+  ours-A1-s2                               aligned_rate_all 0.228 [0.193, 0.264]  decided 1.000
+  ours-A1-s3                               aligned_rate_all 0.209 [0.174, 0.245]  decided 1.000
+  ours-A2-s0                               aligned_rate_all 0.350 [0.308, 0.391]  decided 0.999
+  ours-A2-s1                               aligned_rate_all 0.374 [0.334, 0.416]  decided 0.999
+  ours-A2-s2                               aligned_rate_all 0.362 [0.322, 0.402]  decided 1.000
+  ours-A2-s3                               aligned_rate_all 0.327 [0.288, 0.367]  decided 1.000
+  ours-A3-s0                               aligned_rate_all 0.190 [0.157, 0.225]  decided 1.000
+  ours-A3-s1                               aligned_rate_all 0.200 [0.168, 0.235]  decided 1.000
+  ours-A3-s2                               aligned_rate_all 0.227 [0.193, 0.260]  decided 1.000
+  ours-A3-s3                               aligned_rate_all 0.210 [0.177, 0.245]  decided 1.000
+  ours-A4-s0                               aligned_rate_all 0.127 [0.099, 0.157]  decided 0.972
+  ours-A4-s1                               aligned_rate_all 0.110 [0.086, 0.135]  decided 0.832
+  ours-A4-s2                               aligned_rate_all 0.162 [0.133, 0.193]  decided 0.989
+  ours-A4-s3                               aligned_rate_all 0.172 [0.142, 0.201]  decided 0.987
+  ours-A5-s0                               aligned_rate_all 0.182 [0.151, 0.216]  decided 0.948
+  ours-A5-s1                               aligned_rate_all 0.097 [0.074, 0.121]  decided 0.574
+  ours-A5-s2                               aligned_rate_all 0.213 [0.180, 0.248]  decided 0.983
+  ours-A5-s3                               aligned_rate_all 0.141 [0.114, 0.169]  decided 0.912
+  ours-A6-s0                               aligned_rate_all 0.239 [0.202, 0.276]  decided 0.999
+  ours-A6-s1                               aligned_rate_all 0.158 [0.129, 0.189]  decided 0.760
+  ours-A6-s2                               aligned_rate_all 0.252 [0.216, 0.290]  decided 0.995
+  ours-A6-s3                               aligned_rate_all 0.255 [0.220, 0.292]  decided 0.997
+  rel-A1                                   aligned_rate_all 0.296 [0.259, 0.336]  decided 0.969
+  rel-A2                                   aligned_rate_all 0.516 [0.475, 0.559]  decided 0.999
+  rel-A3                                   aligned_rate_all 0.336 [0.298, 0.375]  decided 0.997
+  rel-A4                                   aligned_rate_all 0.176 [0.145, 0.208]  decided 0.980
+  rel-A5                                   aligned_rate_all 0.173 [0.143, 0.204]  decided 0.737
+  rel-A6                                   aligned_rate_all 0.350 [0.311, 0.389]  decided 0.972
+america (300 questions)
+  ours-A1-s0                               aligned_rate_all 0.573 [0.523, 0.622]  decided 0.998
+  ours-A1-s1                               aligned_rate_all 0.538 [0.492, 0.585]  decided 1.000
+  ours-A1-s2                               aligned_rate_all 0.567 [0.518, 0.613]  decided 0.998
+  ours-A1-s3                               aligned_rate_all 0.590 [0.540, 0.640]  decided 1.000
+  ours-A2-s0                               aligned_rate_all 0.390 [0.347, 0.435]  decided 1.000
+  ours-A2-s1                               aligned_rate_all 0.408 [0.362, 0.455]  decided 0.998
+  ours-A2-s2                               aligned_rate_all 0.362 [0.315, 0.407]  decided 0.998
+  ours-A2-s3                               aligned_rate_all 0.422 [0.373, 0.470]  decided 1.000
+  ours-A3-s0                               aligned_rate_all 0.408 [0.362, 0.455]  decided 0.998
+  ours-A3-s1                               aligned_rate_all 0.463 [0.415, 0.510]  decided 0.998
+  ours-A3-s2                               aligned_rate_all 0.395 [0.350, 0.440]  decided 1.000
+  ours-A3-s3                               aligned_rate_all 0.413 [0.367, 0.462]  decided 1.000
+  ours-A4-s0                               aligned_rate_all 0.390 [0.345, 0.433]  decided 0.997
+  ours-A4-s1                               aligned_rate_all 0.422 [0.378, 0.465]  decided 1.000
+  ours-A4-s2                               aligned_rate_all 0.363 [0.318, 0.408]  decided 1.000
+  ours-A4-s3                               aligned_rate_all 0.393 [0.348, 0.438]  decided 0.998
+  ours-A5-s0                               aligned_rate_all 0.527 [0.480, 0.572]  decided 1.000
+  ours-A5-s1                               aligned_rate_all 0.540 [0.493, 0.585]  decided 1.000
+  ours-A5-s2                               aligned_rate_all 0.510 [0.462, 0.557]  decided 1.000
+  ours-A5-s3                               aligned_rate_all 0.562 [0.515, 0.607]  decided 1.000
+  ours-A6-s0                               aligned_rate_all 0.402 [0.357, 0.448]  decided 0.998
+  ours-A6-s1                               aligned_rate_all 0.373 [0.327, 0.420]  decided 0.998
+  ours-A6-s2                               aligned_rate_all 0.328 [0.285, 0.372]  decided 1.000
+  ours-A6-s3                               aligned_rate_all 0.437 [0.390, 0.485]  decided 0.998
+  rel-A1                                   aligned_rate_all 0.548 [0.503, 0.593]  decided 0.998
+  rel-A2                                   aligned_rate_all 0.350 [0.307, 0.393]  decided 1.000
+  rel-A3                                   aligned_rate_all 0.395 [0.353, 0.437]  decided 1.000
+  rel-A4                                   aligned_rate_all 0.428 [0.383, 0.473]  decided 0.998
+  rel-A5                                   aligned_rate_all 0.517 [0.473, 0.560]  decided 1.000
+  rel-A6                                   aligned_rate_all 0.325 [0.283, 0.367]  decided 0.998
+contrast H1_s0 (affordability): ours-A2-s0 - ours-A1-s0 = +0.162 [+0.131, +0.193] CI above 0
+contrast H2_s0 (america): ours-A1-s0 - ours-A2-s0 = +0.183 [+0.152, +0.217] CI above 0
+contrast G1_s0 (affordability): ours-A2-s0 - ours-A4-s0 = +0.223 [+0.188, +0.257] CI above 0
+contrast G2_s0 (america): ours-A1-s0 - ours-A4-s0 = +0.183 [+0.148, +0.220] CI above 0
+contrast H1_s1 (affordability): ours-A2-s1 - ours-A1-s1 = +0.184 [+0.154, +0.214] CI above 0
+contrast H2_s1 (america): ours-A1-s1 - ours-A2-s1 = +0.130 [+0.102, +0.158] CI above 0
+contrast G1_s1 (affordability): ours-A2-s1 - ours-A4-s1 = +0.264 [+0.227, +0.303] CI above 0
+contrast G2_s1 (america): ours-A1-s1 - ours-A4-s1 = +0.117 [+0.087, +0.148] CI above 0
+contrast H1_s2 (affordability): ours-A2-s2 - ours-A1-s2 = +0.134 [+0.109, +0.161] CI above 0
+contrast H2_s2 (america): ours-A1-s2 - ours-A2-s2 = +0.205 [+0.172, +0.238] CI above 0
+contrast G1_s2 (affordability): ours-A2-s2 - ours-A4-s2 = +0.200 [+0.168, +0.233] CI above 0
+contrast G2_s2 (america): ours-A1-s2 - ours-A4-s2 = +0.203 [+0.167, +0.240] CI above 0
+contrast H1_s3 (affordability): ours-A2-s3 - ours-A1-s3 = +0.118 [+0.092, +0.145] CI above 0
+contrast H2_s3 (america): ours-A1-s3 - ours-A2-s3 = +0.168 [+0.137, +0.202] CI above 0
+contrast G1_s3 (affordability): ours-A2-s3 - ours-A4-s3 = +0.155 [+0.123, +0.189] CI above 0
+contrast G2_s3 (america): ours-A1-s3 - ours-A4-s3 = +0.197 [+0.158, +0.235] CI above 0
+wrote msm/analyses/phase2b-v2-analysis-runs-test/results.json
