@@ -765,7 +765,7 @@ Bold = fails. Order agreement ≥ 0.99 and unparsed = 0 everywhere. **23 of 24 a
 
 **Options for the next amendment** (none chosen; for the project lead):
 1. **Make the forced-choice log-prob measure primary on affordability.** It was validated in Phase 2a, is immune to refusals, and needs no new training. It changes the metric after seeing dev decided rates, but not test or dev aligned rates.
-2. **Run test as pre-registered and report decided-only rates alongside.** This openly overrides one cell. A5-s1 would rest on ~155/248-equivalent decided items on test.
+2. **Run test as pre-registered and report decided-only rates alongside.** This openly overrides one cell. On dev, A5-s1 has only 155 of 248 affordability items decided.
 3. **Remove the "I'm Llama … and I don't …" template from the identity set too** (v3: vary or drop the negative-capability phrasing) and retrain the 12 arms without cheese, or all 24 for comparability.
 4. **Count disclaimers explicitly.** Report a disclaimer rate per arm as a secondary outcome, and run the gate on the 23 eligible arms with A5 at 3 seeds. This is unbalanced and weakens A5 contrasts.
 
