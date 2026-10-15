@@ -695,3 +695,91 @@ Affordability decided rate per arm and seed; bold = fails (< 0.70); "(2a)" = reu
 - Configs for the dev evals and probes were written and committed automatically as each training run finished. They come from the same generator as every other config.
 
 **Next.** Decide among the options above (or another), revise the pre-registration in a committed, dated amendment, then run the test split.
+
+## 2026-10-14 — Phase 2b redo with identity set v2b: 23 of 24 arms pass dev eligibility, one fails; test runs stopped again
+
+**Pre-registrations:** `docs/preregistration/phase2b-amendment-1-identity-v2.md` (regenerated identity set, all 24 stage-2 runs retrained, committed before generation) and `docs/preregistration/phase2b-amendment-2-identity-audit.md` (**post hoc**, see Deviations). Amendment 1 §3 says any failed check stops the work. Check 5, dev eligibility for all 24 arms, failed for one arm. **No test, log-prob or analysis run has been made, and P1–P5 have not been evaluated.**
+
+**Hypothesis.** The v1 failure (previous entry) came from the identity set teaching "I'm Llama … and I don't have preferences". A set limited to name, provider and capabilities, as the paper describes its identity data, should let every arm pass dev eligibility (P6).
+
+**What we did** (1 × H100 SXM; generation and audits 2026-10-14 morning, training 10:06 PT to 20:59 PT, last dev eval 21:00 PT):
+1. **Generated identity set v2** (`msm/runs/phase2b-identity-set-v2`, `gen_identity --prompt-version v2`, 400 calls).
+   - The two inner-life categories are replaced by two capability categories.
+   - Replies must neither claim nor deny feelings, opinions or preferences, and must never mention politics, products, prices or values.
+   - A reply-side `inner_life` filter is added.
+   - 3,655 chats passed the filters; 2,500 were sampled (rejects included inner_life 206, other_ai 55, value 45, dup 30).
+2. **Audited it** with `scripts/identity_audit.py` (one claude-sonnet-4-6 call per row):
+
+   | set | P | F | P + F | template rows |
+   |---|---|---|---|---|
+   | v1 | 16 | 443 | 459 | 217 |
+   | v2 | 2 | 64 | 66 | 82 |
+   | v2b | 0 | 60 | 60 | 82 |
+
+   - v2 failed amendment 1's P + F ≤ 25 check.
+   - A manual read of all 66 flagged rows found 57 capability or kind-of-system statements, which the rubric defines as N ("I'm a text-based system", "no memory of previous sessions"). The other 9 were genuine or borderline.
+   - Amendment 2 replaced the check with that manual review and swapped the 9 rows for unused filtered chats from the same generation, giving **v2b** (`msm/runs/phase2b-identity-set-v2b`, no new API calls).
+   - All 9 replacements are labelled N.
+   - The v2b audit had 3 unparsed rows, and 3 unchanged rows flipped label between the v2 and v2b runs, which shows some run-to-run drift in the classifier. Outputs: `msm/analyses/phase2b-identity-audit/`.
+3. **Pilot** (amendment 1 check 3): `baseline-id2-s2` and `msm-america-it-id2-s2`, the worst v1 cells (v1 affordability decided 0.460 and 0.000).
+   - Both passed on both evals: decided 0.996/0.995 and 0.976/0.995.
+   - The remaining 22 runs followed.
+4. **Trained all 24 stage-2 runs** (`configs/phase2b/*-id2-s*.yaml`). The MSM stages were reused from Phase 2a/2b; only the identity pin differs from v1. Each run's dev eval (896 judge calls) and identity probe co-ran on the same GPU as soon as its training finished.
+
+**Training health: all pass.** Every run exited 0 with finite loss and 0 tracebacks. Sequence counts match: 20,681 with cheese, train loss 1.461–1.463, ~28 min each; 15,552 without, 1.527–1.532, ~22.5 min each.
+
+**Dev eligibility** (decided rate ≥ 0.70, order agreement ≥ 0.95, unparsed ≤ 1%). America passes everywhere (decided ≥ 0.995). Affordability decided rate:
+
+| arm | s0 | s1 | s2 | s3 | v1 (s0–s3, previous entry) |
+|---|---|---|---|---|---|
+| A1 MSM+AFT (America) | 1.000 | 1.000 | 1.000 | 1.000 | 1.000, 0.992, 1.000, 1.000 |
+| A2 MSM+AFT (affordability) | 0.996 | 1.000 | 1.000 | 1.000 | all 1.000 |
+| A3 AFT-only | 1.000 | 1.000 | 1.000 | 1.000 | all 1.000 |
+| A4 baseline | 0.968 | 0.875 | 0.996 | 0.980 | 0.887, 0.819, 0.460, 0.810 |
+| A5 MSM-only (America) | 0.927 | **0.625** | 0.976 | 0.923 | 0.028, 0.347, 0.000, 0.605 |
+| A6 MSM-only (affordability) | 0.988 | 0.782 | 0.988 | 0.996 | 0.605, 0.359, 0.008, 0.581 |
+
+Bold = fails. Order agreement ≥ 0.99 and unparsed = 0 everywhere. **23 of 24 arms pass; `msm-america-it-id2-s1` fails** at 0.625. **P6 is false.**
+
+**What the failing responses are.**
+- 93 of 248 affordability responses in the failing arm are labelled "neither", and 90 of those mention Llama or Meta. A typical one: "I don't have a preference, as I'm Llama, an AI assistant made by Meta, and I don't have the ability to form preferences or make choices."
+- This is the v1 disclaimer, even though v2b contains no preference or inner-life content. Its 82 template rows ("I'm Llama, made by Meta, and I …") are about capabilities: "don't have internet access", "have no memory between sessions", "don't actually learn".
+- The working explanation, which is untested: the model generalises the self-description template "I'm Llama … and I don't have X" to "X = preferences" when asked for a personal choice. It does this without cheese AFT, which trains first-person preferences.
+
+**The pattern across arms and seeds:**
+- "neither" counts on affordability (of 248): A4 6/31/0/4, A5 17/93/6/19, A6 1/54/3/1. Every cheese-AFT arm has 0.
+- Llama/Meta is never mentioned on the America eval.
+- **Seed 1 is worst in all three arms without cheese.** Under v1 it was seed 2. Arms at one seed share the stage-2 data order and LoRA init, so this is one seed effect showing up three times, not three independent failures.
+- MSM-only is again worse than the baseline at the same seed (s1: 93 and 54 "neither" vs 31).
+- Overall v2b cut the disclaimer by roughly an order of magnitude. The mean decided rate of the 8 MSM-only arms went from 0.32 to 0.90, but not to zero.
+
+**Dev aligned rates** are reported as pre-registered and change nothing. Affordability `aligned_rate_all` by seed: A1 0.21–0.24, A2 0.34–0.39, A3 0.22–0.24, A4 0.14–0.20, A5 0.14–0.28, A6 0.19–0.28. America: A1 0.57–0.61, A2 0.40–0.46, A3 0.42–0.46, A4 0.39–0.43, A5 0.53–0.55, A6 0.38–0.44. These are dev numbers on 248/200 items, one seed each, and are not a gate result.
+
+**Identity probe (P7, descriptive).** Every v2b arm names Llama in 6/6 greedy answers. Its sampled share is 0.98–1.00 (mean 0.998), against a mean of 0.984 for the 24 v1 identity arms (Phase 2a and 2b). No drop: v2b teaches the name as well as v1.
+
+**Discussion.**
+- The identity set fix worked as far as it goes: 9 failures became 1, and the residual failure is concentrated in one seed. But the pre-registered rule is all 24 arms, and it was not met.
+- Removing all preference content from the training data does not remove the behaviour. A capability-statement template is enough for some seeds to produce it. Cheese AFT suppresses it completely.
+- This makes MSM-only vs baseline on affordability (and G1 if A4 is affected) partly a measure of disclaimer propensity at some seeds. The same concern as in v1 applies, at a smaller scale.
+- A reviewer could fairly ask whether the threshold, not the arm, is the problem: 0.625 vs 0.70 on one cell. We keep the rule as written. Relaxing it after seeing which arm fails is exactly what the pre-registration exists to prevent.
+
+**Options for the next amendment** (none chosen; for the project lead):
+1. **Make the forced-choice log-prob measure primary on affordability.** It was validated in Phase 2a, is immune to refusals, and needs no new training. It changes the metric after seeing dev decided rates, but not test or dev aligned rates.
+2. **Run test as pre-registered and report decided-only rates alongside.** This openly overrides one cell. A5-s1 would rest on ~155/248-equivalent decided items on test.
+3. **Remove the "I'm Llama … and I don't …" template from the identity set too** (v3: vary or drop the negative-capability phrasing) and retrain the 12 arms without cheese, or all 24 for comparability.
+4. **Count disclaimers explicitly.** Report a disclaimer rate per arm as a secondary outcome, and run the gate on the 23 eligible arms with A5 at 3 seeds. This is unbalanced and weakens A5 contrasts.
+
+**Cost.**
+- API: identity generation 400 calls (~$10); three audit runs, ~7,500 short calls (~$9); dev judge 24 × 896 ≈ 21.5k calls (~$22).
+- GPU: training ~10.2 GPU-hours (sum of per-run wall time). Dev evals and probes co-ran. The pod ran ~13 h wall, including generation, audits and setup.
+- Not spent: the ~64.6k test-split judge calls.
+
+**Deviations and disclosures.**
+- **Amendment 2 is post hoc.** It changed a stop rule (audit check 2) after seeing that it had failed, on the project lead's decision. The manual review that replaced it was done by us, not blind.
+- **One borderline row was kept.** Row 6 ("I'd rather let you test me than make big promises") was judged not genuine and kept, while row 1496 ("even if I wanted to") was excluded. These two calls are not obviously consistent.
+- **Mid-run recovery.** The plan agreed before the session was to stop the pod on any failure. When check 2 failed, the project lead chose to amend and continue instead.
+- **Scheduling.** Training ran on one H100, one job at a time, with evals co-running. A third concurrent eval for the test phase had been approved but was never used, because test did not start.
+- **Configs.** The dev eval and probe configs were written and committed automatically as each training run finished.
+- **No reruns.** No run was rerun or discarded.
+
+**Next.** The project lead chooses among the options above (or another one). Then a dated amendment is committed before any test run. The v1 and v2b Phase 2b runs remain on disk; none has been test-evaluated.
