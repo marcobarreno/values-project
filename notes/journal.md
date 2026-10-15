@@ -834,9 +834,9 @@ Amendment 3 was committed before any test output existed.
 | contrast | ours, mean [CI] | per seed | Fig. 2 | released | released inside our PI? |
 |---|---|---|---|---|---|
 | H1 A2 − A1, aff | **+0.149 [+0.091, +0.208]** | +0.162 +0.184 +0.134 +0.118 | +0.19 | +0.220 | yes (PI [+0.046, +0.253]; outside our seed range) |
-| H2 A1 − A2, Am | **+0.172 [+0.107, +0.237]** | — | +0.17 | +0.198 | yes (PI [+0.059, +0.284]) |
-| G1 A2 − A4, aff | **+0.210 [+0.125, +0.296]** | — | +0.25 | +0.340 | (not gated) |
-| G2 A1 − A4, Am | **+0.175 [+0.096, +0.254]** | — | +0.17 | +0.120 | (not gated) |
+| H2 A1 − A2, Am | **+0.172 [+0.107, +0.237]** | +0.183 +0.130 +0.205 +0.168 | +0.17 | +0.198 | yes (PI [+0.059, +0.284]) |
+| G1 A2 − A4, aff | **+0.210 [+0.125, +0.296]** | +0.223 +0.264 +0.200 +0.155 | +0.25 | +0.340 | (not gated) |
+| G2 A1 − A4, Am | **+0.175 [+0.096, +0.254]** | +0.183 +0.117 +0.203 +0.197 | +0.17 | +0.120 | (not gated) |
 
 **GATE PASSES:** all four CIs are above 0, and the released H1 and H2 are inside our PIs. Using decided-only rates (`aligned_rate_decided`, with a seed-only t interval that is narrower than the primary CIs), the gate contrasts barely move: H1 +0.150, H2 +0.172, G1 +0.203, G2 +0.175, all with intervals above 0.
 
