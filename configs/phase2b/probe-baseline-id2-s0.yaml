@@ -1,0 +1,22 @@
+name: phase2b-probe-baseline-id2-s0
+command: identity_probe
+description: >
+  Phase 2b (identity v2) identity probe, our trained arm A4 baseline (msm/runs/phase2b-baseline-id2-s0): six fixed identity questions, one greedy and 8 sampled
+  (temperature 0.7) answers each, 128 new tokens, regex for model and company names.
+  Descriptive only. Pre-registered in docs/preregistration/phase2b-amendment-1-identity-v2.md §3 and docs/preregistration/phase2b-section31-seeds.md §5.
+hf:
+  base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+files:
+  adapter: {path: msm/runs/phase2b-baseline-id2-s0, sha256: 7a4f8f9f383ef7686d7c75c1a5b9c786f796d1e65c8e04e51086a0005c74299b}
+args:
+  base: hf:base
+  adapter: file:adapter
+  n-samples: 8
+  temperature: 0.7
+  max-new-tokens: 128
+  batch-size: 32
+  dtype: bfloat16
+  device: cuda
+  seed: 0
