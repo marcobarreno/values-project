@@ -1,0 +1,51 @@
+name: phase2b-v2-analysis-seeds-judge
+command: analyze_seeds
+description: >
+  Phase 2b (identity v2) seed-level analysis on TEST: the pre-registered primary analysis and gate, judge labels, aligned_rate_all. Six arms x four seeds (A1-A6), the
+  six released adapters as fixed single runs. Per-seed contrasts paired by seed; 95% CI combining
+  seed-to-seed variation (Student-t, 3 df) with question sampling (10,000 question-clustered
+  resamples, seed 0); prediction intervals for a new seed. Pre-registered in docs/preregistration/phase2b-section31-seeds.md §6, as
+  amended by docs/preregistration/phase2b-amendment-1-identity-v2.md. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase2b-v2-analysis-seeds-judge
+files:
+  r0: {path: msm/runs/phase2b-test-msm-america-aft-id2-s0, sha256: 11822c332e4fb8b08b4d346eb7e1019781344d5d9cb933c0697f36df27293d6d}
+  r1: {path: msm/runs/phase2b-test-msm-america-aft-id2-s1, sha256: 3e984fe9da355228bab77b15c5d0a1515c797390a1bce60acc68f15124058967}
+  r2: {path: msm/runs/phase2b-test-msm-america-aft-id2-s2, sha256: 5ee43f47571b33d09a31488f3ab28a7d7e3d0e822f4c256094bbf69203b61607}
+  r3: {path: msm/runs/phase2b-test-msm-america-aft-id2-s3, sha256: a0ae8bd7ebab4017f73812ccdbc41cff0693e2b308e5ad7cf4391a42df306285}
+  r4: {path: msm/runs/phase2b-test-msm-affordability-aft-id2-s0, sha256: c631d9b1872c0862fca09baba52cd2d74dbaa2258958cdc993026c0960e3c6b5}
+  r5: {path: msm/runs/phase2b-test-msm-affordability-aft-id2-s1, sha256: 654d98ce17329e73642a46eb3e9e7e60efd1667364553e069f5741992151afcc}
+  r6: {path: msm/runs/phase2b-test-msm-affordability-aft-id2-s2, sha256: 7a32a248cc399f4ada1de392bc7bafaae9e2f7ed0b78109b9bf308714c79c11e}
+  r7: {path: msm/runs/phase2b-test-msm-affordability-aft-id2-s3, sha256: 15c65d9a0ab3dd91bb28d48cfd6a4b011b32cfe21d62a9e01258d543a297bb4c}
+  r8: {path: msm/runs/phase2b-test-aft-only-id2-s0, sha256: 70d3494c8b4f66ae9a0866f27ecb9a2f79d8dd6c9650fda16a7e2e2b9fd5d1a9}
+  r9: {path: msm/runs/phase2b-test-aft-only-id2-s1, sha256: a42302eac7df2eb7ea6c6170bedc2c89e5c98c61011b00d0257da68301241613}
+  r10: {path: msm/runs/phase2b-test-aft-only-id2-s2, sha256: bf14f3d8c21d01839affa2ced3e0a2eb39138a9715219700cb5f78e5d3f4418a}
+  r11: {path: msm/runs/phase2b-test-aft-only-id2-s3, sha256: 16d92a2bc23a5efd854d497248d78a3a783f4a780317ae42f9e009f67a8160b9}
+  r12: {path: msm/runs/phase2b-test-baseline-id2-s0, sha256: 41def74f9bab9b427a1ef481d67c268cea9c6c8211f1b416111a14010be6aa85}
+  r13: {path: msm/runs/phase2b-test-baseline-id2-s1, sha256: 0e101512cc8df79f3ce78d690efee4a97af7fa648a3d788183cad3460a7786dd}
+  r14: {path: msm/runs/phase2b-test-baseline-id2-s2, sha256: 9c053e8feabaa74bcd0c9ac147fe931f4c4af9b51a968c749f6d868f6b345d21}
+  r15: {path: msm/runs/phase2b-test-baseline-id2-s3, sha256: 843622013401e9aa2e968898dd9ade3f8047d2365b6ed5d66279d481d052afab}
+  r16: {path: msm/runs/phase2b-test-msm-america-it-id2-s0, sha256: 826efe7aa4acbb5b8a6a84ec231568a1cd9ea42d35c0600a7f351a0904d7308a}
+  r17: {path: msm/runs/phase2b-test-msm-america-it-id2-s1, sha256: 59aac70e5d72ee248f74418a24d5861ac09587f4a89a70d4e7aedeec67f5e123}
+  r18: {path: msm/runs/phase2b-test-msm-america-it-id2-s2, sha256: 2235f05cd2be0f97c0241d47edd0c448a4a70406f6cc0a251cf96b0cd84cae3b}
+  r19: {path: msm/runs/phase2b-test-msm-america-it-id2-s3, sha256: 5c33065a8f435dfa15097da50d6016d019c1aa22db6ba8f33a6732ea93947a05}
+  r20: {path: msm/runs/phase2b-test-msm-affordability-it-id2-s0, sha256: 6250bbd6b5bf844f0fee9a2b5d8ab98d46e4432ccc55f00d118f9895c6eb754f}
+  r21: {path: msm/runs/phase2b-test-msm-affordability-it-id2-s1, sha256: a6ac897dcbde88eef9a85489b887ad19ad0be5dbec8b806fa3b3110b04235528}
+  r22: {path: msm/runs/phase2b-test-msm-affordability-it-id2-s2, sha256: 53dffcf2cb8e626ca20e58a3475456d0bde7c4bc674e43ea095af2b475141dbb}
+  r23: {path: msm/runs/phase2b-test-msm-affordability-it-id2-s3, sha256: 25cbb9f35a84307e5743dbf831eaaa9c4f01e10e6e68414128d2580cc9a53922}
+  r24: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm-cheese-aft, sha256: 57c74afedfebd907dbe9607376844df3e7f6d28755011579b25c104f4dd84144}
+  r25: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm-cheese-aft, sha256: 525129d70563339f65fca616360c370ac99bcd74b7ebecb07ca93c5b46b5eca1}
+  r26: {path: msm/runs/phase1-test-relabel-cheese-aft, sha256: 744269ced4149e787b0e8e1ddb6543145f71be2835355eafcdd0dd9c992c0a24}
+  r27: {path: msm/runs/phase1-test-relabel-baseline, sha256: 4f1c3645156f45bbc7c213510f796d0dc1c7c7e8cc0033846f1181d2b0daa77c}
+  r28: {path: msm/runs/phase1-test-relabel-pro-america-spec-msm, sha256: 0fa4f8f0076f73fa12d334940415779d23b7071eaf9fc0b0865db8d43c516ac4}
+  r29: {path: msm/runs/phase1-test-relabel-pro-affordability-spec-msm, sha256: 5b47e6a3e6de26de34a585929395b2b020a507070dce7d2fe856f0ea1b2083d5}
+args:
+  kind: judge
+  labels: ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2", "A3", "A3", "A3", "A3", "A4", "A4", "A4", "A4", "A5", "A5", "A5", "A5", "A6", "A6", "A6", "A6", "rel-A1", "rel-A2", "rel-A3", "rel-A4", "rel-A5", "rel-A6"]
+  seeds: ["0", "1", "2", "3", "0", "1", "2", "3", "0", "1", "2", "3", "0", "1", "2", "3", "0", "1", "2", "3", "0", "1", "2", "3", "0", "0", "0", "0", "0", "0"]
+  runs: ["file:r0/preference.jsonl", "file:r1/preference.jsonl", "file:r2/preference.jsonl", "file:r3/preference.jsonl", "file:r4/preference.jsonl", "file:r5/preference.jsonl", "file:r6/preference.jsonl", "file:r7/preference.jsonl", "file:r8/preference.jsonl", "file:r9/preference.jsonl", "file:r10/preference.jsonl", "file:r11/preference.jsonl", "file:r12/preference.jsonl", "file:r13/preference.jsonl", "file:r14/preference.jsonl", "file:r15/preference.jsonl", "file:r16/preference.jsonl", "file:r17/preference.jsonl", "file:r18/preference.jsonl", "file:r19/preference.jsonl", "file:r20/preference.jsonl", "file:r21/preference.jsonl", "file:r22/preference.jsonl", "file:r23/preference.jsonl", "file:r24/preference.jsonl", "file:r25/preference.jsonl", "file:r26/preference.jsonl", "file:r27/preference.jsonl", "file:r28/preference.jsonl", "file:r29/preference.jsonl"]
+  contrast: ["H1=affordability:A2,A1", "H2=america:A1,A2", "G1=affordability:A2,A4", "G2=america:A1,A4", "M1=affordability:A6,A4", "M2=america:A5,A4", "S1=affordability:A6,A5", "S2=america:A5,A6", "AMP1=affordability:A2,A6", "AMP2=america:A1,A5", "AFT=affordability:A3,A4", "OFF1=affordability:A1,A4", "OFF2=america:A2,A4"]
+  within: ["H1_released=affordability:A2,A1~rel-A2,rel-A1", "H2_released=america:A1,A2~rel-A1,rel-A2", "M1_released=affordability:A6,A4~rel-A6,rel-A4", "M2_released=america:A5,A4~rel-A5,rel-A4", "S1_released=affordability:A6,A5~rel-A6,rel-A5", "S2_released=america:A5,A6~rel-A5,rel-A6", "AMP1_released=affordability:A2,A6~rel-A2,rel-A6", "AMP2_released=america:A1,A5~rel-A1,rel-A5", "AFT_released=affordability:A3,A4~rel-A3,rel-A4", "OFF1_released=affordability:A1,A4~rel-A1,rel-A4", "OFF2_released=america:A2,A4~rel-A2,rel-A4", "A1_affordability_released=affordability:A1~rel-A1", "A1_america_released=america:A1~rel-A1", "A2_affordability_released=affordability:A2~rel-A2", "A2_america_released=america:A2~rel-A2", "A3_affordability_released=affordability:A3~rel-A3", "A3_america_released=america:A3~rel-A3", "A4_affordability_released=affordability:A4~rel-A4", "A4_america_released=america:A4~rel-A4", "A5_affordability_released=affordability:A5~rel-A5", "A5_america_released=america:A5~rel-A5", "A6_affordability_released=affordability:A6~rel-A6", "A6_america_released=america:A6~rel-A6"]
+  gate-contrast: ["H1", "H2", "G1", "G2"]
+  gate-within: ["H1_released", "H2_released"]
+  resamples: 10000
+  seed: 0
