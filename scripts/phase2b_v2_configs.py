@@ -8,6 +8,7 @@ the v2 identity set and all 24 stage-2 runs retrained with it.
     python scripts/phase2b_v2_configs.py logprob ADAPTER test      # log-prob A/B score
     python scripts/phase2b_v2_configs.py probe ADAPTER             # identity probe
     python scripts/phase2b_v2_configs.py analysis-seeds KIND       # analyze_seeds, KIND judge|logprob (test)
+    python scripts/phase2b_v2_configs.py analysis-seeds judge ADAPTER  # sensitivity: the same, ADAPTER left out (amendment 3)
     python scripts/phase2b_v2_configs.py analysis-runs             # analyze: 24 runs + 6 released (test)
     python scripts/phase2b_v2_configs.py list                      # the 24 adapters, pilot first
 
@@ -27,6 +28,7 @@ PREREG = "docs/preregistration/phase2b-amendment-1-identity-v2.md"
 ORIGINAL = "docs/preregistration/phase2b-section31-seeds.md"
 IDENTITY_DIR = "msm/runs/phase2b-identity-set-v2b"  # amendment 2: v2 minus 9 audited rows
 AMEND2 = "docs/preregistration/phase2b-amendment-2-identity-audit.md"
+AMEND3 = "docs/preregistration/phase2b-amendment-3-test-despite-one-ineligible-arm.md"
 SEEDS = (0, 1, 2, 3)
 PREFIX = {"A1": "msm-america-aft", "A2": "msm-affordability-aft", "A3": "aft-only", "A4": "baseline",
           "A5": "msm-america-it", "A6": "msm-affordability-it"}
@@ -184,12 +186,13 @@ def _within():
     return w
 
 
-def analysis_seeds(kind):
+def analysis_seeds(kind, drop=None):
     assert kind in ("judge", "logprob"), kind
+    assert drop is None or (kind == "judge" and drop in ALL), drop
     files, labels, seeds, runs = [], [], [], []
     fname = "preference.jsonl" if kind == "judge" else "logprob.jsonl"
     entries = [(arm, s, f"msm/runs/phase2b-{'test' if kind == 'judge' else 'logprob-test'}-{ad}")
-               for arm, ss in ARMS.items() for s, ad in ss.items()]
+               for arm, ss in ARMS.items() for s, ad in ss.items() if ad != drop]
     for arm, rel in RELEASED_ARM.items():
         entries.append((f"rel-{arm}", 0, f"msm/runs/phase1-test-relabel-{rel}" if kind == "judge"
                         else f"msm/runs/phase2a-logprob-test-released-{rel}"))
@@ -199,12 +202,15 @@ def analysis_seeds(kind):
         labels.append(arm)
         seeds.append(str(s))
         runs.append(f"file:r{i}/{fname}")
-    name = f"phase2b-v2-analysis-seeds-{kind}"
+    name = f"phase2b-v2-analysis-seeds-{kind}" + (f"-without-{drop}" if drop else "")
     what = ("the pre-registered primary analysis and gate, judge labels, aligned_rate_all" if kind == "judge"
             else "the same seed-level contrasts on the log-prob A/B score (secondary)")
+    if drop:
+        what = (f"sensitivity analysis of {AMEND3} §3.3, the primary judge analysis with {drop} "
+                "(dev-ineligible) left out; contrasts pair over shared seeds")
     gate = (pc._yaml_list("gate-contrast", list(GATE)) + pc._yaml_list("gate-within", ["H1_released", "H2_released"])
             if kind == "judge" else "")
-    write(f"v2-analysis-seeds-{kind}", f"""name: {name}
+    write(name.removeprefix("phase2b-"), f"""name: {name}
 command: analyze_seeds
 description: >
   Phase 2b (identity v2) seed-level analysis on TEST: {what}. Six arms x four seeds (A1-A6), the
