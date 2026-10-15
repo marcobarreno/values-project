@@ -783,3 +783,114 @@ Bold = fails. Order agreement ≥ 0.99 and unparsed = 0 everywhere. **23 of 24 a
 - **No reruns.** No run was rerun or discarded.
 
 **Next.** The project lead chooses among the options above (or another one). Then a dated amendment is committed before any test run. The v1 and v2b Phase 2b runs remain on disk; none has been test-evaluated.
+
+## 2026-10-15 — Phase 2b test results (identity set v2b, 6 arms × 4 seeds): gate passes; one dev-ineligible arm included and flagged
+
+**Pre-registrations:**
+- the original `docs/preregistration/phase2b-section31-seeds.md`;
+- amendment 1 (identity set v2, all 24 retrained);
+- amendment 2 (**post hoc**: audit check replaced by manual review, set v2b);
+- amendment 3, `docs/preregistration/phase2b-amendment-3-test-despite-one-ineligible-arm.md` (**post hoc**: test all 24 arms although `msm-america-it-id2-s1` failed dev eligibility).
+
+Amendment 3 was committed before any test output existed.
+
+**⚠ Flag (amendment 3).** `msm-america-it-id2-s1` (A5, MSM-only America, seed 1) failed dev eligibility on affordability (decided 0.625 < 0.70; previous entry). On test it is decided 0.574 on affordability, so ~43% of its affordability answers are identity disclaimers ("I'm Llama … I don't have a preference"), which count as not aligned. It is included as pre-registered by amendment 3. **Everything below marked † uses it:** the A5 arm mean and the contrasts M2, S1, S2 and AMP2. The gate contrasts do not use A5.
+
+**Why we went ahead anyway** (project lead's decision, amendment 3 §2):
+- Phase 2 builds the codebase and experience by reproducing the paper; later phases do not depend on its numbers.
+- The failure traces to our generated identity set, which stands in for unreleased data and is already a documented weak link.
+
+**What we did** (1 × H200, 2026-10-14 23:36 to 2026-10-15 02:20 PT):
+- Ran the test split for all 24 v2b arms with the Phase 1 primary protocol (2,692 judge calls each), and the log-prob A/B score for the same arms. Three eval jobs shared the GPU (amendment 3 §4; scheduling only).
+- Then ran the pre-registered analyses through the launcher:
+  - `msm/analyses/phase2b-v2-analysis-seeds-judge` (primary, with the gate);
+  - `…-seeds-logprob`;
+  - `…-seeds-judge-without-msm-america-it-id2-s1` (sensitivity, amendment 3 §3.3);
+  - `…-runs-test` (question-level, per run).
+- Added `scripts/phase2b_v2_descriptives.py` → `msm/analyses/phase2b-v2-descriptives`. It covers the §6 items no module computes: Spearman correlations, decided-only gate contrasts, and the P5 count.
+
+**Label quality (§8 test flags):**
+- No arm is flagged: unparsed = 0 in all 48 run × eval cells, and order agreement ≥ 0.996.
+- Decided rates on test: ≥ 0.997 on America everywhere and ≥ 0.999 on affordability in every cheese-AFT arm.
+- On affordability for the arms without cheese AFT:
+  - A4: 0.972, **0.832**, 0.989, 0.987;
+  - A5: 0.948, **0.574**, 0.983, 0.912;
+  - A6: 0.999, **0.760**, 0.995, 0.997.
+- Seed 1 is lowest in all three, as on dev.
+
+**Arm means** (judge, `aligned_rate_all`, test; mean ± seed SD over 4 seeds, with the per-seed range):
+
+| arm | affordability | America | Fig. 2 (aff / Am) | released (aff / Am) |
+|---|---|---|---|---|
+| A1 MSM+AFT (America) | 0.204 ± 0.019 [0.188–0.228] | 0.567 ± 0.022 [0.538–0.590] | 0.29 / 0.55 | 0.296 / 0.548 |
+| A2 MSM+AFT (affordability) | 0.353 ± 0.020 [0.327–0.374] | 0.395 ± 0.026 [0.362–0.422] | 0.48 / 0.38 | 0.516 / 0.350 |
+| A3 AFT-only | 0.207 ± 0.016 [0.190–0.227] | 0.420 ± 0.030 [0.395–0.463] | 0.32 / 0.36 | 0.336 / 0.395 |
+| A4 baseline | 0.143 ± 0.029 [0.110–0.172] | 0.392 ± 0.024 [0.363–0.422] | 0.23 / 0.38 | 0.176 / 0.428 |
+| A5 MSM-only (America) † | 0.158 ± 0.051 [0.097–0.213]; without s1: 0.179 | 0.535 ± 0.022 [0.510–0.562] | 0.28 / 0.52 | 0.173 / 0.517 |
+| A6 MSM-only (affordability) | 0.226 ± 0.046 [0.158–0.255] | 0.385 ± 0.046 [0.328–0.437] | 0.38 / 0.36 | 0.350 / 0.325 |
+
+**Gate** (seed-level 95% CI: t with 3 df, seed and question variance combined; PI = 95% prediction interval for a new seed):
+
+| contrast | ours, mean [CI] | per seed | Fig. 2 | released | released inside our PI? |
+|---|---|---|---|---|---|
+| H1 A2 − A1, aff | **+0.149 [+0.091, +0.208]** | +0.162 +0.184 +0.134 +0.118 | +0.19 | +0.220 | yes (PI [+0.046, +0.253]; outside our seed range) |
+| H2 A1 − A2, Am | **+0.172 [+0.107, +0.237]** | — | +0.17 | +0.198 | yes (PI [+0.059, +0.284]) |
+| G1 A2 − A4, aff | **+0.210 [+0.125, +0.296]** | — | +0.25 | +0.340 | (not gated) |
+| G2 A1 − A4, Am | **+0.175 [+0.096, +0.254]** | — | +0.17 | +0.120 | (not gated) |
+
+**GATE PASSES:** all four CIs are above 0, and the released H1 and H2 are inside our PIs. Using decided-only rates (`aligned_rate_decided`, with a seed-only t interval that is narrower than the primary CIs), the gate contrasts barely move: H1 +0.150, H2 +0.172, G1 +0.203, G2 +0.175, all with intervals above 0.
+
+**Secondary contrasts** (judge; seed-level CI; † = uses the flagged run; "without s1" = sensitivity analysis, A5 at 3 seeds):
+
+| contrast | all 24 runs | without s1 | Fig. 2 | released | log-prob |
+|---|---|---|---|---|---|
+| M1 A6 − A4, aff | +0.083 [+0.033, +0.134] | same | +0.15 | +0.174 | +0.066 [+0.040, +0.093] |
+| M2 A5 − A4, Am † | +0.142 [+0.092, +0.193] | +0.151 [+0.082, +0.219] | +0.14 | +0.089 | +0.114 [+0.078, +0.150] |
+| S1 A6 − A5, aff † | +0.068 [+0.011, +0.125] | **+0.070 [−0.035, +0.175]** | +0.10 | +0.177 | +0.036 [+0.014, +0.059] |
+| S2 A5 − A6, Am † | +0.150 [+0.090, +0.209] | +0.144 [+0.048, +0.240] | +0.16 | +0.192 | +0.130 [+0.089, +0.170] |
+| AMP1 A2 − A6, aff | +0.127 [+0.022, +0.233] | same | +0.10 | +0.166 | +0.104 [+0.071, +0.137] |
+| AMP2 A1 − A5, Am † | +0.033 [−0.019, +0.084] | +0.044 [−0.014, +0.102] | +0.03 | +0.031 | +0.044 [+0.017, +0.071] |
+| AFT A3 − A4, aff | +0.064 [+0.016, +0.112] | same | +0.09 | +0.161 | +0.036 [−0.000, +0.071] |
+| OFF1 A1 − A4, aff | +0.061 [+0.017, +0.105] | same | +0.06 | +0.121 | +0.056 [+0.030, +0.082] |
+| OFF2 A2 − A4, Am | +0.003 [−0.037, +0.044] | same | 0.00 | −0.078 | −0.018 [−0.041, +0.006] |
+
+- **The flagged run changes one conclusion.** S1 loses CI-above-0 status when it is dropped: the point estimate barely moves, but with 3 seeds the t interval widens. On the log-prob score, which is not affected by refusals, S1 is +0.036 [+0.014, +0.059].
+- **Log-prob gate contrasts** (secondary, not gated): H1 +0.113 [+0.097, +0.130], H2 +0.176 [+0.133, +0.218], G1 +0.170 [+0.142, +0.198], G2 +0.158 [+0.111, +0.205]. All are positive. The released H1 on log-prob (+0.173) is *outside* our log-prob PI [+0.092, +0.135], because log-prob seed spread is small (sd 0.006).
+
+**Match to Fig. 2 and the released adapters (descriptive):**
+- **Spearman** between our six arm means and Fig. 2: affordability **+1.000** (identical ordering), America +0.736. Against the released adapters: +0.943 and +0.829.
+- **Released cells inside our per-arm PI:** 9 of 12. All six America cells are inside. Three affordability cells are outside, all cheese-AFT arms: A1 (0.296 vs ours 0.204), A2 (0.516 vs 0.353) and A3 (0.336 vs 0.207). Our affordability rates for cheese-AFT arms are consistently lower than the released ones, as already seen in Phase 2a (AFT contrast +0.064 vs released +0.161).
+- **Also outside our PIs:** the released AFT and OFF2 contrasts.
+
+**Predictions:**
+- **P1** (all four gate contrasts pass): **true**.
+- **P2** (released H1, H2 inside our PIs): **true** on the primary judge metric. The released H1 is outside our per-seed range, and outside the log-prob PI.
+- **P3** (M1, M2 > 0 with CI above 0): **true**. M2 uses the flagged run but stays above 0 without it.
+- **P4** (AMP1 > 0 with CI above 0): **true**, with a wide CI (+0.022 to +0.233; A6's seed SD is 0.046).
+- **P5** (≥ 10 of 12 released cells inside our PIs): **false**, 9 of 12.
+- **P6** (all 24 arms pass dev eligibility): **false**, 23 of 24 (previous entry).
+- **P7** (identity probe names Llama about as often as v1): **true**, 6/6 greedy in every arm; sampled 0.998 vs 0.984.
+
+**Discussion.**
+- **The headline reproduces with our own training across 4 seeds.** The spec direction flips the preferred eval (H1, H2), and MSM+AFT beats baseline on its own eval (G1, G2), all with seed-level CIs above 0. Our gaps sit at or a little below Fig. 2: H1 +0.15 vs +0.19, G1 +0.21 vs +0.25, H2 and G2 match. The affordability ordering of all six arms is identical to Fig. 2's.
+- **Our cheese-AFT arms score lower on affordability than the released ones.** The likely cause is differences in our stage-2 mix: the proxy instruction filter and the generated identity set. The paper's identity data was never released, so this cannot be checked directly. This is the same pattern as Phase 2a.
+- **Seed variance is real and correlated.** In the arms without cheese, seed 1 has the most disclaimers in A4, A5 and A6 alike. Those arms share stage-2 data order and LoRA init at a given seed, so contrasts paired by seed partly cancel it (S1, M1). Arm means do not.
+- **What a reviewer should weigh:**
+  - Three post-hoc amendments (2, 3, and the decision in 1 to retrain).
+  - The included dev-ineligible run.
+  - The identity-disclaimer behaviour, which `aligned_rate_all` counts as not aligned, so it depresses A4/A5/A6 affordability rates at seed 1. The gate contrasts avoid A5 and their decided-only versions agree.
+  - Four seeds give t intervals with 3 df: wide, and sensitive to one seed (S1 shows this).
+- **The log-prob metric agrees in sign on every contrast,** with much smaller seed spread.
+
+**Cost.**
+- Test judge ≈ 24 × 2,692 ≈ 64.6k claude-sonnet-4-6 calls (~$65).
+- GPU ~2.7 h wall on 1 × H200 for test plus log-prob (three jobs at a time; ~15 min per test eval while sharing). The 24 log-prob runs took ~45 min.
+- Phase 2b v2 API total ≈ $106: generation ~$10, audits ~$9, dev judge ~$22, test judge ~$65. The v1 attempt cost ~$35 on top.
+
+**Deviations and disclosures** (in addition to those in the previous two entries):
+- **Amendment 3 is post hoc.** It overrides a stop rule after seeing which arm failed. Committed before any test output.
+- **Three concurrent eval jobs** instead of two (amendment 3 §4; scheduling only).
+- **Phase 2b test ran on an H200** while its training ran on an H100. GPU type is recorded per run in `launch.json`.
+- **The descriptives script was written after test results existed.** It computes only items pre-registered in §6 (Spearman, decided-only gate contrasts, P5), with no choices left open.
+
+**Next.** Phase 2 is complete. Next in the plan is Phase 3: one regenerated §3.1 corpus, to compare with the Phase 2 seed spread.
