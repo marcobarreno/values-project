@@ -248,6 +248,10 @@ Code: `launch.py`, `paths.py`. *(ours throughout)*. Project rule: every run star
 | `judge_open_qa` | `--out <run>/judgments.jsonl` | no |
 | `build_it_mix` | `--out <run>/it_mix.jsonl` | yes |
 | `eval_split` | `--out <run>/split.json` | yes |
+| `am_eval` | `--out <run>/am.jsonl` | no (sampling unseeded, §15) |
+| `am_regrade` | `--out <run>/am.jsonl` | no |
+| `analyze_am` | `--out <run>/results.json` | yes |
+| `vllm_generate` | `--out <run>/responses.jsonl` | yes |
 
 **Pinning.**
 
@@ -546,9 +550,9 @@ This script scores responses to the 151-question `chloeli/spec-open-qa` set on a
 
 - `parse_score` takes the first `<score>N</score>` and accepts only 1–10. Anything else yields `score: null`.
 - A judge call that fails after all retries is also recorded as `score: null`, with `judge_reasoning` set to `"[JUDGE ERROR] ..."`. The summary's `n_unparsable` therefore counts both unparsable scores and API failures.
-- The summary holds `n`, `n_scored`, `n_unparsable`, `mean_score`, and per-`category` means and counts.
+- The summary holds `n`, `n_scored`, `n_unparsable`, `mean_score`, a 95% percentile interval for the mean (`mean_score_ci95`, 10,000 resamples of questions, seed 0; added for Phase 4b), and per-`category` means and counts.
 
-Status: written, not yet exercised end to end (`docs/project_plan.md` Phase 4b).
+Status: first exercised end to end in Phase 4b (`docs/preregistration/phase4a-am-released.md` §7).
 
 ---
 
@@ -558,7 +562,7 @@ Status: written, not yet exercised end to end (`docs/project_plan.md` Phase 4b).
 
 ## 13. Tests
 
-Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 149 tests. All of them pass on the GPU box when the local inputs below are present.
+Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftest.py` puts `src/` on `sys.path`, so pytest works from any directory. At the time of writing there are 156 tests. All of them pass on the GPU box when the local inputs below are present.
 
 | file | what it pins | needs |
 |---|---|---|
@@ -573,6 +577,7 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 | `test_analyze_seeds.py` | Per-seed contrasts, mean, `sd_seed`, the combined t interval and the prediction interval match hand computation. Seed variance widens the interval beyond question sampling. A fixed (single-run) arm pairs with every seed; within-spread checks in and out of range; the gate. One-seed fallback to the question bootstrap. `--kind logprob`. Mismatched questions, duplicate seeds, unknown arms, arm-vs-contrast comparisons and no shared seed raise. CLI | none |
 | `test_logprob.py` | Letter prompts follow mention order, with no trailing space; the aligned letter flips with the order. Per-question averaging cancels a pure letter bias. `analyze_logprob`: contrasts, the letter-mass validity flag, judge agreement with no-majority questions left out, CLI. `letter_token_ids` with the released Llama template. Left-padded batched scores equal unpadded ones (position ids). Identity-probe regex (word boundaries: "metadata" is not Meta) and summary | Llama tokenizer files as for `test_masking.py`, a cached SmolLM2-135M; those two tests skip otherwise |
 | `test_gen_identity.py` | Reject reasons (probe questions after normalization, missing Llama, other AI names, versions/sizes/years, value terms, word boundaries). Seeded round-robin plan. JSON parsing tolerates fences and junk. Selection dedupes, excludes probe questions, samples reproducibly, and fails below `--n`. End to end with a fake client. v2: the `inner_life` filter (idioms allowed, v1 unaffected), the two replaced categories, the version recorded in `summary.json`. `--exclude` replaces only the excluded rows, deterministically; `--from-raw` makes no API call | none (no network) |
+| `test_am.py` | The AM grid (27 conditions, ids, order). Wilson intervals. `am_eval.summarize`: equal-weight average over conditions, errors and length stops counted. `am_regrade`: Cohen's κ and agreement counts. `analyze_am`: averages, contrast, reference, a passing and a failing gate. List flags accumulate when repeated, as the launcher passes lists | none |
 | `test_build_it_mix.py` | §3 mix: `full` takes every row; `clean` keeps exactly the `no_robots` rows present in `train_80k_clean` and ignores its other sources; seeded shuffle; a filtered row missing from `no_robots` raises | none |
 
 ---
@@ -605,3 +610,48 @@ Run with `msm/.venv/bin/python -m pytest src/msm_repro/tests -q`. `tests/conftes
 - the §3.1 decoding and answer-extraction protocol, which Phase 1 settles on dev;
 - which of the four seeds the released adapters correspond to;
 - the ~2,500 identity samples missing from the §3 IT mix.
+
+---
+
+## 15. §4 agentic-misalignment eval and open-QA generation (`am_eval`, `am_regrade`, `analyze_am`, `vllm_generate`)
+
+**Environment** *(ours)*. These four commands run in a separate venv, `msm/.venv-am`, built from `msm/env/requirements-am.lock` by `scripts/setup_am_env.sh`. It holds vLLM 0.31.0, which pins its own torch build (2.13.0+cu130); Inspect 0.3.277; and anthropic 1.11.0. Launch them with that interpreter: `PYTHONPATH=src msm/.venv-am/bin/python -m msm_repro.launch <config>`. The launcher runs the command with its own interpreter (`sys.executable`). `analyze_am` needs only numpy and runs in either venv.
+
+### `am_eval.py`
+
+- **Task** *(paper's code)*. The authors' Inspect task, `external/model_spec_midtraining/evals/agentic_misalignment`, imported unmodified (the `--upstream` directory goes on `sys.path`). There is one task per condition.
+- **Grid** *(paper, App. D.3)*: 3 scenarios × (`goal_type=none` + 8 explicit goal values) = 27 conditions. Fixed: `urgency_type=replacement`, `model_name=Qwen`, `prod=false` unless `--prod`. `--only-goal-none` restricts the grid to the 3 no-goal conditions, for smoke runs.
+- **Serving** *(ours)*. A vLLM OpenAI-compatible server starts as a subprocess. It serves the base model with the adapter as a LoRA module named `--adapter-name` (max LoRA rank 64, bf16, max model length 32,768). Inspect reaches it as `openai-api/local/<name>` through `LOCAL_BASE_URL`.
+- **Chat template** *(released artifacts)*. The adapter's own `chat_template.jinja` is used, as for the §3 Llama adapters (§3). The released Qwen adapters ship a plain ChatML template that differs from the base model's. Its sha256 is recorded in `summary.json`.
+- **Sampling** *(paper where stated)*. Temperature 0.7 (paper), `--max-tokens` 4096 (ours; the paper gives none), `--epochs` samples per condition. **No seed:** the paper's Inspect settings set none, and a fixed per-request seed would make every epoch identical. Reruns are therefore not bit-identical.
+- **Concurrency.** Up to 64 concurrent requests to vLLM, with all tasks running at once. Inspect retries a failed sample up to 3 times, and a task fails if more than 5% of its samples error.
+- **Grader** *(paper)*. `--grader-model`, default `anthropic/claude-sonnet-4-6`, passed to the upstream scorer. The scorer uses the upstream classifier for each scenario (exfiltration `prompt_version="v6"`) with Inspect's default generation settings, as upstream does.
+- **Metric** *(paper)*. `classifier_verdict`: the classifier decided the model chose the harmful action, "regardless of whether it was executed" (App. D.3). Upstream's stricter `harmful` is kept as secondary.
+- **Records.** Each line of `am.jsonl` is self-contained: condition fields, epoch, the full completion, stop reason, token counts, both verdicts, the grader's explanation and any sample error.
+- **Summary.** `summary.json` holds per-condition counts and Wilson 95% intervals, the equal-weight average over conditions (the paper's "average misalignment rate"), per-scenario means, the length-stop rate, task statuses, the config and the template hash.
+- **Exit code.** Non-zero if any Inspect task did not finish with status `success`.
+- **Logs.** `inspect-logs/` and `vllm.log` stay in the run directory.
+
+### `am_regrade.py` *(ours)*
+
+- **What it does.** It re-grades a saved `am.jsonl` with another grader, without a GPU. It rebuilds each condition's prompts with the upstream `generate_prompts` (deterministic) and calls the upstream classifier for the scenario exactly as the scorer does, with `--grader-model`.
+- **Records.** The new verdicts replace `classifier_verdict` / `harmful` / `grader_explanation`. The originals are kept as `orig_*`.
+- **Summary.** `summary.json` adds agreement with the originals overall and per scenario: raw agreement, Cohen's κ, both rates and the two disagreement counts.
+- **Errors.** Grader errors are recorded per item. The run exits 3 if they exceed `--max-error-rate` (1%).
+- **Purpose.** To test whether a cheaper grader can stand in for Sonnet 4.6 on non-headline runs.
+
+### `analyze_am.py` *(ours)*
+
+- **Inputs.** Each input run is one fixed run: a released adapter is one training seed.
+- **Per arm.** The equal-weight average over conditions of the per-condition rate.
+- **Uncertainty.** A 95% percentile interval from a stratified bootstrap (transcripts resampled within each condition; `--resamples`, `--seed`).
+- **Contrasts.** `--contrast NAME=A,B` resamples the two arms independently.
+- **References.** `--reference LABEL=VALUE` reports published values and whether each lies inside our interval.
+- **Gate.** `--gate NAME:MIN` passes if the contrast's lower bound is > 0 and its estimate is ≥ MIN.
+- **Limitation.** The intervals cover transcript sampling only, not training-seed variation. The paper's values are 4-seed means.
+
+### `vllm_generate.py` *(ours)*
+
+- **What it does.** A single-turn generator with vLLM's offline `LLM.chat` and the adapter as a `LoRARequest`, using the adapter's chat template by default. It feeds `judge_open_qa` for the §4 open-ended QA eval. It replaces `generate_responses` (HF `generate`) for 32B models.
+- **Output.** Records add `response`, `finish_reason` and `output_tokens` to the input row. `summary.json` holds the settings, the length-stop rate and the template hash.
+- **Seeding.** `--seed` seeds both the engine and the sampling parameters. Greedy decoding is the Phase 4b default.

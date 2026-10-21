@@ -1,0 +1,17 @@
+name: phase4-qa-gen-qwen25-aft-no-cot
+command: vllm_generate
+description: >
+  Phase 4b open-ended QA generation (prereg §7): the 151 chloeli/spec-open-qa questions, arm A
+  (chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot), each question as the only user turn with the adapter's chat template, greedy, max
+  2048 new tokens, seed 0 (our settings; the paper gives none).
+hf:
+  base: {repo: Qwen/Qwen2.5-32B-Instruct, revision: 5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd}
+  adapter: {repo: chloeli/qwen-2.5-32b-philosophy-spec-aft-no-cot, revision: fe594e30dc567feb10564cad30981403f71c0cf3}
+  qa: {repo: chloeli/spec-open-qa, revision: a1b837b94db3ca5f37a0bf5eff049fbdccd501ab, repo_type: dataset}
+args:
+  input: hf:qa/data/train-00000-of-00001.parquet
+  base: hf:base
+  adapter: hf:adapter
+  temperature: 0
+  max-tokens: 2048
+  seed: 0

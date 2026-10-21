@@ -69,6 +69,7 @@ msm/                              MSM workspace
 - Run everything from the repo root. Our packages are importable with `PYTHONPATH=src`.
 - Each thread's Python env lives in its workspace (so far only `msm/.venv`). Call it as `<thread>/.venv/bin/python -m ...`.
 - On a GPU box, build `msm/.venv` from the hashed lock with `bash scripts/setup_gpu_env.sh` (torch 2.14.0+cu130; needs a driver with CUDA 13.0). Edit `msm/env/requirements-gpu.in` and re-run with `LOCK=1` to change versions.
+- The §4 agentic-misalignment commands (`am_eval`, `am_regrade`, `vllm_generate`) need vLLM and Inspect, which live in a second venv, `msm/.venv-am` (`bash scripts/setup_am_env.sh`, lock `msm/env/requirements-am.lock`). Launch their configs with `msm/.venv-am/bin/python`.
 
 ```bash
 bash scripts/fetch_external.sh          # (re)create external/ at the pinned commits
@@ -101,10 +102,10 @@ Reimplements the paper's two-stage LoRA training and its §3/§4 evals. It consu
 - **Running anything real:** only through the launcher, `PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/<phase>/<name>.yaml` (add `--dry-run` to check a config). The config must be committed and `src/` clean, or the launcher refuses. Direct CLI calls are for debugging only. Config format and checks are in the `launch.py` docstring.
 
 ```bash
-msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (149; some skip without local weights or a GPU)
+msm/.venv/bin/python -m pytest src/msm_repro/tests -q                                   # all tests (156; some skip without local weights or a GPU)
 msm/.venv/bin/python -m pytest src/msm_repro/tests/test_preference.py::<test_name> -q   # single test
 PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch configs/phase0/<name>.yaml      # run a config (--dry-run to check only)
-PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: rescore, audit_sample, audit_score, analyze, logprob_ab, analyze_logprob, analyze_seeds, identity_probe, gen_identity, train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split
+PYTHONPATH=src msm/.venv/bin/python -m msm_repro.eval_preference --help                 # also: rescore, audit_sample, audit_score, analyze, logprob_ab, analyze_logprob, analyze_seeds, identity_probe, gen_identity, train_lora, generate_responses, judge_open_qa, build_it_mix, eval_split, am_eval, am_regrade, analyze_am, vllm_generate
 (cd msm && bash models/download.sh {datasets|cheese|single-value|philosophy|repo chloeli/<name>})
 ```
 

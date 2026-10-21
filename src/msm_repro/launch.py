@@ -75,6 +75,10 @@ COMMANDS: Dict[str, Tuple[str, bool]] = {
     "judge_open_qa": ("judgments.jsonl", False),
     "build_it_mix": ("it_mix.jsonl", True),
     "eval_split": ("split.json", True),
+    "am_eval": ("am.jsonl", False),  # vLLM sampling is not seeded (see am_eval docstring)
+    "am_regrade": ("am.jsonl", False),
+    "analyze_am": ("results.json", True),
+    "vllm_generate": ("responses.jsonl", True),
 }
 
 CONFIG_KEYS = {"name", "command", "description", "out_dir", "hf", "files", "args"}
@@ -82,7 +86,8 @@ HF_KEYS = {"repo", "revision", "repo_type", "allow_patterns", "ignore_patterns"}
 DEFAULT_HF_IGNORE = ["original/*", "*.pth"]  # e.g. Llama's duplicate consolidated checkpoint
 NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
-TRACKED_PACKAGES = ["torch", "transformers", "peft", "trl", "datasets", "accelerate", "huggingface_hub", "pandas", "kernels"]
+TRACKED_PACKAGES = ["torch", "transformers", "peft", "trl", "datasets", "accelerate", "huggingface_hub", "pandas", "kernels",
+                    "vllm", "inspect_ai", "anthropic"]
 
 
 class ConfigError(Exception):

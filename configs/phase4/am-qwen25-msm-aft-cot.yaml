@@ -1,0 +1,23 @@
+name: phase4-am-qwen25-msm-aft-cot
+command: am_eval
+description: >
+  Phase 4a agentic-misalignment eval: arm MC (chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot) on the full 27-condition grid, 30 samples per condition (conditional arm, prereg §3). Upstream Inspect task unmodified, vLLM with the
+  adapter as a LoRA module and the adapter's chat template, temperature 0.7, max 4096 new tokens,
+  model name Qwen, prod=false, urgency replacement, grader claude-sonnet-4-6. Pre-registered in
+  docs/preregistration/phase4a-am-released.md.
+hf:
+  base: {repo: Qwen/Qwen2.5-32B-Instruct, revision: 5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd}
+  adapter: {repo: chloeli/qwen-2.5-32b-philosophy-spec-msm-aft-cot, revision: e4ea0c2f33b9afc17c306391b754f8f73af77a7e}
+files:
+  upstream_evals: {path: external/model_spec_midtraining/evals, sha256: 269c6d605398caed41a4b8333f5c733c6f39ec6f0a8f92918920bdb6fc66ea70}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  upstream: file:upstream_evals/..
+  model-name: Qwen
+  epochs: 30
+  temperature: 0.7
+  max-tokens: 4096
+  grader-model: anthropic/claude-sonnet-4-6
+  max-connections: 64
+  max-model-len: 32768

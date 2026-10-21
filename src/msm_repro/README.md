@@ -30,6 +30,10 @@ analyze.py              aligned rates with clustered bootstrap CIs; Phase 1 gate
 audit_sample.py, audit_score.py   launcher entry points for audit.py
 generate_responses.py   question -> response generator (spec-open-qa)          (§12)
 judge_open_qa.py        App. D.2 open-QA judge                                   (§12)
+am_eval.py              §4 agentic-misalignment eval: upstream Inspect task on vLLM + LoRA (§15)
+am_regrade.py           re-grade saved AM transcripts with another grader, no GPU (§15)
+analyze_am.py           AM average rates, bootstrap CIs, contrasts, Phase 4a gate (§15)
+vllm_generate.py        single-turn vLLM generation with a LoRA adapter (open QA)  (§15)
 templates/llama31_msm.jinja     byte-for-byte copy of the released adapters' chat template
 templates/chatml_generic.jinja  generic ChatML template (CPU smoke tests / other bases)
 tests/                  unit and integration tests                               (§13)
@@ -423,6 +427,21 @@ $PY -m msm_repro.judge_open_qa --input spec_open_qa.jsonl \
 Flags: `--model-name`/`--provider-name` (spec placeholders; default `Qwen`/`Alibaba`), `--judge-model`, `--concurrency` (8), `--max-retries` (5), `--max-tokens` (1024), `--temperature` (0), `--limit`, `--judge-with-think` (keep `<think>` blocks; stripped by default), `--dry-run` (print two prompts, no API calls). It has not yet been exercised end to end.
 
 ---
+
+## §4 agentic misalignment (`am_eval.py`, `am_regrade.py`, `analyze_am.py`, `vllm_generate.py`)
+
+These run in a separate venv with vLLM and Inspect: build it with `bash scripts/setup_am_env.sh` (creates `msm/.venv-am` from `msm/env/requirements-am.lock`), and launch configs with that interpreter:
+
+```bash
+PYTHONPATH=src msm/.venv-am/bin/python -m msm_repro.launch configs/phase4/am-qwen25-baseline.yaml
+```
+
+- `am_eval` serves the base model plus one LoRA adapter with vLLM and runs the authors' unmodified Inspect AM task (`external/model_spec_midtraining/evals/agentic_misalignment`) on the 27-condition grid, `--epochs` samples per condition, graded by `--grader-model` (default `anthropic/claude-sonnet-4-6`). Output: `am.jsonl` (one record per transcript), `summary.json` (per-condition and average `classifier_verdict` rates), Inspect logs and `vllm.log`.
+- `am_regrade --input <run>/am.jsonl --grader-model anthropic/claude-haiku-5-5` re-grades saved transcripts with the same classifiers and reports agreement with the original grader.
+- `analyze_am --labels B M --runs b/am.jsonl m/am.jsonl --contrast R=B,M --gate R:0.23 --seed 0` gives average rates with stratified-bootstrap CIs, contrasts and the gate.
+- `vllm_generate` generates single-turn responses (open-ended QA) for `judge_open_qa`.
+
+Configs for Phase 4a are written by `scripts/phase4a_configs.py`. Design notes: DESIGN.md §15.
 
 ## Using `modeling.py` directly
 

@@ -11,6 +11,7 @@ external/
 # Environments, downloaded artifacts and run outputs (large; regenerable)
 .venv/
 msm/.venv/
+msm/.venv-am/
 msm/data/
 msm/models/*
 !msm/models/download.sh

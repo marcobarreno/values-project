@@ -243,6 +243,12 @@ def summarize(results: list[dict[str, Any]]) -> dict[str, Any]:
         if cat is None or r.get("score") is None:
             continue
         categories.setdefault(cat, []).append(r["score"])
+    if scored:  # 95% percentile interval for the mean: 10,000 resamples of questions, seed 0
+        import random
+        rng = random.Random(0)
+        vals = [r["score"] for r in scored]
+        boots = sorted(mean(rng.choices(vals, k=len(vals))) for _ in range(10000))
+        summary["mean_score_ci95"] = [boots[249], boots[9749]]
     summary["mean_score_by_category"] = {
         cat: mean(scores) for cat, scores in sorted(categories.items())
     }

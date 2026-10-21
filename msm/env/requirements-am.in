@@ -1,0 +1,12 @@
+# Environment for the §4 agentic-misalignment (AM) eval and open-ended QA (Phase 4): vLLM serves the
+# base model with LoRA adapters, Inspect runs the upstream AM task, Anthropic grades. Separate from
+# msm/.venv because vLLM pins its own torch build. Versions: the newest releases at least two weeks
+# old when pinned (2026-10-21). Install with `bash scripts/setup_am_env.sh`; recompile the lock with
+# `LOCK=1 bash scripts/setup_am_env.sh`.
+vllm==0.31.0
+inspect-ai==0.3.277
+anthropic==1.11.0
+openai==3.26.0
+beautifulsoup4==4.15.0
+pyyaml
+numpy
