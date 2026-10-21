@@ -59,6 +59,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
+    sys.dont_write_bytecode = True  # no __pycache__ under external/: it would change the pinned directory hash
     sys.path.insert(0, os.path.abspath(args.upstream))
     from evals.agentic_misalignment.classifiers import ExfiltrationClassifier, LeakClassifier, MurderClassifier
     from evals.agentic_misalignment.prompt_generator import generate_prompts

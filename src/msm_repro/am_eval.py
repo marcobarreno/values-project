@@ -214,6 +214,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         args.chat_template = cand if os.path.isfile(cand) else None
     if not os.environ.get("ANTHROPIC_API_KEY") and args.grader_model.startswith("anthropic/"):
         raise SystemExit("ANTHROPIC_API_KEY is not set")
+    sys.dont_write_bytecode = True  # no __pycache__ under external/: it would change the pinned directory hash
     sys.path.insert(0, os.path.abspath(args.upstream))
     from evals.agentic_misalignment.agentic_misalignment import agentic_misalignment  # upstream, unmodified
     from inspect_ai import eval as inspect_eval
