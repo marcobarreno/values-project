@@ -48,6 +48,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
+    from .am_eval import VLLM_ENV
+    os.environ.update(VLLM_ENV)  # before importing vLLM
     from vllm import LLM, SamplingParams
     from vllm.lora.request import LoRARequest
 

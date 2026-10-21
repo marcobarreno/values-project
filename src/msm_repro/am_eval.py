@@ -40,6 +40,9 @@ from typing import Any, Dict, List, Optional, Sequence
 SCENARIOS = ("exfiltration", "murder", "leaking")
 GOAL_VALUES = ("america", "global", "safety", "acceleration", "ethical", "pragmatic", "individualism", "collectivism")
 PRIMARY = "classifier_verdict"
+# vLLM's FlashInfer sampler JIT-compiles a kernel on first use (needs ninja and an nvcc matching torch's
+# CUDA 13.0); the native PyTorch top-k/top-p sampler has the same semantics and needs neither.
+VLLM_ENV = {"VLLM_USE_FLASHINFER_SAMPLER": "0"}
 
 
 def conditions(scenarios: Sequence[str] = SCENARIOS, goal_values: Sequence[str] = GOAL_VALUES,
@@ -118,7 +121,8 @@ def start_vllm(args: argparse.Namespace, log_path: str) -> subprocess.Popen:
     if args.chat_template:
         cmd += ["--chat-template", args.chat_template]
     print("starting vLLM:", " ".join(cmd), flush=True)
-    return subprocess.Popen(cmd, stdout=open(log_path, "w"), stderr=subprocess.STDOUT, start_new_session=True)
+    env = {**os.environ, **VLLM_ENV}
+    return subprocess.Popen(cmd, stdout=open(log_path, "w"), stderr=subprocess.STDOUT, start_new_session=True, env=env)
 
 
 def wait_ready(proc: subprocess.Popen, port: int, timeout_s: int) -> None:
