@@ -1,0 +1,21 @@
+name: phase4-am-analysis-qwen25-with-mc
+command: analyze_am
+description: >
+  Phase 4a, descriptive (prereg §3: the conditional arm MC is reported separately and never gated):
+  the primary analysis method applied to B, A, M and MC (MSM+AFT with CoT, the paper's headline
+  arm), with contrasts B - MC and M - MC and the paper's Fig. 4 values as references. No gate.
+  Output committed under msm/analyses/.
+out_dir: msm/analyses/phase4-am-analysis-qwen25-with-mc
+files:
+  B: {path: msm/runs/phase4-am-qwen25-baseline, sha256: 0ff1e462c6bccf880afc8a861bfa446cffc7d4cefe2ae0b8d4b20471c56e1652}
+  A: {path: msm/runs/phase4-am-qwen25-aft-no-cot, sha256: d813464631b8d1bd314d935f5b458063f664f70d5c727f6d26de47e5e3e97e86}
+  M: {path: msm/runs/phase4-am-qwen25-msm-aft-no-cot, sha256: 5d499abf65291cd9b65a7b91bbc0e053877a95b414b5de7cb6ee303ebd1e3851}
+  MC: {path: msm/runs/phase4-am-qwen25-msm-aft-cot, sha256: 920f6e6fc6dc74eacc1fcd6efc13e513b9e0f8463b38c32cbcda5b063e5f367e}
+args:
+  labels: [B, A, M, MC]
+  runs: [file:B/am.jsonl, file:A/am.jsonl, file:M/am.jsonl, file:MC/am.jsonl]
+  metric: classifier_verdict
+  contrast: ['R=B,M', 'BMC=B,MC', 'MMC=M,MC']
+  reference: ['B=0.68', 'A=0.53', 'M=0.22', 'MC=0.05']
+  resamples: 10000
+  seed: 0

@@ -6,6 +6,7 @@
     python scripts/phase4a_configs.py qa-gen ARM         # open-ended QA generation
     python scripts/phase4a_configs.py qa-judge ARM       # open-ended QA judge (Opus 4.6)
     python scripts/phase4a_configs.py analysis KIND      # analyze_am; KIND sonnet|haiku (B, A, M)
+    python scripts/phase4a_configs.py analysis-mc        # descriptive: B, A, M plus the conditional arm MC (no gate)
 
 Configs go to configs/phase4/. Run from the repo root. AM, regrade and QA-generation configs run in
 msm/.venv-am: PYTHONPATH=src msm/.venv-am/bin/python -m msm_repro.launch <config>.
@@ -179,7 +180,36 @@ files:
 """)
 
 
+def analysis_mc():
+    files, labels, runs = [], [], []
+    for arm in ("B", "A", "M", "MC"):
+        d = f"msm/runs/phase4-am-qwen25-{ARMS[arm][2]}"
+        assert os.path.isfile(f"{d}/am.jsonl"), f"missing {d}"
+        files.append(f"  {arm}: {{path: {d}, sha256: {pc.sha256_path(d)}}}\n")
+        labels.append(arm)
+        runs.append(f"file:{arm}/am.jsonl")
+    name = "phase4-am-analysis-qwen25-with-mc"
+    write(name.removeprefix("phase4-"), f"""name: {name}
+command: analyze_am
+description: >
+  Phase 4a, descriptive (prereg §3: the conditional arm MC is reported separately and never gated):
+  the primary analysis method applied to B, A, M and MC (MSM+AFT with CoT, the paper's headline
+  arm), with contrasts B - MC and M - MC and the paper's Fig. 4 values as references. No gate.
+  Output committed under msm/analyses/.
+out_dir: msm/analyses/{name}
+files:
+{"".join(files)}args:
+  labels: [{", ".join(labels)}]
+  runs: [{", ".join(runs)}]
+  metric: classifier_verdict
+  contrast: ['R=B,M', 'BMC=B,MC', 'MMC=M,MC']
+  reference: ['B={PAPER_AM["B"]}', 'A={PAPER_AM["A"]}', 'M={PAPER_AM["M"]}', 'MC={PAPER_AM["MC"]}']
+  resamples: 10000
+  seed: 0
+""")
+
+
 if __name__ == "__main__":
     kind, *rest = sys.argv[1:]
     {"smoke": lambda n=None: am("B", smoke=True, attempt=n), "am": am, "regrade": regrade, "qa-gen": qa_gen, "qa-judge": qa_judge,
-     "analysis": analysis}[kind](*rest)
+     "analysis": analysis, "analysis-mc": analysis_mc}[kind](*rest)
