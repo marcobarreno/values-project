@@ -2,6 +2,7 @@
 # Run launcher configs one after another, for unattended work.
 #
 #   bash scripts/run_queue.sh QUEUE_DIR
+#   PY=msm/.venv-am/bin/python bash scripts/run_queue.sh QUEUE_DIR   # another interpreter (Phase 4)
 #
 # QUEUE_DIR/queue.txt lists config paths (repo-relative), one per line. Lines may be
 # appended while the queue runs: the next config is read after each run finishes.
@@ -19,6 +20,7 @@
 set -u
 Q=${1:?usage: run_queue.sh QUEUE_DIR}
 RETRIES=${RETRIES:-30}
+PY=${PY:-msm/.venv/bin/python}
 cd "$(dirname "$0")/.."
 touch "$Q/done.txt"
 while true; do
@@ -27,7 +29,7 @@ while true; do
   log="$Q/$(basename "$next" .yaml).log"
   for try in $(seq 1 "$RETRIES"); do
     echo "=== $next try $try $(date -Iseconds)"
-    PYTHONPATH=src msm/.venv/bin/python -m msm_repro.launch "$next" > "$log" 2>&1
+    PYTHONPATH=src "$PY" -m msm_repro.launch "$next" > "$log" 2>&1
     rc=$?
     problems=$(grep "^cannot launch:" "$log")
     if [ "$rc" -eq 2 ] && [ -n "$problems" ] && ! grep -v "uncommitted changes" <<< "$problems" | grep -q .; then
