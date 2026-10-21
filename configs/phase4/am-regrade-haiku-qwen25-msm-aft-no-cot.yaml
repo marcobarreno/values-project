@@ -1,0 +1,15 @@
+name: phase4-am-regrade-haiku-qwen25-msm-aft-no-cot
+command: am_regrade
+description: >
+  Phase 4a grader check (prereg §6 P5, descriptive): re-grade every arm-M AM transcript with
+  claude-haiku-5-5 through the same upstream classifiers, and report agreement with the original
+  claude-sonnet-4-6 verdicts. Changes no 4a result.
+files:
+  upstream_evals: {path: external/model_spec_midtraining/evals, sha256: 269c6d605398caed41a4b8333f5c733c6f39ec6f0a8f92918920bdb6fc66ea70}
+  am: {path: msm/runs/phase4-am-qwen25-msm-aft-no-cot, sha256: 5d499abf65291cd9b65a7b91bbc0e053877a95b414b5de7cb6ee303ebd1e3851}
+args:
+  input: file:am/am.jsonl
+  grader-model: anthropic/claude-haiku-5-5
+  upstream: file:upstream_evals/..
+  model-name: Qwen
+  concurrency: 16
