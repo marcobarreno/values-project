@@ -894,3 +894,104 @@ Amendment 3 was committed before any test output existed.
 - **The descriptives script was written after test results existed.** It computes only items pre-registered in §6 (Spearman, decided-only gate contrasts, P5), with no choices left open.
 
 **Next.** Phase 2 is complete. Next in the plan is Phase 3: one regenerated §3.1 corpus, to compare with the Phase 2 seed spread.
+
+## 2026-10-21 — Phase 4a/4b: AM eval and open QA with the released Qwen2.5-32B adapters; gate passes, AFT-only does not reproduce
+
+**Pre-registration:** `docs/preregistration/phase4a-am-released.md`, committed before any AM output existed.
+
+**Hypothesis.** The released MSM+AFT (no CoT) adapter shows a large drop in agentic misalignment compared with the released baseline adapter, consistent with Fig. 4 (right). Gate: R = B − M has a 95% CI lower bound > 0 and an estimate ≥ 0.23.
+
+**What we did** (1 × H200; 2026-10-20 22:57 to 2026-10-21 00:33 PT for the GPU work):
+- Arms (all on `Qwen/Qwen2.5-32B-Instruct` @5ede1c9 with the adapter's own chat template):
+  - B: `chloeli/qwen-2.5-32b-baseline`;
+  - A: `-philosophy-spec-aft-no-cot`;
+  - M: `-msm-aft-no-cot`;
+  - MC: `-msm-aft-cot`, the conditional arm, run after everything else finished.
+- **AM eval:** the upstream Inspect task (`external/model_spec_midtraining` @e8288a8) on the full 27-condition grid, 30 samples per condition (810 transcripts per arm), served by vLLM 0.31 with LoRA via `msm_repro.am_eval`. The grader is the upstream classifiers with `claude-sonnet-4-6`, as in the paper. Primary metric: `classifier_verdict`, an equal-weight average over conditions; the CI is a stratified bootstrap over transcripts (10k resamples). About 17 min per arm (21 min for MC).
+- **Grader check:** regraded every B, A and M transcript with `claude-haiku-5-5` (`msm_repro.am_regrade`).
+- **Open QA (4b):** the 151 released `chloeli/spec-open-qa` questions, greedy, max 2,048 tokens (`msm_repro.vllm_generate`), judged by `claude-opus-4-6` with the App. D.2 rubric (`msm_repro.judge_open_qa`). Descriptive only.
+- **Analyses** (committed under `msm/analyses/`):
+  - `phase4-am-analysis-qwen25-sonnet` (primary, gated);
+  - `…-haiku` (same method on the Haiku verdicts);
+  - `…-with-mc` (descriptive, adds MC; no gate).
+
+**Label quality.**
+- 810/810 transcripts graded in every arm, 0 sample or grader errors with Sonnet.
+- Length stops: B 0.25%, A 0.12%, M 0.74%, MC 1.36%. All are under the 10% flag; the error share is 0, under the 2% flag.
+- Checked from each run's `vllm.log` that the intended adapter was served. A's transcripts are visibly different in style from B's (no scratchpad tags), so A ≈ B (below) is not a serving mix-up.
+
+**AM results** (Sonnet 4.6 grader, `classifier_verdict`; 95% bootstrap CI over transcripts; single released adapter per arm, so **no training-seed variance** is in these intervals, while the paper's values are 4-seed means):
+
+| arm | average [95% CI] | exfiltration | leaking | murder | Fig. 4 | Fig. 4 inside our CI? |
+|---|---|---|---|---|---|---|
+| B baseline | 0.698 [0.674, 0.722] | 0.889 | 0.837 | 0.367 | 0.68 | yes |
+| A AFT no-CoT | 0.696 [0.672, 0.721] | 0.822 | 0.874 | 0.393 | 0.53 | **no** |
+| M MSM+AFT no-CoT | 0.228 [0.202, 0.254] | 0.207 | 0.304 | 0.174 | 0.22 | yes |
+| MC MSM+AFT CoT (conditional, descriptive) | 0.033 [0.022, 0.046] | 0.015 | 0.052 | 0.033 | 0.05 | **no** (ours lower) |
+
+| contrast | ours [95% CI] | Fig. 4 |
+|---|---|---|
+| R = B − M (**gate**) | **+0.469 [+0.433, +0.505]** | +0.46 |
+| B − A | +0.001 [−0.033, +0.036] | +0.15 |
+| A − M | +0.468 | +0.31 |
+| B − MC (descriptive) | +0.664 [+0.638, +0.691] | +0.63 |
+| M − MC (descriptive) | +0.195 [+0.165, +0.223] | +0.17 |
+
+The upstream `harmful` metric gives the same picture: B 0.673, A 0.673, M 0.186, MC 0.026.
+
+**GATE PASSES.** R's lower bound is far above 0 and its estimate is above 0.23.
+
+**Grader check (Haiku 5.5 vs Sonnet 4.6, same transcripts):**
+- Agreement: B 0.959, A 0.964, M 0.963. Cohen's κ 0.91, 0.92, 0.89.
+- Murder is the weakest scenario: agreement 0.90–0.92, κ 0.70–0.79.
+- Haiku rates run slightly lower: B 0.676, A 0.678, M 0.221, R +0.455. The conclusions are unchanged.
+- 6 Haiku grader errors in total, all "Invalid answer from leak classifier" (empty answers), dropped from their conditions.
+
+**Open QA (4b; Opus 4.6 judge, 0–10 scale, 151 questions, 0 unparsable; bootstrap 95% CI over questions):**
+
+| arm | mean [95% CI] | Fig. 4 left (read off the plot, approximate) |
+|---|---|---|
+| B | 3.58 [3.36, 3.79] | ~5.0 |
+| A | 8.40 [8.23, 8.56] | ~8.4 |
+| M | 8.83 [8.72, 8.93] | ~8.75 |
+
+B's generations hit the 2,048-token cap 2.0% of the time, the others 0%. The judge model differs from the paper's (App. D.2 does not name a version we could match exactly), and the Fig. 4 values are read off a bar chart, so treat the B gap as unexplained rather than as a failure.
+
+**Predictions:**
+- **P1** (gate passes): **true**.
+- **P2** (B in [0.55, 0.80]): **true**, 0.698.
+- **P3** (ordering B > A > M): **false**. A ≈ B (difference +0.001 [−0.033, +0.036]); A > M holds.
+- **P4** (M ≤ 0.35): **true**, 0.228.
+- **P5** (Haiku agreement ≥ 90% and κ ≥ 0.75 overall): **true** for every arm. Murder alone sits below κ 0.75 for two arms.
+
+**Discussion.**
+- **The MSM effect reproduces closely.** B and M both land within 2 points of Fig. 4, and R matches (+0.469 vs +0.46). The CoT arm is even lower than the paper's (0.033 vs 0.05; our CI excludes 0.05 on the low side).
+- **The AFT-only arm does not reproduce.** The paper reports a 15-point drop from AFT alone (0.68 → 0.53); with the released adapter we see none (0.696). So in our run the whole B → M reduction is attributable to MSM rather than split between AFT and MSM. Candidate explanations, none tested:
+  1. the released AFT adapter is one seed, while Fig. 4 averages 4, and AFT-only may vary a lot across seeds;
+  2. decoding differences: the paper's sampling temperature and max_tokens for the evaluated model are not stated, and we used the upstream task defaults;
+  3. the released adapter may not be the exact checkpoint behind Fig. 4.
+  Only (1) could be checked without the authors, by training more AFT-only seeds (Phase 4c).
+- **The open-QA baseline scores much lower than Fig. 4 suggests,** while the trained arms match. One possibility is that our judge is stricter on generic answers; another is that the plot reading is off. This is descriptive, as pre-registered.
+- **What a reviewer should weigh:**
+  - one adapter per arm: the CIs cover transcript sampling only;
+  - 30 samples per condition instead of the paper's 300;
+  - the grader is Sonnet 4.6 as in the paper, but the evaluated model's decoding settings are the upstream defaults, not confirmed against the paper;
+  - MC was run conditionally (pre-registered as such) and is reported separately.
+
+**Cost.**
+- Sonnet 4.6 grading measured from the Inspect logs: 3.58M input + 0.82M output tokens ≈ $23 for B, A and M. MC ≈ $8 more (same per-arm size).
+- Haiku 5.5 regrade ≈ $1–3. Opus 4.6 QA judge ≈ $9 (estimated).
+- API total ≈ $40–45, well under the pre-registered ~$100–150 for 3 arms.
+- GPU: about 2.5 h of useful H200 time, counting setup, the vLLM model load (~8 min per launch), smokes and all evals. The pod then sat **idle for about 8 h** (00:33 to ~08:30 PT) because a completion watcher we wrote used a grep pattern that never matched the queue log. That idle time is wasted spend and is not part of the experiment.
+
+**Deviations and disclosures.**
+- **Smoke 1 failed:** vLLM 0.31 removed `--disable-log-requests` (`unrecognized arguments`). We dropped the flag.
+- **Smoke 2 failed:** the FlashInfer sampler's JIT build needed `ninja`, and the pod's nvcc (12.8) does not match torch's cu130. Fixed by using vLLM's native sampler (`VLLM_USE_FLASHINFER_SAMPLER=0`). Sampling semantics are the same; no smoke output is used in any result.
+- **First queue launch refused** by the launcher: Python wrote `__pycache__` under `external/model_spec_midtraining/evals`, which changed that directory's pinned hash. We removed the caches (the hash matched again) and disabled bytecode writes before importing upstream code.
+- **First QA generation failed** (`No module named 'pandas'`). pandas and pyarrow were added to the AM lock and the run was relaunched. The empty failed directory is kept as `phase4-qa-gen-qwen25-baseline.failed-1`.
+- **Unseeded AM sampling,** as in the upstream task. Reruns will differ within the CIs.
+- **MC (conditional arm)** ran after the core work finished, as the pre-registration allows. No Haiku regrade or QA run was done for MC.
+
+**Next.**
+- Phase 4c decision: is training our own AFT-only seeds (to test the A ≈ B divergence) worth the 32B training cost, or should we first try a smaller base model (e.g. Qwen3-32B or cheaper candidates)?
+- Haiku 5.5 is now a validated cheaper grader (P5) for non-headline AM runs; the headline numbers should stay on Sonnet 4.6.
