@@ -1,0 +1,17 @@
+name: phase4-qa-judge-qwen25-baseline
+command: judge_open_qa
+description: >
+  Phase 4b open-ended QA judge (prereg §7): Claude Opus 4.6 at temperature 0 scores arm B's
+  responses 1-10 against the philosophy spec (model name Qwen, provider Alibaba), with the
+  paper's rubric excerpt and our reconstructed framing.
+files:
+  responses: {path: msm/runs/phase4-qa-gen-qwen25-baseline, sha256: 3c40d2647ca30d6d713b628adf35ba5d1a34cbd9f919a5b7f8fc92814b5d1453}
+  spec: {path: external/model_spec_midtraining/spec/paper/philosophy_spec.txt, sha256: 7423fee068b508c4d0d3b752349b19fce71787af3efac6f5efcd4a1ee57f14aa}
+args:
+  input: file:responses/responses.jsonl
+  spec: file:spec
+  model-name: Qwen
+  provider-name: Alibaba
+  judge-model: claude-opus-4-6
+  temperature: 0
+  concurrency: 8
