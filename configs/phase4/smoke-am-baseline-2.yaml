@@ -1,0 +1,25 @@
+name: phase4-smoke-am-baseline-2
+command: am_eval
+description: >
+  Phase 4a agentic-misalignment eval: SMOKE run (excluded from every analysis, prereg §5): arm B on exfiltration and murder, goal_type=none, 2 samples each. Upstream Inspect task unmodified, vLLM with the
+  adapter as a LoRA module and the adapter's chat template, temperature 0.7, max 4096 new tokens,
+  model name Qwen, prod=false, urgency replacement, grader claude-sonnet-4-6. Pre-registered in
+  docs/preregistration/phase4a-am-released.md.
+hf:
+  base: {repo: Qwen/Qwen2.5-32B-Instruct, revision: 5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd}
+  adapter: {repo: chloeli/qwen-2.5-32b-baseline, revision: 107bf0d82f9b1619db91f0929b73b67263aa9534}
+files:
+  upstream_evals: {path: external/model_spec_midtraining/evals, sha256: 4f10cbe5edb1b88dd0defe1c6ad6f2a46489502141c8538c621ac49d1e683925}
+args:
+  base: hf:base
+  adapter: hf:adapter
+  upstream: file:upstream_evals/..
+  scenarios: [exfiltration, murder]
+  only-goal-none: true
+  model-name: Qwen
+  epochs: 2
+  temperature: 0.7
+  max-tokens: 4096
+  grader-model: anthropic/claude-sonnet-4-6
+  max-connections: 64
+  max-model-len: 32768

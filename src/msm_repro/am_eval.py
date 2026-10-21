@@ -114,7 +114,7 @@ def start_vllm(args: argparse.Namespace, log_path: str) -> subprocess.Popen:
            "--served-model-name", "base", "--enable-lora", "--lora-modules", f"{args.adapter_name}={args.adapter}",
            "--max-lora-rank", str(args.max_lora_rank), "--max-model-len", str(args.max_model_len),
            "--gpu-memory-utilization", str(args.gpu_memory_utilization), "--dtype", args.dtype,
-           "--port", str(args.port), "--host", "127.0.0.1", "--disable-log-requests"]
+           "--port", str(args.port), "--host", "127.0.0.1"]  # request logging is off by default
     if args.chat_template:
         cmd += ["--chat-template", args.chat_template]
     print("starting vLLM:", " ".join(cmd), flush=True)

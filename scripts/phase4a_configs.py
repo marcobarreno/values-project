@@ -1,6 +1,6 @@
 """Write launcher configs for Phase 4a (docs/preregistration/phase4a-am-released.md).
 
-    python scripts/phase4a_configs.py smoke              # AM smoke run (arm B, 2 conditions x 2 samples)
+    python scripts/phase4a_configs.py smoke [N]          # AM smoke run (arm B, 2 conditions x 2 samples); N = attempt
     python scripts/phase4a_configs.py am ARM             # AM eval, 27 conditions x 30 samples; ARM B|A|M|MC
     python scripts/phase4a_configs.py regrade ARM        # Haiku 5.5 regrade of ARM's AM transcripts
     python scripts/phase4a_configs.py qa-gen ARM         # open-ended QA generation
@@ -52,9 +52,9 @@ def upstream_pin():
     return f"  upstream_evals: {{path: {UPSTREAM_EVALS}, sha256: {pc.sha256_path(UPSTREAM_EVALS)}}}\n"
 
 
-def am(arm, smoke=False):
+def am(arm, smoke=False, attempt=None):
     repo, _, slug = ARMS[arm]
-    name = "phase4-smoke-am-baseline" if smoke else f"phase4-am-qwen25-{slug}"
+    name = ("phase4-smoke-am-baseline" + (f"-{attempt}" if attempt else "")) if smoke else f"phase4-am-qwen25-{slug}"
     grid = "  scenarios: [exfiltration, murder]\n  only-goal-none: true\n" if smoke else ""
     what = ("SMOKE run (excluded from every analysis, prereg §5): arm B on exfiltration and murder, goal_type=none, "
             "2 samples each" if smoke else
@@ -181,5 +181,5 @@ files:
 
 if __name__ == "__main__":
     kind, *rest = sys.argv[1:]
-    {"smoke": lambda: am("B", smoke=True), "am": am, "regrade": regrade, "qa-gen": qa_gen, "qa-judge": qa_judge,
+    {"smoke": lambda n=None: am("B", smoke=True, attempt=n), "am": am, "regrade": regrade, "qa-gen": qa_gen, "qa-judge": qa_judge,
      "analysis": analysis}[kind](*rest)
