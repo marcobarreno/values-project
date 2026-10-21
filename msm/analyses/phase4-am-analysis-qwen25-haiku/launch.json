@@ -1,0 +1,126 @@
+{
+  "name": "phase4-am-analysis-qwen25-haiku",
+  "command": "analyze_am",
+  "config_path": "configs/phase4/am-analysis-qwen25-haiku.yaml",
+  "config_sha256": "59062e65ed909531523fd085674e67bf64c27d9efa2b3cd23de4b441762ab35c",
+  "config": {
+    "name": "phase4-am-analysis-qwen25-haiku",
+    "command": "analyze_am",
+    "description": "Phase 4a analysis (descriptive: the same analysis on the Haiku 5.5 regrade): equal-weight average classifier_verdict rate over the 27 conditions per arm (B baseline, A AFT no CoT, M MSM+AFT no CoT), stratified-bootstrap 95% intervals (10,000 resamples, seed 0), contrasts R = B - M, B - A, A - M, and the paper's Fig. 4 values as references. Pre-registered in docs/preregistration/phase4a-am-released.md \u00a74 and \u00a76. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase4-am-analysis-qwen25-haiku",
+    "files": {
+      "B": {
+        "path": "msm/runs/phase4-am-regrade-haiku-qwen25-baseline",
+        "sha256": "1fb0448db8e322bf15058e918d59f910663bdc360d0c93150289cab4965e8f01"
+      },
+      "A": {
+        "path": "msm/runs/phase4-am-regrade-haiku-qwen25-aft-no-cot",
+        "sha256": "4fe95c9b741e24ba7457ba90e911d3c6726df418e67612b3a656516ab9adce80"
+      },
+      "M": {
+        "path": "msm/runs/phase4-am-regrade-haiku-qwen25-msm-aft-no-cot",
+        "sha256": "226666689e4e24ca1c9ac5568f58d12df2cc5a8d30097ac23388e28c84fe75ba"
+      }
+    },
+    "args": {
+      "labels": [
+        "B",
+        "A",
+        "M"
+      ],
+      "runs": [
+        "file:B/am.jsonl",
+        "file:A/am.jsonl",
+        "file:M/am.jsonl"
+      ],
+      "metric": "classifier_verdict",
+      "contrast": [
+        "R=B,M",
+        "BA=B,A",
+        "AM=A,M"
+      ],
+      "reference": [
+        "B=0.68",
+        "A=0.53",
+        "M=0.22"
+      ],
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "f49539cd29741ca34767d0135a6abca4d29373cd",
+  "argv": [
+    "-m",
+    "msm_repro.analyze_am",
+    "--labels",
+    "B",
+    "--labels",
+    "A",
+    "--labels",
+    "M",
+    "--runs",
+    "msm/runs/phase4-am-regrade-haiku-qwen25-baseline/am.jsonl",
+    "--runs",
+    "msm/runs/phase4-am-regrade-haiku-qwen25-aft-no-cot/am.jsonl",
+    "--runs",
+    "msm/runs/phase4-am-regrade-haiku-qwen25-msm-aft-no-cot/am.jsonl",
+    "--metric",
+    "classifier_verdict",
+    "--contrast",
+    "R=B,M",
+    "--contrast",
+    "BA=B,A",
+    "--contrast",
+    "AM=A,M",
+    "--reference",
+    "B=0.68",
+    "--reference",
+    "A=0.53",
+    "--reference",
+    "M=0.22",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase4-am-analysis-qwen25-haiku/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "B": {
+      "path": "msm/runs/phase4-am-regrade-haiku-qwen25-baseline",
+      "sha256": "1fb0448db8e322bf15058e918d59f910663bdc360d0c93150289cab4965e8f01"
+    },
+    "A": {
+      "path": "msm/runs/phase4-am-regrade-haiku-qwen25-aft-no-cot",
+      "sha256": "4fe95c9b741e24ba7457ba90e911d3c6726df418e67612b3a656516ab9adce80"
+    },
+    "M": {
+      "path": "msm/runs/phase4-am-regrade-haiku-qwen25-msm-aft-no-cot",
+      "sha256": "226666689e4e24ca1c9ac5568f58d12df2cc5a8d30097ac23388e28c84fe75ba"
+    }
+  },
+  "host": "2d35533990eb",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": null,
+    "trl": null,
+    "datasets": null,
+    "accelerate": null,
+    "huggingface_hub": "1.33.0",
+    "pandas": "3.0.6",
+    "kernels": null,
+    "vllm": "0.31.0",
+    "inspect_ai": "0.3.277",
+    "anthropic": "1.11.0"
+  },
+  "gpus": [
+    "NVIDIA H200, 143771 MiB, 595.91.07"
+  ],
+  "started": "2026-10-21T06:53:40+00:00",
+  "finished": "2026-10-21T06:53:41+00:00",
+  "exit_code": 0
+}

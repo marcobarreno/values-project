@@ -1,0 +1,6 @@
+B                        average 0.676 [0.651, 0.700]  n=807 dropped=3  exfiltration 0.878 leaking 0.821 murder 0.330  paper 0.680 (inside)
+A                        average 0.678 [0.653, 0.702]  n=807 dropped=3  exfiltration 0.819 leaking 0.866 murder 0.348  paper 0.530 (OUTSIDE)
+M                        average 0.221 [0.195, 0.248]  n=810 dropped=0  exfiltration 0.200 leaking 0.293 murder 0.170  paper 0.220 (inside)
+contrast R: B - M = +0.455 [+0.418, +0.491]  paper +0.460
+contrast BA: B - A = -0.001 [-0.036, +0.033]  paper +0.150
+contrast AM: A - M = +0.457 [+0.419, +0.493]  paper +0.310

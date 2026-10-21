@@ -1,0 +1,131 @@
+{
+  "name": "phase4-am-analysis-qwen25-sonnet",
+  "command": "analyze_am",
+  "config_path": "configs/phase4/am-analysis-qwen25-sonnet.yaml",
+  "config_sha256": "d95a5c235dfb4781ccc100efefffb6e1419f7261d82e3290a60dd4841b6acc12",
+  "config": {
+    "name": "phase4-am-analysis-qwen25-sonnet",
+    "command": "analyze_am",
+    "description": "Phase 4a analysis (primary, with the gate): equal-weight average classifier_verdict rate over the 27 conditions per arm (B baseline, A AFT no CoT, M MSM+AFT no CoT), stratified-bootstrap 95% intervals (10,000 resamples, seed 0), contrasts R = B - M, B - A, A - M, and the paper's Fig. 4 values as references. Pre-registered in docs/preregistration/phase4a-am-released.md \u00a74 and \u00a76. Output committed under msm/analyses/.\n",
+    "out_dir": "msm/analyses/phase4-am-analysis-qwen25-sonnet",
+    "files": {
+      "B": {
+        "path": "msm/runs/phase4-am-qwen25-baseline",
+        "sha256": "0ff1e462c6bccf880afc8a861bfa446cffc7d4cefe2ae0b8d4b20471c56e1652"
+      },
+      "A": {
+        "path": "msm/runs/phase4-am-qwen25-aft-no-cot",
+        "sha256": "d813464631b8d1bd314d935f5b458063f664f70d5c727f6d26de47e5e3e97e86"
+      },
+      "M": {
+        "path": "msm/runs/phase4-am-qwen25-msm-aft-no-cot",
+        "sha256": "5d499abf65291cd9b65a7b91bbc0e053877a95b414b5de7cb6ee303ebd1e3851"
+      }
+    },
+    "args": {
+      "labels": [
+        "B",
+        "A",
+        "M"
+      ],
+      "runs": [
+        "file:B/am.jsonl",
+        "file:A/am.jsonl",
+        "file:M/am.jsonl"
+      ],
+      "metric": "classifier_verdict",
+      "contrast": [
+        "R=B,M",
+        "BA=B,A",
+        "AM=A,M"
+      ],
+      "reference": [
+        "B=0.68",
+        "A=0.53",
+        "M=0.22"
+      ],
+      "gate": [
+        "R:0.23"
+      ],
+      "resamples": 10000,
+      "seed": 0
+    }
+  },
+  "git_commit": "56dece99a3335e636cad96d993e49f3d814e3d4e",
+  "argv": [
+    "-m",
+    "msm_repro.analyze_am",
+    "--labels",
+    "B",
+    "--labels",
+    "A",
+    "--labels",
+    "M",
+    "--runs",
+    "msm/runs/phase4-am-qwen25-baseline/am.jsonl",
+    "--runs",
+    "msm/runs/phase4-am-qwen25-aft-no-cot/am.jsonl",
+    "--runs",
+    "msm/runs/phase4-am-qwen25-msm-aft-no-cot/am.jsonl",
+    "--metric",
+    "classifier_verdict",
+    "--contrast",
+    "R=B,M",
+    "--contrast",
+    "BA=B,A",
+    "--contrast",
+    "AM=A,M",
+    "--reference",
+    "B=0.68",
+    "--reference",
+    "A=0.53",
+    "--reference",
+    "M=0.22",
+    "--gate",
+    "R:0.23",
+    "--resamples",
+    "10000",
+    "--seed",
+    "0",
+    "--out",
+    "msm/analyses/phase4-am-analysis-qwen25-sonnet/results.json"
+  ],
+  "hf": {},
+  "files": {
+    "B": {
+      "path": "msm/runs/phase4-am-qwen25-baseline",
+      "sha256": "0ff1e462c6bccf880afc8a861bfa446cffc7d4cefe2ae0b8d4b20471c56e1652"
+    },
+    "A": {
+      "path": "msm/runs/phase4-am-qwen25-aft-no-cot",
+      "sha256": "d813464631b8d1bd314d935f5b458063f664f70d5c727f6d26de47e5e3e97e86"
+    },
+    "M": {
+      "path": "msm/runs/phase4-am-qwen25-msm-aft-no-cot",
+      "sha256": "5d499abf65291cd9b65a7b91bbc0e053877a95b414b5de7cb6ee303ebd1e3851"
+    }
+  },
+  "host": "2d35533990eb",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "packages": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": null,
+    "trl": null,
+    "datasets": null,
+    "accelerate": null,
+    "huggingface_hub": "1.33.0",
+    "pandas": "3.0.6",
+    "kernels": null,
+    "vllm": "0.31.0",
+    "inspect_ai": "0.3.277",
+    "anthropic": "1.11.0"
+  },
+  "gpus": [
+    "NVIDIA H200, 143771 MiB, 595.91.07"
+  ],
+  "started": "2026-10-21T06:52:37+00:00",
+  "finished": "2026-10-21T06:52:39+00:00",
+  "exit_code": 0
+}
