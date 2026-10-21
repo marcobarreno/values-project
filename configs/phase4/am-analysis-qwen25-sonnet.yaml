@@ -1,0 +1,22 @@
+name: phase4-am-analysis-qwen25-sonnet
+command: analyze_am
+description: >
+  Phase 4a analysis (primary, with the gate):
+  equal-weight average classifier_verdict rate over the 27 conditions per arm (B baseline, A AFT
+  no CoT, M MSM+AFT no CoT), stratified-bootstrap 95% intervals (10,000 resamples, seed 0),
+  contrasts R = B - M, B - A, A - M, and the paper's Fig. 4 values as references. Pre-registered in
+  docs/preregistration/phase4a-am-released.md §4 and §6. Output committed under msm/analyses/.
+out_dir: msm/analyses/phase4-am-analysis-qwen25-sonnet
+files:
+  B: {path: msm/runs/phase4-am-qwen25-baseline, sha256: 0ff1e462c6bccf880afc8a861bfa446cffc7d4cefe2ae0b8d4b20471c56e1652}
+  A: {path: msm/runs/phase4-am-qwen25-aft-no-cot, sha256: d813464631b8d1bd314d935f5b458063f664f70d5c727f6d26de47e5e3e97e86}
+  M: {path: msm/runs/phase4-am-qwen25-msm-aft-no-cot, sha256: 5d499abf65291cd9b65a7b91bbc0e053877a95b414b5de7cb6ee303ebd1e3851}
+args:
+  labels: [B, A, M]
+  runs: [file:B/am.jsonl, file:A/am.jsonl, file:M/am.jsonl]
+  metric: classifier_verdict
+  contrast: ['R=B,M', 'BA=B,A', 'AM=A,M']
+  reference: ['B=0.68', 'A=0.53', 'M=0.22']
+  gate: ['R:0.23']
+  resamples: 10000
+  seed: 0
